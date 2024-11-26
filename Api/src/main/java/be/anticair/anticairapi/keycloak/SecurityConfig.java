@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Collection;
 
+/*** Needs to be done further
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -42,10 +43,6 @@ public class SecurityConfig {
         return new KeycloakAuthenticationProvider();
     }
 
-    /**
-     * This method checks if the user has the "admin" group in Keycloak.
-     * The `SecurityContextHolder` will have the KeycloakAuthenticationToken after login.
-     */
     public boolean hasAdminRole() {
         try {
             KeycloakAuthenticationToken authenticationToken = (KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
@@ -68,3 +65,4 @@ public class SecurityConfig {
         return false;
     }
 }
+**/
