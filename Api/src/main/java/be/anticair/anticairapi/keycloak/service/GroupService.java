@@ -35,8 +35,6 @@ public class GroupService {
      */
     public void addGroup(String userEmail, String groupName) {
         try {
-            System.out.println("Adding user: " + userEmail + " to group: " + groupName);
-
             // Look for the group in the realm
             List<GroupRepresentation> groups = getGroupsByName(groupName);
 
@@ -67,8 +65,6 @@ public class GroupService {
      */
     public void removeGroup(String userEmail, String groupName) {
         try {
-            System.out.println("Removing user: " + userEmail + " from group: " + groupName);
-
             // Look for the group in the realm
             List<GroupRepresentation> groups = getGroupsByName(groupName);
 
@@ -133,8 +129,6 @@ public class GroupService {
      */
     private List<GroupRepresentation> getGroupsByName(String groupName) {
         try {
-            System.out.println("Searching for groups with name: " + groupName);
-
             // Look for the group in the realm
             List<GroupRepresentation> groups = keycloak.realm(realm)
                     .groups()
