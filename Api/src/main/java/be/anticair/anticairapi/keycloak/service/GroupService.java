@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service that manage a user's groups
+ * @Author Zarzycki Alexis
+**/
 @Service
 public class GroupService {
 
@@ -32,6 +36,7 @@ public class GroupService {
      *
      * @param userEmail The email ID of the user
      * @param groupName The name of the group in the Keycloak Realm
+     * @Author Zarzycki Alexis
      */
     public void addGroup(String userEmail, String groupName) {
         try {
@@ -52,7 +57,6 @@ public class GroupService {
         } catch (NotFoundException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace(); // Print the full stack trace
             throw new NotFoundException("Error while adding user: " + userEmail + " to group: " + groupName);
         }
     }
@@ -62,6 +66,7 @@ public class GroupService {
      *
      * @param userEmail The email ID of the user
      * @param groupName The name of the group in the Keycloak Realm
+     * @Author Zarzycki Alexis
      */
     public void removeGroup(String userEmail, String groupName) {
         try {
@@ -82,7 +87,6 @@ public class GroupService {
         } catch (NotFoundException e) {
             throw e;
         } catch (Exception e) {
-            e.printStackTrace(); // Print the full stack trace
             throw new NotFoundException("Error while removing group: " + groupName + " to user: " + userEmail, e);
         }
     }
@@ -93,6 +97,7 @@ public class GroupService {
      * @param userEmail The email of the user to check.
      * @param groupName The name of the group to verify membership.
      * @return true if the user is a member of the group, false otherwise.
+     * @Author Zarzycki Alexis
      */
     private boolean isUserInGroup(String userEmail, String groupName) {
         try {
@@ -126,6 +131,7 @@ public class GroupService {
      * @param groupName The name of the group to search for.
      * @return A list of GroupRepresentation objects matching the name.
      * @throws NotFoundException if no groups are found with the given name.
+     * @Author Zarzycki Alexis
      */
     private List<GroupRepresentation> getGroupsByName(String groupName) {
         try {
@@ -143,7 +149,6 @@ public class GroupService {
 
             return groups;
         } catch (Exception e) {
-            e.printStackTrace(); // Print the full stack trace
             throw new NotFoundException("Error while retrieving groups with name: " + groupName, e);
         }
     }

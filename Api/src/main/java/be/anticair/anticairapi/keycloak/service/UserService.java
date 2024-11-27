@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service that manage user's
+ * @Author Zarzycki Alexis
+ **/
 @Service
 public class UserService {
 
@@ -22,6 +26,12 @@ public class UserService {
         this.keycloak = keycloak;
     }
 
+    /**
+     * Retrieves a user from his email
+     * @param userEmail The Email of the user to find
+     * @return List of the users finded
+     * @Author Zarzycki Alexis
+     */
     public List<UserRepresentation> getUsersByEmail(String userEmail) {
         try {
 

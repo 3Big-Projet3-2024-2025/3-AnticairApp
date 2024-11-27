@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 
+/**
+ * Configuration for Keycloak server connection
+ * @Author Zarzycki Alexis
+ */
 @Configuration
 public class KeycloakConfig {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakConfig.class);
@@ -28,6 +32,11 @@ public class KeycloakConfig {
 
     private Keycloak keycloak;
 
+    /**
+     * Creates a Keycloak client for administrative operations
+     * @return Configured Keycloak client
+     * @Author Zarzycki Alexis
+     */
     @Bean
     public Keycloak keycloakClient() {
         try {
