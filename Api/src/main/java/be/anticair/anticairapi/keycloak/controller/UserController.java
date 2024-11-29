@@ -48,4 +48,16 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    /**
+     * Get all users from a specific group.
+     * @return ResponseEntity containing a list of all users in the group specified.
+     * @Author Blommaert Youry
+     */
+    @GetMapping("/list/admin")
+    public ResponseEntity<List<UserRepresentation>> listAdmins() {
+        List<UserRepresentation> admins = userService.getUsersByGroupName("Admin");
+        return ResponseEntity.ok(admins);
+    }
+
+
 }

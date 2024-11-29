@@ -73,5 +73,40 @@ public class UserService {
         }
     }
 
+    /**
+     * Retrieves all users from the realm that are in the specified group.
+     *
+     * @param groupName
+     * @return List of all users in the group specified
+     * @Author Blommaert Youry
+     */
+    public List<UserRepresentation> getUsersByGroupName(String groupName) {
+        List<UserRepresentation> users = new ArrayList<>();
+        try {
+            if (groupName == null || groupName.isEmpty()) {
+                throw new IllegalArgumentException("Group name must not be null or empty");
+            }
+
+            GroupRepresentation group = keycloak.realm(realm).groups().groups().stream()
+                    .filter(g -> g.getName().equals(groupName))
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException("Group not found: " + groupName));
+
+            users = keycloak.realm(realm).groups().group(group.getId()).members();
+
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found in the group: " + groupName);
+            }
+        } catch (NotFoundException e) {
+            System.err.println("Error: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+            throw new RuntimeException("Error while retrieving users in the group: " + groupName, e);
+        }
+        return users;
+    }
+
+
 
 }
