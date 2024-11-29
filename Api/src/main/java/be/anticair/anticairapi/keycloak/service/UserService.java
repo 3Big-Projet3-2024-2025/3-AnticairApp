@@ -2,12 +2,15 @@ package be.anticair.anticairapi.keycloak.service;
 
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service that manage user's
@@ -47,6 +50,26 @@ public class UserService {
         } catch (Exception e) {
             // Debug log for exception
             throw new NotFoundException("Error while retrieving users with email: " + userEmail, e);
+        }
+    }
+
+    /**
+     * Retrieves all users from the realm
+     * @return List of all users
+     * @Author Blommaert Youry
+     */
+    public List<UserRepresentation> getAllUsers() {
+        try{
+            List<UserRepresentation> users = keycloak.realm(realm).users().list();
+
+            if(users.isEmpty()){
+                throw new NotFoundException("No users found");
+            }
+
+            return users;
+
+        } catch(Exception e){
+            throw new NotFoundException("Error while retrieving all users", e);
         }
     }
 
