@@ -35,10 +35,11 @@ public class GroupServiceTests {
     @Autowired
     private UserService userService;
 
-    private static final String TEST_USER_EMAIL = "alexis.zarzycki0212@gmail.com";
+    private static final String TEST_USER_EMAIL = "admin@anticairapp.sixela.be";
 
     /**
      * Testing the getGroupsByName
+     * @Author Zarzycki Alexis
      */
     @Test
     public void testGetGroupsByName() {
@@ -52,6 +53,7 @@ public class GroupServiceTests {
 
     /**
      * Testing Adding and Removing a group to a user
+     * @Author Zarzycki Alexis
      */
     @Test
     public void testAddAndRemoveGroup() {
@@ -97,6 +99,7 @@ public class GroupServiceTests {
 
     /**
      * Testing Adding a group to a nonExistent User
+     * @Author Zarzycki Alexis
      */
     @Test
     public void testAddGroup_NonExistentUser() {
@@ -110,6 +113,7 @@ public class GroupServiceTests {
 
     /**
      * Testing Adding a user to a nonExistent Group
+     * @Author Zarzycki Alexis
      */
     @Test
     public void testAddGroup_NonExistentGroup() {
@@ -121,6 +125,7 @@ public class GroupServiceTests {
 
     /**
      * Testing Removing a group from a nonExistent User
+     * @Author Zarzycki Alexis
      */
     @Test
     public void testRemovingroup_NonExistentUser() {
@@ -134,6 +139,7 @@ public class GroupServiceTests {
 
     /**
      * Testing Remove a user from a nonExistent Group
+     * @Author Zarzycki Alexis
      */
     @Test
     public void testRemoveGroup_NonExistentGroup() {
