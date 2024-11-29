@@ -13,8 +13,9 @@ import java.util.stream.Collectors;
 
 /**
  * Service that manage a user's groups
+ *
  * @Author Zarzycki Alexis
-**/
+ **/
 @Service
 public class GroupService {
 
@@ -60,7 +61,7 @@ public class GroupService {
             throw new NotFoundException("Error while adding user: " + userEmail + " to group: " + groupName);
         }
     }
-
+    
     /**
      * Removes a user from a specific group in Keycloak.
      *
@@ -133,7 +134,7 @@ public class GroupService {
      * @throws NotFoundException if no groups are found with the given name.
      * @Author Zarzycki Alexis
      */
-    private List<GroupRepresentation> getGroupsByName(String groupName) {
+    public List<GroupRepresentation> getGroupsByName(String groupName) {
         try {
             // Look for the group in the realm
             List<GroupRepresentation> groups = keycloak.realm(realm)
