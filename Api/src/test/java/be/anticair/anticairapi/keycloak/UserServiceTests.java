@@ -5,13 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.UserRepresentation;
-
 import jakarta.ws.rs.NotFoundException;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -29,8 +26,22 @@ public class UserServiceTests {
 
     @Autowired
     private UserService userService;
-
+  
     private static final String TEST_USER_EMAIL = "alexis.zarzycki0212@gmail.com";
+
+    /**
+     * Testing the listAntiquarian
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testGetAllAnticarianUsers() {
+        // Attempt to retrieve User with a specific Email
+        List<UserRepresentation> users = userService.getUsersByGroupName("Antiquarian");
+
+        assertNotNull(users);
+        assertFalse(users.isEmpty());
+        assertTrue(users.size() >= 1);
+    }
 
     /**
      * Testing the getUserByEmail with a existent User

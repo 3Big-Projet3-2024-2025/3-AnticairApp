@@ -59,5 +59,15 @@ public class UserController {
         return ResponseEntity.ok(admins);
     }
 
+    /**
+     * Get all users from a specific group
+     * @Return ResponseEntity containing a list of all users in the antiquarian group specified.
+     * @Author Zarzycki Alexis
+     */
+    @GetMapping("/list/antiquarian")
+    public ResponseEntity<List<UserRepresentation>> listAntiquarian() {
+        List<UserRepresentation> antiquarian = userService.getUsersByGroupName("Antiquarian");
+        return ResponseEntity.ok(antiquarian);
+    }
 
 }
