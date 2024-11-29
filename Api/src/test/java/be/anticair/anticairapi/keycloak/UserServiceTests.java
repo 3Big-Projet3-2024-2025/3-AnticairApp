@@ -34,6 +34,7 @@ public class UserServiceTests {
 
     /**
      * Testing the getUserByEmail with a existent User
+     * @Author Zarzycki Alexis
      */
     @Test
     public void testGetExistentUserByEmail() {
@@ -47,6 +48,7 @@ public class UserServiceTests {
 
     /**
      * Testing the getUserByEmail with a non existent User
+     * @Author Zarzycki Alexis
      */
     @Test
     public void testGetNotExistentUserByEmail() {
