@@ -5,9 +5,7 @@ import org.apache.catalina.User;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -61,7 +59,7 @@ public class UserController {
 
     /**
      * Get all users from a specific group
-     * @Return ResponseEntity containing a list of all users in the antiquarian group specified.
+     * @return ResponseEntity containing a list of all users in the antiquarian group specified.
      * @Author Zarzycki Alexis
      */
     @GetMapping("/list/antiquarian")
@@ -69,5 +67,32 @@ public class UserController {
         List<UserRepresentation> antiquarian = userService.getUsersByGroupName("Antiquarian");
         return ResponseEntity.ok(antiquarian);
     }
+
+    /**
+     * Desactivate a user
+     * @return ResponseEntity containing a string
+     * @Author Zarzycki Alexis
+     */
+    @PostMapping("/desactivate")
+    public ResponseEntity<String> desactivateUser(
+            @RequestParam String emailId
+    ){
+        userService.disableUser(emailId);
+        return ResponseEntity.ok("User disabled successfully");
+    }
+
+    /**
+     * Activate a user
+     * @return ResponseEntity containing a string
+     * @Author Zarzycki Alexis
+     */
+    @PostMapping("/activate")
+    public ResponseEntity<String> activateUser(
+            @RequestParam String emailId
+    ){
+        userService.enableUser(emailId);
+        return ResponseEntity.ok("User enabled successfully");
+    }
+
 
 }
