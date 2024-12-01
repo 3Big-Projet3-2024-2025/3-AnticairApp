@@ -14,11 +14,6 @@ export class AppComponent {
 
   currentTheme: 'dark' | 'light' = 'light'; // Current theme by default Light
   constructor(private themeService: ThemeService, private router: Router) {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      this.checkAdminRoute();
-    });
   }
 
   ngOnInit(): void {
@@ -26,9 +21,12 @@ export class AppComponent {
     this.themeService.theme$.subscribe(theme => {
       this.currentTheme = theme;
     });
+
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.isAdminRoute = this.router.url.startsWith('/admin');
+    });
   }
 
-  checkAdminRoute(){
-    this.isAdminRoute = this.router.url.includes('admin');
-  }
 }

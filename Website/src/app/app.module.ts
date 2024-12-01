@@ -13,6 +13,7 @@ import { FooterComponent } from './footer/footer.component';
 import { SellComponent } from './sell/sell.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { SidebarComponent } from './admin/sidebar/sidebar.component';
+import { UsersComponent } from './admin/users/users.component';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
@@ -29,7 +30,8 @@ export function initializeKeycloak(authService: AuthService) {
     FooterComponent,
     SellComponent,
     DashboardComponent,
-    SidebarComponent
+    SidebarComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
