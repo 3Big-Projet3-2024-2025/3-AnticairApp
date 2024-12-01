@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * REST Controller for managing user groups in Keycloak.
  * @Author Zarzycki Alexis
@@ -41,12 +44,14 @@ public class GroupController {
      * @Author Zarzycki Alexis
      */
     @PostMapping("/add")
-    public ResponseEntity<String> addGroup(
+    public ResponseEntity<Map<String, String>> addGroup(
             @RequestParam String emailId,
             @RequestParam String groupName
     ) {
         groupService.addGroup(emailId, groupName);
-        return ResponseEntity.ok(emailId + " added to the group " + groupName);
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", emailId + " added to the group " + groupName);
+        return ResponseEntity.ok(responseMessage);
     }
 
     /**
