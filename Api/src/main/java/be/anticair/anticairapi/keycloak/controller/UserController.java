@@ -49,6 +49,18 @@ public class UserController {
     }
 
     /**
+     * Get the number of users from the database
+     *
+     * @return a ResponseEntity containing the number of users
+     * @Author Verly Noah
+     */
+    @GetMapping("/nbrUsers")
+    public ResponseEntity<Integer> numberUsers() {
+        int nbrUser = userService.getNumberOfUsers();
+        return ResponseEntity.ok(nbrUser);
+    }
+
+    /**
      * Get all users from a specific group.
      * @return ResponseEntity containing a list of all users in the group specified.
      * @Author Blommaert Youry
