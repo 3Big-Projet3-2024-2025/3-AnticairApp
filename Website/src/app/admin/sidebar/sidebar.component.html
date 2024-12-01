@@ -7,12 +7,13 @@
       '-translate-x-full': !isMobileMenuOpen,
       'translate-x-0': isMobileMenuOpen,
       'md:translate-x-0': true,
-      'bg-gray-800 md:bg-gray-700': currentTheme === 'dark',
+      'bg-gray-700': currentTheme === 'dark',
       'bg-white': currentTheme !== 'dark'
     }">
         <div class="h-full flex flex-col relative p-6 pr-12">
             <button *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()"
-                class="md:hidden absolute top-4 right-4 text-gray-300 z-50">
+                class="md:hidden absolute top-4 right-4 z-50" 
+                [ngClass]="currentTheme === 'dark' ? 'text-white' : 'text-gray-800'">
                 <i class="fas fa-times text-2xl"></i>
             </button>
 
@@ -27,7 +28,7 @@
                         <li class="mb-4">
                             <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMobileMenu()"
                                 class="flex items-center p-2 rounded transition duration-200" [ngClass]="{
-                    'text-white hover:bg-gray-700': currentTheme === 'dark',
+                    'text-white hover:bg-gray-600': currentTheme === 'dark',
                     'text-gray-700 hover:bg-gray-100': currentTheme !== 'dark'
                   }">
                                 <i class="fas fa-tachometer-alt mr-3"></i>
@@ -37,7 +38,7 @@
                         <li class="mb-4">
                             <a routerLink="/admin/users" routerLinkActive="active" (click)="closeMobileMenu()"
                                 class="flex items-center p-2 rounded transition duration-200" [ngClass]="{
-                    'text-white hover:bg-gray-700': currentTheme === 'dark',
+                    'text-white hover:bg-gray-600': currentTheme === 'dark',
                     'text-gray-700 hover:bg-gray-100': currentTheme !== 'dark'
                   }">
                                 <i class="fas fa-users mr-3"></i>
@@ -48,9 +49,13 @@
                 </nav>
             </div>
 
-            <div class="mt-auto p-6 space-y-4">
-                <div class="flex items-center justify-between bg-gray-700 p-3 rounded">
-                    <span class="text-gray-300 mr-2">
+            <div class="mt-auto space-y-4">
+                <div class="flex items-center justify-between p-2 rounded" 
+                    [ngClass]="{
+                        'bg-gray-600': currentTheme === 'dark',
+                        'bg-gray-200': currentTheme !== 'dark'
+                    }">
+                    <span [ngClass]="currentTheme === 'dark' ? 'text-white' : 'text-gray-700'">
                         <i class="fas fa-adjust"></i>
                     </span>
 
@@ -58,17 +63,22 @@
                         <input type="checkbox" class="sr-only peer" [checked]="currentTheme === 'dark'"
                             (change)="toggleTheme()">
                         <div
-                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                            class="w-11 h-6 peer-focus:outline-none peer-focus:ring-4 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"
+                            [ngClass]="{
+                                'bg-gray-200 peer-checked:bg-blue-600': currentTheme !== 'dark',
+                                'bg-gray-700 peer-checked:bg-blue-500': currentTheme === 'dark'
+                            }">
                         </div>
                     </label>
 
-                    <span class="text-gray-300 ml-2">
+                    <span [ngClass]="currentTheme === 'dark' ? 'text-white' : 'text-gray-700'">
                         {{ currentTheme === 'dark' ? 'Dark' : 'Light' }}
                     </span>
                 </div>
 
                 <button (click)="logout()"
-                    class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-300 flex items-center justify-center">
+                    class="w-full text-white py-2 rounded hover:opacity-90 transition duration-300 flex items-center justify-center"
+                    [ngClass]="currentTheme === 'dark' ? 'bg-red-700' : 'bg-red-600'">
                     <i class="fas fa-sign-out-alt mr-2"></i>
                     Logout
                 </button>
@@ -78,18 +88,19 @@
 
     <div class="md:hidden w-full fixed top-0 left-0 z-40">
         <div class="flex items-center justify-between p-4" [ngClass]="{
-          'bg-gray-800 text-white': currentTheme === 'dark',
+          'bg-gray-700 text-white': currentTheme === 'dark',
           'bg-white text-gray-800': currentTheme !== 'dark'
         }">
             <h2 class="text-xl font-bold">Admin Dashboard</h2>
-            <button (click)="toggleMobileMenu()">
+            <button (click)="toggleMobileMenu()" 
+                [ngClass]="currentTheme === 'dark' ? 'text-white' : 'text-gray-800'">
                 <i class="fas fa-bars text-2xl"></i>
             </button>
         </div>
     </div>
 
     <!-- Router outlet for displaying routed components -->
-    <div class="flex-1 pt-16 md:pt-0">
+    <div class="flex-1 pt-16 md:pt-0 md:pl-64">
         <router-outlet></router-outlet>
     </div>
 </div>
