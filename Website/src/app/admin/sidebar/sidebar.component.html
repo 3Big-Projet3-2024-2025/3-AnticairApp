@@ -1,81 +1,56 @@
-<div *ngIf="currentTheme === 'dark'; else lightTheme" class="flex flex-col h-screen bg-gray-700">
-    <div class="w-64 bg-gray-700 h-full p-5 flex flex-col">
-        <h2 class="text-white text-2xl font-bold mb-8">Admin Dashboard</h2>
+<div class="min-h-screen flex">
+    <div *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()" class="fixed inset-0 bg-black opacity-50 z-40 md:hidden">
+    </div>
 
-        <nav class="flex-grow">
-            <ul>
-                <li class="mb-4">
-                    <a routerLink="/admin/dashboard" routerLinkActive="active"
-                        class="text-gray-300 hover:text-white flex items-center">
-                        <i class="fas fa-tachometer-alt mr-2"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="mb-4">
-                    <a routerLink="/admin/users" routerLinkActive="active"
-                        class="text-gray-300 hover:text-white flex items-center">
-                        <i class="fas fa-users mr-2"></i>
-                        Users
-                    </a>
-                </li>
-            </ul>
-        </nav>
+    <div [ngClass]="{
+      'fixed md:static inset-y-0 left-0 w-64 z-50 transform transition-transform duration-300 ease-in-out': true,
+      '-translate-x-full': !isMobileMenuOpen,
+      'translate-x-0': isMobileMenuOpen,
+      'md:translate-x-0': true,
+      'bg-gray-800 md:bg-gray-700': currentTheme === 'dark',
+      'bg-white': currentTheme !== 'dark'
+    }">
+        <div class="h-full flex flex-col relative p-6 pr-12">
+            <button *ngIf="isMobileMenuOpen" (click)="closeMobileMenu()"
+                class="md:hidden absolute top-4 right-4 text-gray-300 z-50">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
 
-        <div class="mt-auto space-y-4">
-            <div class="flex items-center justify-between bg-gray-700 p-2 rounded">
-                <span class="text-gray-300 mr-2">
-                    <i class="fas fa-adjust"></i>
-                </span>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-6"
+                    [ngClass]="currentTheme === 'dark' ? 'text-white' : 'text-gray-800'">
+                    Admin Dashboard
+                </h2>
 
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" class="sr-only peer" [checked]="currentTheme === 'dark'"
-                        (change)="toggleTheme()">
-                    <div
-                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                    </div>
-                </label>
-
-                <span class="text-gray-300 ml-2">
-                    {{ currentTheme === 'dark' ? 'Dark' : 'Light' }}
-                </span>
+                <nav>
+                    <ul>
+                        <li class="mb-4">
+                            <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMobileMenu()"
+                                class="flex items-center p-2 rounded transition duration-200" [ngClass]="{
+                    'text-white hover:bg-gray-700': currentTheme === 'dark',
+                    'text-gray-700 hover:bg-gray-100': currentTheme !== 'dark'
+                  }">
+                                <i class="fas fa-tachometer-alt mr-3"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-4">
+                            <a routerLink="/admin/users" routerLinkActive="active" (click)="closeMobileMenu()"
+                                class="flex items-center p-2 rounded transition duration-200" [ngClass]="{
+                    'text-white hover:bg-gray-700': currentTheme === 'dark',
+                    'text-gray-700 hover:bg-gray-100': currentTheme !== 'dark'
+                  }">
+                                <i class="fas fa-users mr-3"></i>
+                                Users
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
 
-            <button (click)="logout()"
-                class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-300 flex items-center justify-center">
-                <i class="fas fa-sign-out-alt mr-2"></i>
-                Logout
-            </button>
-        </div>
-    </div>
-</div>
-
-<ng-template #lightTheme>
-    <div class="flex flex-col h-screen bg-gray-100">
-        <div class="w-64 bg-white h-full p-5 flex flex-col">
-            <h2 class="text-gray-800 text-2xl font-bold mb-8">Admin Dashboard</h2>
-
-            <nav class="flex-grow">
-                <ul>
-                    <li class="mb-4">
-                        <a routerLink="/admin/dashboard" routerLinkActive="active"
-                            class="text-gray-700 hover:text-gray-900 flex items-center">
-                            <i class="fas fa-tachometer-alt mr-2"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="mb-4">
-                        <a routerLink="/admin/users" routerLinkActive="active"
-                            class="text-gray-700 hover:text-gray-900 flex items-center">
-                            <i class="fas fa-users mr-2"></i>
-                            Users
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="mt-auto space-y-4">
-                <div class="flex items-center justify-between bg-gray-300 p-2 rounded">
-                    <span class="text-gray-700 mr-2">
+            <div class="mt-auto p-6 space-y-4">
+                <div class="flex items-center justify-between bg-gray-700 p-3 rounded">
+                    <span class="text-gray-300 mr-2">
                         <i class="fas fa-adjust"></i>
                     </span>
 
@@ -87,7 +62,7 @@
                         </div>
                     </label>
 
-                    <span class="text-gray-700 ml-2">
+                    <span class="text-gray-300 ml-2">
                         {{ currentTheme === 'dark' ? 'Dark' : 'Light' }}
                     </span>
                 </div>
@@ -100,4 +75,21 @@
             </div>
         </div>
     </div>
-</ng-template>
+
+    <div class="md:hidden w-full fixed top-0 left-0 z-40">
+        <div class="flex items-center justify-between p-4" [ngClass]="{
+          'bg-gray-800 text-white': currentTheme === 'dark',
+          'bg-white text-gray-800': currentTheme !== 'dark'
+        }">
+            <h2 class="text-xl font-bold">Admin Dashboard</h2>
+            <button (click)="toggleMobileMenu()">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Router outlet for displaying routed components -->
+    <div class="flex-1 pt-16 md:pt-0">
+        <router-outlet></router-outlet>
+    </div>
+</div>

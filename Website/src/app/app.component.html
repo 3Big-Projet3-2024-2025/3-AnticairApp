@@ -6,9 +6,6 @@
     <!-- Admin layout with sidebar when on admin routes -->
     <div *ngIf="isAdminRoute" class="flex">
         <app-sidebar></app-sidebar>
-        <div class="flex-1">
-            <router-outlet></router-outlet>
-        </div>
     </div>
 
     <!-- Router outlet for non-admin routes -->
