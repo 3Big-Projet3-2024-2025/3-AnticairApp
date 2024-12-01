@@ -1,0 +1,103 @@
+<div *ngIf="currentTheme === 'dark'; else lightTheme" class="flex flex-col h-screen bg-gray-700">
+    <div class="w-64 bg-gray-700 h-full p-5 flex flex-col">
+        <h2 class="text-white text-2xl font-bold mb-8">Admin Dashboard</h2>
+
+        <nav class="flex-grow">
+            <ul>
+                <li class="mb-4">
+                    <a routerLink="/admin/dashboard" routerLinkActive="active"
+                        class="text-gray-300 hover:text-white flex items-center">
+                        <i class="fas fa-tachometer-alt mr-2"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a routerLink="/admin/users" routerLinkActive="active"
+                        class="text-gray-300 hover:text-white flex items-center">
+                        <i class="fas fa-users mr-2"></i>
+                        Users
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="mt-auto space-y-4">
+            <div class="flex items-center justify-between bg-gray-700 p-2 rounded">
+                <span class="text-gray-300 mr-2">
+                    <i class="fas fa-adjust"></i>
+                </span>
+
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" [checked]="currentTheme === 'dark'"
+                        (change)="toggleTheme()">
+                    <div
+                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                    </div>
+                </label>
+
+                <span class="text-gray-300 ml-2">
+                    {{ currentTheme === 'dark' ? 'Dark' : 'Light' }}
+                </span>
+            </div>
+
+            <button (click)="logout()"
+                class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-300 flex items-center justify-center">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<ng-template #lightTheme>
+    <div class="flex flex-col h-screen bg-gray-100">
+        <div class="w-64 bg-white h-full p-5 flex flex-col">
+            <h2 class="text-gray-800 text-2xl font-bold mb-8">Admin Dashboard</h2>
+
+            <nav class="flex-grow">
+                <ul>
+                    <li class="mb-4">
+                        <a routerLink="/admin/dashboard" routerLinkActive="active"
+                            class="text-gray-700 hover:text-gray-900 flex items-center">
+                            <i class="fas fa-tachometer-alt mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <a routerLink="/admin/users" routerLinkActive="active"
+                            class="text-gray-700 hover:text-gray-900 flex items-center">
+                            <i class="fas fa-users mr-2"></i>
+                            Users
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="mt-auto space-y-4">
+                <div class="flex items-center justify-between bg-gray-300 p-2 rounded">
+                    <span class="text-gray-700 mr-2">
+                        <i class="fas fa-adjust"></i>
+                    </span>
+
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" [checked]="currentTheme === 'dark'"
+                            (change)="toggleTheme()">
+                        <div
+                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                        </div>
+                    </label>
+
+                    <span class="text-gray-700 ml-2">
+                        {{ currentTheme === 'dark' ? 'Dark' : 'Light' }}
+                    </span>
+                </div>
+
+                <button (click)="logout()"
+                    class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
