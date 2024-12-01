@@ -68,7 +68,6 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Méthodes autorisées
         configuration.setAllowedHeaders(List.of("*")); // Tous les en-têtes sont autorisés
         configuration.setAllowCredentials(true); // Permettre les cookies si nécessaires
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Applique CORS à toutes les routes
         return source;
