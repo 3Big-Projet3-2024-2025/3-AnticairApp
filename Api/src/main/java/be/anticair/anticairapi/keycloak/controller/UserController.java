@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -70,28 +72,32 @@ public class UserController {
 
     /**
      * Desactivate a user
-     * @return ResponseEntity containing a string
+     * @return ResponseEntity containing a Json
      * @Author Zarzycki Alexis
      */
     @PostMapping("/desactivate")
-    public ResponseEntity<String> desactivateUser(
+    public ResponseEntity<Map<String,String>> desactivateUser(
             @RequestParam String emailId
     ){
         userService.disableUser(emailId);
-        return ResponseEntity.ok("User disabled successfully");
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", "User disabled successfully");
+        return ResponseEntity.ok(responseMessage);
     }
 
     /**
      * Activate a user
-     * @return ResponseEntity containing a string
+     * @return ResponseEntity containing a Json
      * @Author Zarzycki Alexis
      */
     @PostMapping("/activate")
-    public ResponseEntity<String> activateUser(
+    public ResponseEntity<Map<String,String>> activateUser(
             @RequestParam String emailId
     ){
         userService.enableUser(emailId);
-        return ResponseEntity.ok("User enabled successfully");
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", "User enabled successfully");
+        return ResponseEntity.ok(responseMessage);
     }
 
 
