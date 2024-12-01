@@ -11,6 +11,8 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { SellComponent } from './sell/sell.component';
+import { DashboardComponent } from './admin/dashboard/dashboard.component';
+import { SidebarComponent } from './admin/sidebar/sidebar.component';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
@@ -25,7 +27,9 @@ export function initializeKeycloak(authService: AuthService) {
     NavbarComponent,
     HomeComponent,
     FooterComponent,
-    SellComponent
+    SellComponent,
+    DashboardComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,
