@@ -69,7 +69,32 @@ public class UserServiceTests {
         });
     }
 
+       * Testing the list of all users
+     * @Author Blommaert Youry
+     */
+    @Test
+    public void testGetAllUsers() {
+        List<UserRepresentation> users = userService.getAllUsers();
+
+        assertNotNull(users);
+        assertFalse(users.isEmpty());
+        assertTrue(users.size() >= 1);
+    }
+
     /**
+     * Testing the list of all users in admin group.
+     * @Author Blommaert Youry
+     *
+     */
+    @Test
+    public void testGetAllAdminUsers() {
+        List<UserRepresentation> users = userService.getUsersByGroupName("Admin");
+
+        assertNotNull(users);
+        assertFalse(users.isEmpty());
+        assertTrue(users.size() >= 1);
+    /**
+
      * Testing the desactivate an existent User
      * @Author Zarzycki Alexis
      */
@@ -107,6 +132,7 @@ public class UserServiceTests {
         assertThrows(NotFoundException.class, () -> {
             userService.enableUser("nonexistent_user_987654@anticairapp.be");
         });
+
     }
 
 }
