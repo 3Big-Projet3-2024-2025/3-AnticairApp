@@ -136,6 +136,7 @@ export class AuthService {
       }
     
   }
+  
   // Returns user details if available
   getUserDetails(): any {
     return this.userDetails;
