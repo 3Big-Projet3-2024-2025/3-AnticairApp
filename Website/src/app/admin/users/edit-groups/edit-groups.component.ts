@@ -13,7 +13,7 @@ export class EditGroupsComponent {
   // List of groups
   groups: { name: string; selected: boolean }[] = [
     { name: 'Admin', selected: false },
-    { name: 'Anticarian', selected: false },
+    { name: 'Antiquarian', selected: false },
   ];
 
   constructor(private route : ActivatedRoute, private router : Router, private groupsService : GroupService) { }
@@ -35,20 +35,14 @@ export class EditGroupsComponent {
     }
   
     // Call the API for each selected group
-    const requests = selectedGroups.map((groupName) =>
-      this.groupsService.addGroupToUser(this.userEmail, groupName).toPromise()
-    );
-  
-    // Wait for all API calls to complete
-    Promise.all(requests)
-      .then(() => {
-        alert('Groups successfully updated!');
-        this.router.navigate(['/admin/users']);
-      })
-      .catch((err) => {
-        console.error(err);
-        alert('Failed to update groups. Please try again.');
-      });
+    const requests = selectedGroups.map((groupName) => {
+      const observable = this.groupsService.addGroupToUser(this.userEmail, groupName);
+      if (!observable) {
+        console.error(`Failed to create request for group: ${groupName}`);
+        return Promise.resolve();
+      }
+      return observable.toPromise();
+    });
   }
   
 
