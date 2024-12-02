@@ -30,6 +30,7 @@ export class AuthService {
             onLoad: 'check-sso',
             silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
           },
+          
         });
 
         const timeoutPromise = new Promise<boolean>((_, reject) => 
@@ -119,6 +120,10 @@ export class AuthService {
   // Method to extract groups and return them as a comma-separated string
   private extractGroups(groups: string[]): string {
     return groups.join(', '); // Join the groups array into a single string with commas
+  }
+
+  isAdmin(): boolean {
+    return this.userDetails.groups.includes('admin'); // Check if the user is an admin
   }
 
 
