@@ -14,6 +14,9 @@ import { SellComponent } from './sell/sell.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { SidebarComponent } from './admin/sidebar/sidebar.component';
 import { UsersComponent } from './admin/users/users.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
@@ -31,7 +34,8 @@ export function initializeKeycloak(authService: AuthService) {
     SellComponent,
     DashboardComponent,
     SidebarComponent,
-    UsersComponent
+    UsersComponent,
+    EditGroupsComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,6 +44,8 @@ export function initializeKeycloak(authService: AuthService) {
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    MatDialogModule,
+    MatCheckboxModule
   ],
   providers: [
     {
