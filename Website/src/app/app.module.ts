@@ -11,6 +11,12 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { SellComponent } from './sell/sell.component';
+import { DashboardComponent } from './admin/dashboard/dashboard.component';
+import { SidebarComponent } from './admin/sidebar/sidebar.component';
+import { UsersComponent } from './admin/users/users.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
@@ -25,7 +31,11 @@ export function initializeKeycloak(authService: AuthService) {
     NavbarComponent,
     HomeComponent,
     FooterComponent,
-    SellComponent
+    SellComponent,
+    DashboardComponent,
+    SidebarComponent,
+    UsersComponent,
+    EditGroupsComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,6 +44,8 @@ export function initializeKeycloak(authService: AuthService) {
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    MatDialogModule,
+    MatCheckboxModule
   ],
   providers: [
     {

@@ -36,7 +36,7 @@ export class NavbarComponent implements OnInit {
     }
   }
 
-  // Toggle entre les thèmes via le service
+  // Toggle between themes trough the service
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }
