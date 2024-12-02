@@ -2,13 +2,17 @@ package be.anticair.anticairapi.keycloak.controller;
 
 import be.anticair.anticairapi.keycloak.service.GroupService;
 import jakarta.ws.rs.NotFoundException;
+import org.keycloak.representations.idm.GroupRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * REST Controller for managing user groups in Keycloak.
@@ -33,6 +37,57 @@ public class GroupController {
     @Autowired
     public GroupController(GroupService groupService) {
         this.groupService = groupService;
+    }
+
+    /**
+     * Get all the groups in the keycloak realm.
+     *
+     * @return a ResponseEntity containing a success message.
+     * @Author Zarzycki Alexis
+     */
+    @GetMapping("/")
+    public ResponseEntity<List<Map<String, Object>>> getGroups() {
+        List<GroupRepresentation> groups = groupService.getGroup();
+
+        // Transforming the groups to match the frontend format
+        List<Map<String, Object>> formattedGroups = groups.stream()
+                .map(group -> {
+                    Map<String, Object> formattedGroup = new HashMap<>();
+                    formattedGroup.put("name", group.getName());
+                    return formattedGroup;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(formattedGroups);
+    }
+
+    /**
+     * Get all the groups for a user.
+     *
+     * @param emailId   the email of the user to get the groups for.
+     * @return a ResponseEntity containing a list of groups the user belongs to.
+     * @Author Zarzycki Alexis
+     */
+    @GetMapping("/{emailId}/groups")
+    public ResponseEntity<List<Map<String, Object>>> getGroupsFromUser(@RequestParam String emailId) {
+        // Fetch the groups the user is a member of (assuming groupService.getGroupsForUser fetches this)
+        List<GroupRepresentation> userGroups = groupService.getGroupFromUser(emailId);
+
+        // If the user has no groups, return an empty list
+        if (userGroups == null || userGroups.isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+        // Transforming the groups to match the frontend format
+        List<Map<String, Object>> formattedGroups = userGroups.stream()
+                .map(group -> {
+                    Map<String, Object> formattedGroup = new HashMap<>();
+                    formattedGroup.put("name", group.getName());
+                    return formattedGroup;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(formattedGroups);
     }
 
     /**
@@ -63,12 +118,14 @@ public class GroupController {
      * @Author Zarzycki Alexis
      */
     @PostMapping("/remove")
-    public ResponseEntity<String> removeGroup(
+    public ResponseEntity<Map<String, String>> removeGroup(
             @RequestParam String emailId,
             @RequestParam String groupName
     ) {
         groupService.removeGroup(emailId, groupName);
-        return ResponseEntity.ok(emailId + " removed from the group " + groupName);
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", emailId + " removed from the group " + groupName);
+        return ResponseEntity.ok(responseMessage);
     }
 
     /**

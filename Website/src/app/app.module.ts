@@ -45,7 +45,7 @@ export function initializeKeycloak(authService: AuthService) {
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
   ],
   providers: [
     {
