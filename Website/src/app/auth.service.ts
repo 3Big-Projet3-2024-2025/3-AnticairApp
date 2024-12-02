@@ -141,6 +141,11 @@ export class AuthService {
     return this.userDetails;
   }
 
+  // Get the user's token
+  async getToken(): Promise<string> {
+    return this.keycloakService.getToken();
+  }
+
   // Method to get the first element from an array
   getFirstElement(array : any) {
     if (Array.isArray(array) && array.length > 0) {
@@ -155,7 +160,7 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.userDetails.groups.includes('admin'); // Check if the user is an admin
+    return this.userDetails.groups.includes('Admin'); // Check if the user is an admin
   }
 
 
