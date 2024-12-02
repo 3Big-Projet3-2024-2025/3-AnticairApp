@@ -74,6 +74,15 @@ public class UserService {
     }
 
     /**
+     * Retrieves the number of user from the realm
+     * @return the number of user
+     * @Author Verly Noah
+     */
+    public int getNumberOfUsers() {
+       return this.getAllUsers().size();
+    }
+
+    /**
      * Retrieves all users from the realm that are in the specified group.
      *
      * @param groupName
