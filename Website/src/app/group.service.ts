@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class GroupService {
   private apiUrl = 'http://localhost:8080/api/groups';
 
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(private http: HttpClient, private authService: AuthService, private router : Router) { }
 
   // Method to add a group to a user
   addGroupToUser(emailId: string, groupName: string): Observable<any> {
@@ -21,6 +22,8 @@ export class GroupService {
         // Check if the token exists
         if (!token) {
           observer.error('No token found');
+          this.router.navigate(['/']);
+          alert("You are not connected");
           return;
         }
         const headers = new HttpHeaders({
@@ -58,6 +61,8 @@ export class GroupService {
         // Check if the token exists
         if (!token) {
           observer.error('No token found');
+          this.router.navigate(['/']);
+          alert("You are not connected");
           return;
         }
         const headers = new HttpHeaders({
@@ -95,6 +100,8 @@ export class GroupService {
         // Check if the token exists
         if (!token) {
           observer.error('No token found');
+          this.router.navigate(['/']);
+          alert("You are not connected");
           return;
         }
         const headers = new HttpHeaders({
@@ -127,6 +134,9 @@ export class GroupService {
         // Check if the token exists
         if (!token) {
           observer.error('No token found');
+          // Redirect to home page
+          this.router.navigate(['/']);
+          alert("You are not connected");
           return;
         }
         const headers = new HttpHeaders({
