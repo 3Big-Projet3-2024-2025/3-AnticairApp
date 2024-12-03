@@ -52,7 +52,7 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder
-                .withJwkSetUri("https://keycloak.anticairapp.sixela.be:8443/realms/anticairapp/protocol/openid-connect/certs")
+                .withJwkSetUri("http://localhost:8081/realms/anticairapp/protocol/openid-connect/certs")
                 .build();
     }
 

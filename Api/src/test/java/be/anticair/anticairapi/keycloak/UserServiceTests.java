@@ -34,7 +34,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
-    public void testGetAllAnticarianUsers() {
+    public void testGetAllAntiquarianUsers() {
         // Attempt to retrieve User with a specific Email
         List<UserRepresentation> users = userService.getUsersByGroupName("Antiquarian");
 
@@ -69,7 +69,7 @@ public class UserServiceTests {
         });
     }
 
-       * Testing the list of all users
+    /** Testing the list of all users
      * @Author Blommaert Youry
      */
     @Test
@@ -93,9 +93,9 @@ public class UserServiceTests {
         assertNotNull(users);
         assertFalse(users.isEmpty());
         assertTrue(users.size() >= 1);
-    /**
+    }
 
-     * Testing the desactivate an existent User
+    /** Testing the desactivate an existent User
      * @Author Zarzycki Alexis
      */
     @Test
