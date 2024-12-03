@@ -11,10 +11,10 @@ const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'sell', component: SellComponent },
-  { path: 'admin', redirectTo: '/admin/dashboard', pathMatch: 'full' },
-  { path: 'admin/dashboard', component: DashboardComponent },
-  { path: 'admin/users', component: UsersComponent },
-  { path: 'admin/users/edit-groups/:email', component: EditGroupsComponent },
+  { path: 'admin', redirectTo: '/admin/dashboard', pathMatch: 'full'},
+  { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AdminGuard] },
+  { path: 'admin/users', component: UsersComponent, canActivate: [AdminGuard] },
+  { path: 'admin/users/edit-groups/:email', component: EditGroupsComponent, canActivate: [AdminGuard] },
   { path: '**', redirectTo: '/home' }
 ];
 

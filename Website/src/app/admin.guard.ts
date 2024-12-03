@@ -26,12 +26,7 @@ export class AdminGuard implements CanActivate {
       return of(true);
     }
 
-    this.router.navigate(['/home'], {
-      queryParams: { 
-        returnUrl: state.url,
-        accessDenied: true 
-      }
-    });
+    this.router.navigate(['/home'], {});
 
     return of(false);
   }
