@@ -17,6 +17,8 @@ import { UsersComponent } from './admin/users/users.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
+import { ForcePasswordResetComponent } from './admin/users/force-password-reset/force-password-reset.component';
+import { ManageUsersComponent } from './admin/users/manage-users/manage-users.component';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
@@ -36,6 +38,8 @@ export function initializeKeycloak(authService: AuthService) {
     SidebarComponent,
     UsersComponent,
     EditGroupsComponent,
+    ForcePasswordResetComponent,
+    ManageUsersComponent,
   ],
   imports: [
     BrowserModule,

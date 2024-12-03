@@ -6,6 +6,7 @@ import { AdminGuard } from './admin.guard';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { UsersComponent } from './admin/users/users.component';
 import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
+import {ManageUsersComponent} from './admin/users/manage-users/manage-users.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AdminGuard] },
   { path: 'admin/users', component: UsersComponent, canActivate: [AdminGuard] },
   { path: 'admin/users/edit-groups/:email', component: EditGroupsComponent, canActivate: [AdminGuard] },
+  { path: 'admin/manage-users', component: ManageUsersComponent }, // Route pour le composant Admin
   { path: '**', redirectTo: '/home' }
 ];
 
