@@ -5,11 +5,11 @@ import org.apache.catalina.User;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -49,6 +49,18 @@ public class UserController {
     }
 
     /**
+     * Get the number of users from the database
+     *
+     * @return a ResponseEntity containing the number of users
+     * @Author Verly Noah
+     */
+    @GetMapping("/nbrUsers")
+    public ResponseEntity<Integer> numberUsers() {
+        int nbrUser = userService.getNumberOfUsers();
+        return ResponseEntity.ok(nbrUser);
+    }
+
+    /**
      * Get all users from a specific group.
      * @return ResponseEntity containing a list of all users in the group specified.
      * @Author Blommaert Youry
@@ -61,7 +73,7 @@ public class UserController {
 
     /**
      * Get all users from a specific group
-     * @Return ResponseEntity containing a list of all users in the antiquarian group specified.
+     * @return ResponseEntity containing a list of all users in the antiquarian group specified.
      * @Author Zarzycki Alexis
      */
     @GetMapping("/list/antiquarian")
@@ -69,5 +81,36 @@ public class UserController {
         List<UserRepresentation> antiquarian = userService.getUsersByGroupName("Antiquarian");
         return ResponseEntity.ok(antiquarian);
     }
+
+    /**
+     * Desactivate a user
+     * @return ResponseEntity containing a Json
+     * @Author Zarzycki Alexis
+     */
+    @PostMapping("/desactivate")
+    public ResponseEntity<Map<String,String>> desactivateUser(
+            @RequestParam String emailId
+    ){
+        userService.disableUser(emailId);
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", "User disabled successfully");
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    /**
+     * Activate a user
+     * @return ResponseEntity containing a Json
+     * @Author Zarzycki Alexis
+     */
+    @PostMapping("/activate")
+    public ResponseEntity<Map<String,String>> activateUser(
+            @RequestParam String emailId
+    ){
+        userService.enableUser(emailId);
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", "User enabled successfully");
+        return ResponseEntity.ok(responseMessage);
+    }
+
 
 }

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -151,6 +153,58 @@ public class GroupService {
             return groups;
         } catch (Exception e) {
             throw new NotFoundException("Error while retrieving groups with name: " + groupName, e);
+        }
+    }
+
+    /**
+     * Retrieves the list of groups inside the keycloak realm.
+     *
+     * @return A list of GroupRepresentation objects
+     * @throws NotFoundException if no groups are found with the given name.
+     * @Author Zarzycki Alexis
+     */
+    public List<GroupRepresentation> getGroup() {
+        try {
+            // Look for the group in the realm
+            List<GroupRepresentation> groups = new ArrayList<>(keycloak.realm(realm)
+                    .groups()
+                    .groups());
+
+            if (groups.isEmpty()) {
+                throw new NotFoundException("No groups found ");
+            }
+
+            return groups;
+        } catch (Exception e) {
+            throw new NotFoundException("Error while retrieving groups");
+        }
+    }
+
+    /**
+     * Retrieves the list of groups of a user.
+     * @param emailId the email of the user
+     * @return A list of GroupRepresentation objects
+     * @throws NotFoundException if the user is not found.
+     * @Author Zarzycki Alexis
+     */
+    public List<GroupRepresentation> getGroupFromUser(String emailId) {
+        try {
+            // Get the user by emailId
+            UserRepresentation user = keycloak.realm(realm).users().search(emailId).stream().findFirst()
+                    .orElseThrow(() -> new NotFoundException("User not found"));
+
+            // Fetch the groups that the user is a member of
+            List<GroupRepresentation> groups = keycloak.realm(realm)
+                    .users().get(user.getId()).groups();
+
+            // If no groups found, return an empty list
+            if (groups == null || groups.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return groups;
+        } catch (Exception e) {
+            throw new RuntimeException("Error while retrieving groups for the user", e);
         }
     }
 
