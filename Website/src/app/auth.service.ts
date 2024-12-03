@@ -24,7 +24,7 @@ export class AuthService {
       try {
         const keycloakInitPromise = this.keycloakService.init({
           config: {
-            url: 'https://keycloak.anticairapp.sixela.be:8443/', // Keycloak server URL
+            url: 'http://localhost:8081/', // Keycloak server URL
             realm: 'anticairapp',               // Keycloak realm name
             clientId: 'anticairapp',        // Keycloak client ID
           },
@@ -161,7 +161,7 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.userDetails.groups.includes('Admin'); // Check if the user is an admin
+    return this.userDetails?.groups?.includes('Admin') || false; // Check if the user is an admin
   }
 
 

@@ -30,9 +30,12 @@ export class SidebarComponent {
 
 
   logout(){
-    this.authService.logout();
     // Redirect to home page
     this.router.navigate(['/home']);
+    // We wait 300ms before logging out
+    setTimeout(() => {
+      this.authService.logout();
+    }, 300);
   }
 
   toggleMobileMenu() {
