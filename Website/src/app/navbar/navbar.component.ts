@@ -29,6 +29,14 @@ export class NavbarComponent implements OnInit {
     });
   }
 
+  isUserAdmin(): boolean {
+    if(this.isUserLoggedIn) {
+      return this.authService.isAdmin();
+    } else{
+      return false;
+    }
+  }
+
   ngOnDestroy(): void {
     // Unsubscribe to avoid memory leaks
     if (this.loginStatusSubscription) {
@@ -36,7 +44,7 @@ export class NavbarComponent implements OnInit {
     }
   }
 
-  // Toggle entre les thèmes via le service
+  // Toggle between themes trough the service
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }

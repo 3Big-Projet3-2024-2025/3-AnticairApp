@@ -11,11 +11,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-/**
- * Configuration for securing application routes with Keycloak JWT
- * @Author Zarzycki Alexis
- */
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -33,6 +34,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configuration CORS
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(Customizer.withDefaults())
                 )
@@ -50,7 +52,24 @@ public class SecurityConfig {
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder
-                .withJwkSetUri("https://keycloak.anticairapp.sixela.be:8443/realms/anticairapp/protocol/openid-connect/certs")
+                .withJwkSetUri("http://localhost:8081/realms/anticairapp/protocol/openid-connect/certs")
                 .build();
+    }
+
+    /**
+     * Configures CORS settings
+     * @return CorsConfigurationSource
+     * @Author Verly Noah
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Autorise Angular
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Méthodes autorisées
+        configuration.setAllowedHeaders(List.of("*")); // Tous les en-têtes sont autorisés
+        configuration.setAllowCredentials(true); // Permettre les cookies si nécessaires
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Applique CORS à toutes les routes
+        return source;
     }
 }
