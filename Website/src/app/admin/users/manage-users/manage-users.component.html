@@ -1,0 +1,23 @@
+<h1>Gestion des Utilisateurs</h1>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Nom</th>
+    <th>Rôle</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let user of users">
+    <td>{{ user.id }}</td>
+    <td>{{ user.name }}</td>
+    <td>{{ user.role }}</td>
+    <td>
+      <button (click)="forcePasswordReset(user.id)">
+        Forcer la réinitialisation du mot de passe
+      </button>
+    </td>
+  </tr>
+  </tbody>
+</table>
