@@ -16,7 +16,6 @@ services:
       KC_HOSTNAME_STRICT: "false"
       KC_HOSTNAME: 'http://localhost:8081'
       KC_PROXY: 'edge'
-      KC_FEATURES: "scripts"
     volumes:
       - ./keycloak_data:/opt/keycloak/data
       - /etc/timezone:/etc/timezone:ro
@@ -47,3 +46,4 @@ networks:
 
 volumes:
   postgresql_data:
+
