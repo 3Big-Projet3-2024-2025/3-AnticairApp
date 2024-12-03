@@ -110,6 +110,7 @@ public class UserController {
         return ResponseEntity.ok(responseMessage);
     }
 
+
     /**
      * Activate a user
      * @return ResponseEntity containing a Json
