@@ -37,7 +37,7 @@ getAntiquarianUsers(rawToken: string): Observable<any[]> {
 }
 
 getSimpleUsers(rawToken: string): Observable<any[]> {
-  return this.http.get<any[]>("http://localhost:8080/api/users/list", {
+  return this.http.get<any[]>("http://localhost:8080/api/users/list/users", {
     headers: {
       Authorization: 'Bearer ' + rawToken,
     }
