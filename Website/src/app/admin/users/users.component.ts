@@ -26,6 +26,10 @@ export class UsersComponent implements OnInit {
   // Users type selection
   selectedUserType: string = 'basic'; // Default value
 
+  // Sorting properties
+  currentSortColumn: string = '';
+  isSortAscending: boolean = true;
+
   constructor(
     private themeService: ThemeService, 
     private router: Router, 
@@ -87,17 +91,73 @@ export class UsersComponent implements OnInit {
 
   // Method to change the selected user type
   loadSelectedUsers() {
+    let usersToSort: any[];
     switch (this.selectedUserType) {
       case 'admin':
-        this.displayedUsers = this.adminUsers;
+        usersToSort = this.adminUsers;
         break;
       case 'antiquarian':
-        this.displayedUsers = this.antiquarianUsers;
+        usersToSort = this.antiquarianUsers;
         break;
       case 'basic':
       default:
-        this.displayedUsers = this.basicUsers;
+        usersToSort = this.basicUsers;
         break;
     }
+
+    // If a sort column is set, apply sorting
+    if (this.currentSortColumn) {
+      this.displayedUsers = this.sortUsers(usersToSort, this.currentSortColumn, this.isSortAscending);
+    } else {
+      this.displayedUsers = usersToSort;
+    }
   }
+
+  // Sorting method
+  sortByColumn(column: string) {
+    // If clicking the same column, toggle sort direction
+    if (this.currentSortColumn === column) {
+      this.isSortAscending = !this.isSortAscending;
+    } else {
+      // If sorting a new column, default to ascending
+      this.currentSortColumn = column;
+      this.isSortAscending = true;
+    }
+
+    // Apply sorting to current user type
+    this.loadSelectedUsers();
+  }
+
+  // Helper method to sort users
+  private sortUsers(users: any[], column: string, ascending: boolean): any[] {
+    return users.sort((a, b) => {
+      let valueA: any, valueB: any;
+
+      // Handle nested attributes for specific columns
+      if (column === 'phoneNumber') {
+        valueA = a.attributes.phoneNumber;
+        valueB = b.attributes.phoneNumber;
+      } else if (column === 'homeAddress') {
+        valueA = a.attributes.homeAddress;
+        valueB = b.attributes.homeAddress;
+      } else {
+        valueA = a[column];
+        valueB = b[column];
+      }
+
+      // Handle string comparison
+      if (typeof valueA === 'string') {
+        return ascending 
+          ? valueA.localeCompare(valueB) 
+          : valueB.localeCompare(valueA);
+      }
+
+      // Handle numeric comparison
+      return ascending 
+        ? (valueA - valueB) 
+        : (valueB - valueA);
+    });
+  }
+
+  
 }
