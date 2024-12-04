@@ -25,7 +25,7 @@ export class UsersComponent implements OnInit {
   selectedUserType: string = 'basic'; // Default value
 
   // Sorting properties
-  currentSortColumn: string = 'email';
+  currentSortColumn: string = 'email'; // Default value
   isSortAscending: boolean = true;
 
   constructor(
