@@ -34,7 +34,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
-    public void testGetAllAnticarianUsers() {
+    public void testGetAllAntiquarianUsers() {
         // Attempt to retrieve User with a specific Email
         List<UserRepresentation> users = userService.getUsersByGroupName("Antiquarian");
 
@@ -67,6 +67,72 @@ public class UserServiceTests {
             // Attempt to retrieve User with a specific Email
             userService.getUsersByEmail("nonexistent_user_987654@anticairapp.be");
         });
+    }
+
+    /** Testing the list of all users
+     * @Author Blommaert Youry
+     */
+    @Test
+    public void testGetAllUsers() {
+        List<UserRepresentation> users = userService.getAllUsers();
+
+        assertNotNull(users);
+        assertFalse(users.isEmpty());
+        assertTrue(users.size() >= 1);
+    }
+
+    /**
+     * Testing the list of all users in admin group.
+     * @Author Blommaert Youry
+     *
+     */
+    @Test
+    public void testGetAllAdminUsers() {
+        List<UserRepresentation> users = userService.getUsersByGroupName("Admin");
+
+        assertNotNull(users);
+        assertFalse(users.isEmpty());
+        assertTrue(users.size() >= 1);
+    }
+
+    /** Testing the desactivate an existent User
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testDesactiveUser(){
+        assertTrue(userService.disableUser(TEST_USER_EMAIL));
+    }
+
+    /**
+     * Testing the desactivate a non existent user
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testDesactiveNonExistentUser(){
+        assertThrows(NotFoundException.class, () -> {
+            userService.disableUser("nonexistent_user_987654@anticairapp.be");
+        });
+    }
+
+    /**
+     * Testing the enable on an existent User
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testEnableUser(){
+        assertTrue(userService.enableUser(TEST_USER_EMAIL));
+    }
+
+    /**
+     * Testing the enable on an non existent user
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testEnableNonExistentUser(){
+        assertThrows(NotFoundException.class, () -> {
+            userService.enableUser("nonexistent_user_987654@anticairapp.be");
+        });
+
     }
 
 }

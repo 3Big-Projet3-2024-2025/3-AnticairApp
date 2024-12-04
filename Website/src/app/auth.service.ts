@@ -3,6 +3,8 @@ import { KeycloakService } from 'keycloak-angular';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { UserService } from '../service/user.service';
+import { GroupService } from '../service/group.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,7 @@ export class AuthService {
   private loggedInSubject = new BehaviorSubject<boolean>(false); // BehaviorSubject for login status
 
 
-  constructor(private keycloakService: KeycloakService, private http: HttpClient, private router: Router) {} // Inject Router
+  constructor(private keycloakService: KeycloakService, private http: HttpClient, private router: Router, private userService : UserService, private groupService : GroupService) {} // Inject Router
 
   // Method to initialize Keycloak
   async initKeycloak(): Promise<boolean> {
@@ -22,7 +24,7 @@ export class AuthService {
       try {
         const keycloakInitPromise = this.keycloakService.init({
           config: {
-            url: 'https://keycloak.anticairapp.sixela.be:8443/', // Keycloak server URL
+            url: 'http://localhost:8081/', // Keycloak server URL
             realm: 'anticairapp',               // Keycloak realm name
             clientId: 'anticairapp',        // Keycloak client ID
           },
@@ -30,6 +32,7 @@ export class AuthService {
             onLoad: 'check-sso',
             silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
           },
+          
         });
 
         const timeoutPromise = new Promise<boolean>((_, reject) => 
@@ -57,7 +60,6 @@ export class AuthService {
     if (initialized) {
       await this.keycloakService.login();
       await this.loadUserProfile(); // Load user info after login
-      this.loggedInSubject.next(true); // Update login status
     } else {
       this.keycloakInitialized = false;
       this.loggedInSubject.next(false); // Update login status on failure
@@ -67,8 +69,7 @@ export class AuthService {
 
   // Method to logout through Keycloak
   async logout(): Promise<void> {
-    const loggedIn = await this.keycloakService.isLoggedIn();
-    if (loggedIn) {
+    if (this.userDetails) {
       this.userDetails = null; // Clear user details on logout
       await this.keycloakService.logout();
       this.loggedInSubject.next(false); // Update login status
@@ -97,15 +98,53 @@ export class AuthService {
         phoneNumber: phoneNumber,
         groups: tokenParsed && tokenParsed['groups'] ? this.extractGroups(tokenParsed['groups']) : ''
       };
+      this.loggedInSubject.next(true); // Update login status
 
-      console.table(this.userDetails);
+      if (this.keycloakInitialized) {
+        this.initAdminAccount();
+      } else {
+        console.error('Cannot logout because Keycloak is not initialized');
+      }
+     console.table(this.userDetails);
 
     }
-  }
 
+  }
+  // Method to initialize the admin account after his connection
+  async initAdminAccount(): Promise<void> {
+
+    // Check if keycloak is initialized
+      if (!this.keycloakInitialized) {
+        console.error('Cannot logout because Keycloak is not initialized');
+        return;
+      }
+  
+      // Check if the inforamtions about the user is storaged and if he has a email
+      if (!this.userDetails || !this.userDetails.email) {
+        console.error('No information about the user');
+        return;
+      }
+  
+      // Get the raw token
+      const rawToken = await this.keycloakService.getToken();
+      // Get the number of users in the database 
+      const nbrUser = await this.userService.numberOfUsers(rawToken);
+      // If the number of users in the database is 1, the user will be add to the group Admin
+      if (1 == nbrUser) {
+        // Add the user in the group Admin
+        await this.groupService.addGroupByEmail(this.userDetails.email, "Admin", rawToken);
+      }
+    
+  }
+  
   // Returns user details if available
   getUserDetails(): any {
     return this.userDetails;
+  }
+
+  // Get the user's token
+  async getToken(): Promise<string> {
+    return this.keycloakService.getToken();
   }
 
   // Method to get the first element from an array
@@ -119,6 +158,10 @@ export class AuthService {
   // Method to extract groups and return them as a comma-separated string
   private extractGroups(groups: string[]): string {
     return groups.join(', '); // Join the groups array into a single string with commas
+  }
+
+  isAdmin(): boolean {
+    return this.userDetails?.groups?.includes('Admin') || false; // Check if the user is an admin
   }
 
 
