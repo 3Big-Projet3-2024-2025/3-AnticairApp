@@ -52,7 +52,7 @@
                         <td class="px-6 py-4 text-sm text-gray-100">{{user.firstName}}</td>
                         <td class="px-6 py-4 text-sm text-gray-100">{{user.lastName}}</td>
                         <td class="px-6 py-4 text-sm text-gray-100">{{user.attributes.phoneNumber | belgianPhone}}</td>
-                        <td class="px-6 py-4 text-sm text-gray-100">-</td>
+                        <td class="px-6 py-4 text-sm text-gray-100">{{user.attributes.homeAddress}}</td>
                         <td class="px-6 py-4 text-sm text-gray-100">
                             <button class="px-4 py-2 bg-blue-500 text-white rounded" [routerLink]="['/admin/users/edit-groups', user.email]">Edit Groups</button>
                         </td>
@@ -125,7 +125,7 @@
                             <td class="px-6 py-4 text-sm text-gray-700">{{user.firstName}}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{user.lastName}}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">{{user.attributes.phoneNumber | belgianPhone}} </td>"
-                            <td class="px-6 py-4 text-sm text-gray-700">-</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{user.attributes.homeAddress}}</td>
                             <td class="px-6 py-4 text-sm text-gray-700">
                                 <button class="px-4 py-2 bg-blue-500 text-white rounded" [routerLink]="['/admin/users/edit-groups', user.email]">Edit Groups</button>
                             </td>
