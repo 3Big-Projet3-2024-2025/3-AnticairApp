@@ -74,6 +74,48 @@ public class UserService {
     }
 
     /**
+     * Retrieves all users without group assignments from the realm
+     * @return List of users without group memberships
+     * @Author Blommaert Youry
+     */
+    public List<UserRepresentation> getUsersWithoutGroups() {
+        try {
+            // Get all users from the realm
+            List<UserRepresentation> allUsers = keycloak.realm(realm).users().list();
+
+            // Filter out users without groups
+            List<UserRepresentation> usersWithoutGroups = allUsers.stream()
+                    .filter(user -> {
+                        // Get the groups of the user
+                        List<GroupRepresentation> userGroups = keycloak.realm(realm).users()
+                                .get(user.getId())
+                                .groups();
+
+                        return userGroups.isEmpty();
+                    })
+                    .collect(Collectors.toList());
+
+            if(usersWithoutGroups.isEmpty()){
+                throw new NotFoundException("No users without groups found");
+            }
+
+            return usersWithoutGroups;
+
+        } catch(Exception e){
+            throw new NotFoundException("Error while retrieving users without groups", e);
+        }
+    }
+
+    /**
+     * Retrieves the number of user from the realm
+     * @return the number of user
+     * @Author Verly Noah
+     */
+    public int getNumberOfUsers() {
+       return this.getAllUsers().size();
+    }
+
+    /**
      * Retrieves all users from the realm that are in the specified group.
      *
      * @param groupName
@@ -107,6 +149,77 @@ public class UserService {
         return users;
     }
 
+    /**
+     * Disable a user from their Email
+     * @param userEmail The email of the user to disable
+     * @return boolean True if it has been disabled
+     * @Author Zarzycki Alexis
+     */
+    public boolean disableUser(String userEmail) {
+        try {
+            // Get the users with the email to desactivate
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // We get the first user in the list
+            UserRepresentation user = users.getFirst();
+
+            // Get the user's ID
+            String userId = user.getId();
+
+            // Desactivate the user
+            user.setEnabled(false);
+
+            // Actually update the user in Keycloak
+            keycloak.realm(realm).users().get(userId).update(user);
+
+            return true;
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with email: " + userEmail);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while disabling user with email: " + userEmail, e);
+        }
+    }
+
+    /**
+     * Enable a user from their Email
+     * @param userEmail The email of the user to enable
+     * @return boolean True if it has been enabled
+     * @Author Zarzycki Alexis
+     */
+    public boolean enableUser(String userEmail) {
+        try {
+            // Get the users with the email to activate
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // We get the first user in the list
+            UserRepresentation user = users.getFirst();
+
+            // Get the user's ID
+            String userId = user.getId();
+
+            // Enable the user
+            user.setEnabled(true);
+
+            // Actually update the user in Keycloak
+            keycloak.realm(realm).users().get(userId).update(user);
+
+            return true;
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with email: " + userEmail);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while enabling user with email: " + userEmail, e);
+        }
+    }
 
 
 }
