@@ -17,6 +17,7 @@ import { UsersComponent } from './admin/users/users.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
+import { PhonenumberPipe } from './pipe/phonenumber.pipe';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
@@ -36,6 +37,7 @@ export function initializeKeycloak(authService: AuthService) {
     SidebarComponent,
     UsersComponent,
     EditGroupsComponent,
+    PhonenumberPipe,
   ],
   imports: [
     BrowserModule,
