@@ -49,6 +49,18 @@ public class UserController {
     }
 
     /**
+     * Get all users without groups from the database.
+     *
+     * @return a ResponseEntity containing a list of all users without groups.
+     * @Author Blommaert Youry
+     */
+    @GetMapping("/list/users")
+    public ResponseEntity<List<UserRepresentation>> listUsersWithoutGroups() {
+        List<UserRepresentation> users = userService.getUsersWithoutGroups();
+        return ResponseEntity.ok(users);
+    }
+
+    /**
      * Get the number of users from the database
      *
      * @return a ResponseEntity containing the number of users
