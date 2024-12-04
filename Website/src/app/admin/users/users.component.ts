@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../service/user.service';
 import { AuthService } from '../../auth.service';
+import {PhonenumberPipe } from '../../pipe/phonenumber.pipe';
 
 @Component({
   selector: 'app-users',
@@ -75,6 +76,7 @@ export class UsersComponent implements OnInit {
         // If the selected user type is basic, we display the basic users
         if (this.selectedUserType === 'basic') {
           this.displayedUsers = users;
+          console.log(users);
         }
       },
       error: (error) => {
