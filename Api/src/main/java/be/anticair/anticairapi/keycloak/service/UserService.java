@@ -74,6 +74,39 @@ public class UserService {
     }
 
     /**
+     * Retrieves all users without group assignments from the realm
+     * @return List of users without group memberships
+     * @Author Blommaert Youry
+     */
+    public List<UserRepresentation> getUsersWithoutGroups() {
+        try {
+            // Get all users from the realm
+            List<UserRepresentation> allUsers = keycloak.realm(realm).users().list();
+
+            // Filter out users without groups
+            List<UserRepresentation> usersWithoutGroups = allUsers.stream()
+                    .filter(user -> {
+                        // Get the groups of the user
+                        List<GroupRepresentation> userGroups = keycloak.realm(realm).users()
+                                .get(user.getId())
+                                .groups();
+
+                        return userGroups.isEmpty();
+                    })
+                    .collect(Collectors.toList());
+
+            if(usersWithoutGroups.isEmpty()){
+                throw new NotFoundException("No users without groups found");
+            }
+
+            return usersWithoutGroups;
+
+        } catch(Exception e){
+            throw new NotFoundException("Error while retrieving users without groups", e);
+        }
+    }
+
+    /**
      * Retrieves the number of user from the realm
      * @return the number of user
      * @Author Verly Noah
