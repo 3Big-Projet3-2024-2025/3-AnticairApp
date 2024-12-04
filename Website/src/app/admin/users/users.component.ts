@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../service/user.service';
 import { AuthService } from '../../auth.service';
-import {PhonenumberPipe } from '../../pipe/phonenumber.pipe';
 
 @Component({
   selector: 'app-users',
@@ -12,7 +11,6 @@ import {PhonenumberPipe } from '../../pipe/phonenumber.pipe';
   styleUrl: './users.component.css'
 })
 export class UsersComponent implements OnInit {
-
   currentTheme: 'dark' | 'light' = 'light';
 
   // Tables where users will be stored
@@ -27,7 +25,7 @@ export class UsersComponent implements OnInit {
   selectedUserType: string = 'basic'; // Default value
 
   // Sorting properties
-  currentSortColumn: string = '';
+  currentSortColumn: string = 'email';
   isSortAscending: boolean = true;
 
   constructor(
@@ -72,7 +70,6 @@ export class UsersComponent implements OnInit {
       }
     });
     
-
     // Load the basic users
     this.userService.getSimpleUsers(await token).subscribe({
       next: (users) => {
@@ -80,7 +77,6 @@ export class UsersComponent implements OnInit {
         // If the selected user type is basic, we display the basic users
         if (this.selectedUserType === 'basic') {
           this.displayedUsers = users;
-          console.log(users);
         }
       },
       error: (error) => {
@@ -158,6 +154,4 @@ export class UsersComponent implements OnInit {
         : (valueB - valueA);
     });
   }
-
-  
 }
