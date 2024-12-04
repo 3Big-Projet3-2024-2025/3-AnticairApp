@@ -2,6 +2,7 @@ package be.anticair.anticairapi.keycloak.controller;
 
 
 import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.Class.PhotoAntiquity;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import be.anticair.anticairapi.keycloak.service.PhotoAntiquityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,6 +51,19 @@ public class ListingController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error : " + e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/create")
+    public ResponseEntity<Listing> createListing(@RequestParam String email, @RequestBody Listing newListing) {
+        try {
+            // Call the service method using the injected instance
+            Listing listing = listingService.createListing(email, newListing);
+            return ResponseEntity.ok(listing); // Return the created Listing with HTTP 200
+        } catch (RuntimeException e) {
+            // Return HTTP 404 if the User with the given email does not exist
+            return ResponseEntity.notFound().build();
         }
     }
 }
