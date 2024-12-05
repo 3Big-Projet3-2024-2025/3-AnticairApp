@@ -55,15 +55,49 @@ public class ListingController {
     }
 
 
+    /**
+     * Create a new listing in the database.
+     *
+     * @param email The email of the user creating the listing.
+     * @param title The title of the listing.
+     * @param description The description of the listing.
+     * @param price The price of the listing.
+     * @param photos The images associated with the listing.
+     * @return ResponseEntity indicating the creation status.
+     * @Author Blommaert Youry
+     */
     @PostMapping("/create")
-    public ResponseEntity<Listing> createListing(@RequestParam String email, @RequestBody Listing newListing) {
+    public ResponseEntity<?> createListing(
+            @RequestParam("email") String email,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("price") Double price,
+            @RequestParam(value = "photos", required = false) List<MultipartFile> photos) {
+
         try {
-            // Call the service method using the injected instance
-            Listing listing = listingService.createListing(email, newListing);
-            return ResponseEntity.ok(listing); // Return the created Listing with HTTP 200
+            // Create a new Listing object
+            Listing newListing = new Listing();
+            newListing.setTitleAntiquity(title);
+            newListing.setDescriptionAntiquity(description);
+            newListing.setPriceAntiquity(price);
+
+            // call the Listing service to create the listing
+            Listing createdListing = listingService.createListing(email, newListing, photos);
+
+            // Return the created listing
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdListing);
+
+        } catch (IllegalArgumentException e) {
+            // Manage missing required fields
+            return ResponseEntity.badRequest().body(e.getMessage());
+
         } catch (RuntimeException e) {
-            // Return HTTP 404 if the User with the given email does not exist
-            return ResponseEntity.notFound().build();
+            // Manage generic exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
+        } catch (Exception e) {
+            // Manage unexpected exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
 }
