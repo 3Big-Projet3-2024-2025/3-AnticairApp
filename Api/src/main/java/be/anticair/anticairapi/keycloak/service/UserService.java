@@ -221,5 +221,33 @@ public class UserService {
         }
     }
 
+    /**
+     * Get the status of a user
+     * @param userEmail the email of the user to get the status
+     * @return boolean true if it is enabled, false if not
+     * @Author Zarzycki Alexis
+     */
+    public boolean getUserStatus(String userEmail) {
+        try {
+            // Get the users with the email to activate
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // We get the first user in the list
+            UserRepresentation user = users.getFirst();
+
+            // Return the status of the user
+            return user.isEnabled();
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with the email: " + userEmail);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while getting the status of the user with email: " + userEmail, e);
+        }
+    }
+
 
 }
