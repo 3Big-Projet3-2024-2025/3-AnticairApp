@@ -2,6 +2,7 @@ package be.anticair.anticairapi.keycloak.controller;
 
 
 import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.Class.PhotoAntiquity;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import be.anticair.anticairapi.keycloak.service.PhotoAntiquityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,6 +51,53 @@ public class ListingController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error : " + e.getMessage());
+        }
+    }
+
+
+    /**
+     * Create a new listing in the database.
+     *
+     * @param email The email of the user creating the listing.
+     * @param title The title of the listing.
+     * @param description The description of the listing.
+     * @param price The price of the listing.
+     * @param photos The images associated with the listing.
+     * @return ResponseEntity indicating the creation status.
+     * @Author Blommaert Youry
+     */
+    @PostMapping("/create")
+    public ResponseEntity<?> createListing(
+            @RequestParam("email") String email,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("price") Double price,
+            @RequestParam(value = "photos", required = false) List<MultipartFile> photos) {
+
+        try {
+            // Create a new Listing object
+            Listing newListing = new Listing();
+            newListing.setTitleAntiquity(title);
+            newListing.setDescriptionAntiquity(description);
+            newListing.setPriceAntiquity(price);
+
+            // call the Listing service to create the listing
+            Listing createdListing = listingService.createListing(email, newListing, photos);
+
+            // Return the created listing
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdListing);
+
+        } catch (IllegalArgumentException e) {
+            // Manage missing required fields
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        } catch (RuntimeException e) {
+            // Manage generic exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
+        } catch (Exception e) {
+            // Manage unexpected exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
     }
 }
