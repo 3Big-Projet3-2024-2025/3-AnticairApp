@@ -27,7 +27,7 @@ public class UserServiceTests {
     @Autowired
     private UserService userService;
   
-    private static final String TEST_USER_EMAIL = "alexis.zarzycki0212@gmail.com";
+    private static final String TEST_USER_EMAIL = "john.doe@example.com";
 
     /**
      * Testing the listAntiquarian
@@ -133,6 +133,49 @@ public class UserServiceTests {
             userService.enableUser("nonexistent_user_987654@anticairapp.be");
         });
 
+    }
+
+    /**
+     * Testing the get User Status on a enabled user
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testGetStatusEnabledUser(){
+        assertTrue(userService.getUserStatus(TEST_USER_EMAIL));
+    }
+
+    /**
+     * Testing the get User Status on a disabled user
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testGetStatusDisabledUser(){
+        userService.disableUser(TEST_USER_EMAIL);
+        assertFalse(userService.getUserStatus(TEST_USER_EMAIL));
+        userService.enableUser(TEST_USER_EMAIL);
+    }
+
+    /**
+     * Testing the get User Status on a non existent user
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testGetStatusEnabledNonExistentUser(){
+        assertThrows(NotFoundException.class, () -> {
+            userService.getUserStatus("nonexistent_user_987654@anticairapp.be");
+        });
+    }
+
+
+    /**
+     * Testing the get User Status on a non existent user
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testGetStatusDisabledNonExistentUser(){
+        assertThrows(NotFoundException.class, () -> {
+            userService.getUserStatus("nonexistent_user_987654@anticairapp.be");
+        });
     }
 
 }

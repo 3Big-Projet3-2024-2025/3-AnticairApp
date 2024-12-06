@@ -124,5 +124,19 @@ public class UserController {
         return ResponseEntity.ok(responseMessage);
     }
 
+    /**
+     * Get the status of a user
+     * @return ResponseEntity containing a Json
+     * @Author Zarzycki Alexis
+     */
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, String>> getUserStatus(
+            @RequestParam String emailId
+    ){
+        String value = String.valueOf(userService.getUserStatus(emailId));
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", value);
+        return ResponseEntity.ok(responseMessage);
+    }
 
 }
