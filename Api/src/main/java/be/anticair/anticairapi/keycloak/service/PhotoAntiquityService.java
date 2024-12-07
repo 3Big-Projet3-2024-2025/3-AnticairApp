@@ -152,4 +152,9 @@ public class PhotoAntiquityService {
         return "/uploads/" + dest.getName();
     }
 
+    public List<PhotoAntiquity> findByIdAntiquity(Integer id) {
+        // Récupérer les photos associées
+        return photoAntiquityRepository.findByIdAntiquity(id);
+    }
+
 }
