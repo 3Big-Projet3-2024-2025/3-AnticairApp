@@ -1,8 +1,12 @@
 package be.anticair.anticairapi.Class;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "antiquity")
 public class Listing {
 

@@ -2,6 +2,7 @@ package be.anticair.anticairapi.keycloak.controller;
 
 
 import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.Class.PhotoAntiquity;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import be.anticair.anticairapi.keycloak.service.PhotoAntiquityService;
@@ -98,6 +99,16 @@ public class ListingController {
         } catch (Exception e) {
             // Manage unexpected exceptions
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ListingWithPhotosDto> getListingById(@PathVariable Integer id) {
+        try {
+            ListingWithPhotosDto response = listingService.getListingById(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 }
