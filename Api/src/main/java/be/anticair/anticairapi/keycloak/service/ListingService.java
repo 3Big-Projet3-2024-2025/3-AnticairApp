@@ -1,5 +1,6 @@
 package be.anticair.anticairapi.keycloak.service;
 
+import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.Class.PhotoAntiquity;
 import jakarta.transaction.Transactional;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -96,6 +97,18 @@ public class ListingService {
             antiquity.setEstAffiche(updatedListing.getEstAffiche());
             return ListingRepository.save(antiquity);
         }).orElseThrow(() -> new RuntimeException("Antiquity not found with id: " + id));
+    }
+
+    public ListingWithPhotosDto getListingById(Integer id) {
+        // Get the listing
+        Listing listing = ListingRepository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new RuntimeException("Listing not found with id " + id));
+
+        // get the images associates with the antiquity
+        List<PhotoAntiquity> photos = photoAntiquityService.findByIdAntiquity(id);
+
+        // create and return the objects
+        return new ListingWithPhotosDto(listing, photos);
     }
 }
 
