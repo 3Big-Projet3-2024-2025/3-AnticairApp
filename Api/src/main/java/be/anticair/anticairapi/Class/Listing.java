@@ -36,8 +36,11 @@ public class Listing {
         @Column(name = "id_member")
         private Integer idMember;
 
-        // Getters et setters
+        public void applyCommission(){
+                this.priceAntiquity += this.priceAntiquity * 0.20;
+        }
 
+        // Getters et setters
 
         public Integer getIdAntiquity() {
                 return idAntiquity;
