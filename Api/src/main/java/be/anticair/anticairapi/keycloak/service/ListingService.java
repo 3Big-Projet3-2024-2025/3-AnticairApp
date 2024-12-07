@@ -110,7 +110,26 @@ public class ListingService {
         // create and return the objects
         return new ListingWithPhotosDto(listing, photos);
     }
-}
 
+    /**
+     *Function to apply the commission
+     *
+     * @param id the id of the antiquity
+     * @return the antiquity with the commission
+     * @Author Verly Noah
+     */
+    public Listing applyCommission(Integer id){
+        //Check if the id is valid
+        if(id==null ||id<1) return null;
+        //Get the antiquity with the id
+        Optional<Listing> listing = ListingRepository.findById(Long.valueOf(id));
+        //If there isn't antiquity with this id, return null
+        if(listing.isEmpty()) {return null;}
+        //Applied the commission
+        listing.get().applyCommission();
+        //Save the change
+        return ListingRepository.save(listing.get());
+    }
+}
 
 

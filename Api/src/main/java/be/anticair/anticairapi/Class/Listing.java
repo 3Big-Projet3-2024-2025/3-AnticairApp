@@ -36,6 +36,10 @@ public class Listing {
         @Column(name = "id_member")
         private Integer idMember;
 
+        /**
+         * Function to apply the commission
+         * @Author Verly Noah
+         */
         public void applyCommission(){
                 this.priceAntiquity += this.priceAntiquity * 0.20;
         }
