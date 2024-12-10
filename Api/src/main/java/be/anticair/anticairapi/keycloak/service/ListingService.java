@@ -50,11 +50,14 @@ public class ListingService {
      * @Author Blommaert Youry
      */
     public Listing createListing(String email, Listing newListing, List<MultipartFile> photos) {
-        UserRepresentation user = userService.getUsersByEmail(email).get(0);
+        List<UserRepresentation> users = userService.getUsersByEmail(email);
 
-        if(user == null) {
+
+        if(users.isEmpty()) {
             throw new RuntimeException("User not found with email: " + email);
         }
+
+        UserRepresentation user = userService.getUsersByEmail(email).get(0);
 
         // Verify that the listing has a price, description, and title
         if (newListing.getPriceAntiquity() == null ||
