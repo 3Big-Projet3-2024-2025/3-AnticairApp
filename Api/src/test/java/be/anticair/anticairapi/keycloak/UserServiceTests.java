@@ -196,6 +196,10 @@ public class UserServiceTests {
         });
     }
 
+    /**
+     * Testing the get change antiquarian
+     * @Author Verly Noah
+     */
     @Test
     public void testChangeAntiquarianFromAntiquityOK(){
         for (int i = 0; i < 10; i++) {
@@ -210,6 +214,10 @@ public class UserServiceTests {
 
     }
 
+    /**
+     * Testing the get change antiquarian but with a null value for email
+     * @Author Verly Noah
+     */
     @Test
     public void testChangeAntiquarianFromAntiquityNull(){
         assertEquals("No email address provided",this.userService.redistributeAntiquity(TEST_ANTIQUARIAN_EMAIL));
