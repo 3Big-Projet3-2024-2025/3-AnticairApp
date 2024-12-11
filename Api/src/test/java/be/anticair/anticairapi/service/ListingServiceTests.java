@@ -44,15 +44,15 @@ public class ListingServiceTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String mailSeller = "john.doe@example.com";
+    private static final String TEST_SELLER_EMAIL = "john.doe@example.com";
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String mailAntiquarian = "alexis.zarzycki0212@gmail.com";
+    private static final String TEST_ANTIQUARIAN_EMAIL = "alexis.zarzycki0212@gmail.com";
     /**
      * The mail that will be use for the new owner of the antiquity
      */
-    private static final String mailNewAntiquarian = "antiquarian@anticairapp.sixela.be";
+    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "antiquarian@anticairapp.sixela.be";
 
     /**
      * Function which allow to delete a antiquity
@@ -71,11 +71,11 @@ public class ListingServiceTests {
     @Test
     public void applyCommission(){
         //Creation of an antiquity
-        this.listing = new Listing(0,100.0,"A description","Pandora's box",mailAntiquarian,0,false,mailSeller);
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         //The photos for the antiquity
         List<MultipartFile> photos = new ArrayList<>();
         //Add the antiquity in the database
-        Listing listingAdded = this.listingService.createListing(mailSeller,listing,photos);
+        Listing listingAdded = this.listingService.createListing(TEST_SELLER_EMAIL,listing,photos);
         //Apply the commission
         Listing listingCommissionAplied = listingService.applyCommission(listingAdded.getIdAntiquity());
         //Check if the antiquity return is right
@@ -99,18 +99,21 @@ public class ListingServiceTests {
         assertNull(this.listingService.applyCommission(-1));
 
     }
-
+    /**
+     * Test to check if the changeListing antiquarian work
+     * @Author Verly Noah
+     */
     @Test
     public void ChangeAntiquarianTestFromListingService(){
         for (int i = 0; i < 10; i++) {
-            this.listing = new Listing(0,100.0,"A description","Pandora's box",mailAntiquarian,0,false,mailSeller);
+            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
             this.listingRepository.save(this.listing);
         }
-        List<Listing> listingList = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(mailAntiquarian);
+        List<Listing> listingList = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(TEST_ANTIQUARIAN_EMAIL);
         for (Listing listing : listingList) {
-            this.listingService.changeListingAntiquarian(listing,mailNewAntiquarian);
+            this.listingService.changeListingAntiquarian(listing,TEST_NEW_ANTIQUARIAN_EMAIL);
         }
-        assertEquals(0,this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(mailAntiquarian).size());
+        assertEquals(0,this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(TEST_ANTIQUARIAN_EMAIL).size());
         for (Listing listing : listingList) {
             this.cleanListing(listing);
         }
