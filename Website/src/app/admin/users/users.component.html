@@ -93,9 +93,35 @@
         <div class="flex-1 p-10 bg-gray-100 text-gray-800">
             <h1 class="text-3xl font-bold mb-8">User Management</h1>
 
-            <!-- User type selection (same as dark theme) -->
+            <!-- User type selection -->
             <div class="mb-4 flex space-x-4">
-                <!-- ... (radio buttons remain the same) ... -->
+                <label class="inline-flex items-center">
+                    <input type="radio" 
+                           name="userType" 
+                           value="admin" 
+                           [(ngModel)]="selectedUserType" 
+                           (change)="loadSelectedUsers()"
+                           class="form-radio">
+                    <span class="ml-2">Administrators</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" 
+                           name="userType" 
+                           value="antiquarian" 
+                           [(ngModel)]="selectedUserType" 
+                           (change)="loadSelectedUsers()"
+                           class="form-radio">
+                    <span class="ml-2">Antiquarians</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" 
+                           name="userType" 
+                           value="basic" 
+                           [(ngModel)]="selectedUserType" 
+                           (change)="loadSelectedUsers()"
+                           class="form-radio">
+                    <span class="ml-2">Users</span>
+                </label>
             </div>
 
             <!-- Table Section -->
