@@ -18,7 +18,7 @@ public class ListingWithPhotosDto {
     private String mailMember;
     private Integer state;
     private Boolean estAffiche;
-    private Integer idMember;
+    private String mailAntiquarian;
     private List<String> photos;
 
     public ListingWithPhotosDto(Listing listing, List<PhotoAntiquity> photos) {
@@ -26,15 +26,14 @@ public class ListingWithPhotosDto {
         this.priceAntiquity = listing.getPriceAntiquity();
         this.descriptionAntiquity = listing.getDescriptionAntiquity();
         this.titleAntiquity = listing.getTitleAntiquity();
-        this.mailMember = listing.getMailMember();
+        this.mailMember = listing.getMailSeller();
         this.state = listing.getState();
-        this.estAffiche = listing.getEstAffiche();
-        this.idMember = listing.getIdMember();
+        this.estAffiche = listing.getIsDisplay();
+        this.mailAntiquarian = listing.getMailAntiquarian();
         this.photos = photos.stream()
                 .map(PhotoAntiquity::getPathPhoto)
                 .toList();
     }
 
-    // Getters and setters
 }
 
