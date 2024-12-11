@@ -129,6 +129,22 @@ public class ListingService {
         //Save the change
         return ListingRepository.save(listing.get());
     }
+
+    /**
+     * Allow to change the antiquarian of the antiquity
+     *
+     * @param antiquity the antiquity that we want to change the antiquarian
+     * @param emailNewAntiquarian the email of the new antiquarian
+     * @return a boolean, true if the change has been made, false, in case of a problem
+     */
+    public boolean changeListingAntiquarian(Listing antiquity, String emailNewAntiquarian) {
+        if(antiquity==null || emailNewAntiquarian.isEmpty()) return false;
+        if(userService.getUsersByEmail(emailNewAntiquarian).getFirst() == null) {return false;}
+        if(!this.userService.getUserStatus(emailNewAntiquarian)) return false;
+        antiquity.setMailAntiquarian(emailNewAntiquarian);
+        ListingRepository.save(antiquity);
+        return true;
+    }
 }
 
 
