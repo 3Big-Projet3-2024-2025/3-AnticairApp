@@ -99,4 +99,21 @@ public class ListingServiceTests {
         assertNull(this.listingService.applyCommission(-1));
 
     }
+
+    @Test
+    public void ChangeAntiquarianTestFromListingService(){
+        for (int i = 0; i < 10; i++) {
+            this.listing = new Listing(0,100.0,"A description","Pandora's box",mailAntiquarian,0,false,mailSeller);
+            this.listingRepository.save(this.listing);
+        }
+        List<Listing> listingList = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(mailAntiquarian);
+        for (Listing listing : listingList) {
+            this.listingService.changeListingAntiquarian(listing,mailNewAntiquarian);
+        }
+        assertEquals(0,this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(mailAntiquarian).size());
+        for (Listing listing : listingList) {
+            this.cleanListing(listing);
+        }
+
+    }
 }
