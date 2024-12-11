@@ -1,15 +1,18 @@
 package be.anticair.anticairapi.keycloak.service;
 
+import be.anticair.anticairapi.Class.Listing;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +21,14 @@ import java.util.stream.Collectors;
  **/
 @Service
 public class UserService {
+
+    @Autowired
+    @Lazy
+    private ListingRepository listingRepository;
+
+    @Autowired
+    @Lazy
+    private ListingService listingService;
 
     private final Keycloak keycloak;
 
@@ -248,6 +259,39 @@ public class UserService {
             throw new RuntimeException("Error while getting the status of the user with email: " + userEmail, e);
         }
     }
+
+    public String redistributeAntiquity(String userEmail) {
+    //Get the new antiquarian
+        if(userEmail == null || userEmail.isEmpty()){ return "No email address provided"; }
+        //Get all the antiquarian
+        List<UserRepresentation> allAntiquarian = this.getUsersByGroupName("Antiquarian");
+        //Check if there is atleast 1 antiquarian
+        if(allAntiquarian.isEmpty()){return "No antiquarian found";}
+        //Check if the only antiquarian isn't the antiquarian that we want change
+        if(allAntiquarian.size() == 1 && allAntiquarian.getFirst().getId().equals(userEmail)){return "No other antiquarian found";}
+        //Select the new antiquarian of the antiquity
+        int randomUser = getRandom.apply(allAntiquarian.size());
+        //Check if the selectionned antiquarain if not the same that the remplaced
+        while(userEmail.equals(allAntiquarian.get(randomUser).getEmail())){
+            randomUser = getRandom.apply(allAntiquarian.size());
+        }
+    //Change all the antiquarian's antiquity
+        List<Listing> listings = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(userEmail);
+        if(listings.isEmpty()){ return "Antiquity's antiquarian changed";}
+        for(Listing listing : listings){
+            if(!this.listingService.changeListingAntiquarian(listing, allAntiquarian.get(randomUser).getEmail())){
+                return "Error while changing antiquarian";
+            }
+        }
+        return "Antiquity's antiquarian changed";
+
+    }
+
+    /**
+     * Lambda expression to get a random number between 1 and a max
+     * @Author Verly Noah
+     */
+   private Function<Integer,Integer> getRandom = max ->  (int) (Math.random() * max);
 
 
 }
