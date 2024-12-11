@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -137,6 +138,24 @@ public class UserController {
         Map<String, String> responseMessage = new HashMap<>();
         responseMessage.put("message", value);
         return ResponseEntity.ok(responseMessage);
+    }
+
+    /**
+     * Redistrute the antiquity of a antiquarian
+     * @return ResponseEntity containing a Json
+     * @Author Verly Noah
+     */
+    @PutMapping("/redistributeAntiquity")
+    public ResponseEntity<Map<String, String>> redistributeAntiquity(
+            @RequestParam String emailId
+    ){
+        String value = String.valueOf(userService.redistributeAntiquity(emailId));
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", value);
+        if(Objects.equals(responseMessage.get("message"), "Antiquity's antiquarian changed")){
+            return ResponseEntity.ok(responseMessage);
+        }
+        return ResponseEntity.badRequest().body(responseMessage);
     }
 
 }
