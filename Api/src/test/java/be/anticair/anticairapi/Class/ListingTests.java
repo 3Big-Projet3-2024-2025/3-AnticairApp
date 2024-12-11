@@ -23,11 +23,20 @@ public class ListingTests {
     private Listing listing;
 
     /**
+     * The mail that will be use for the owner of the antiquity
+     */
+    private static final String mailSeller = "john.doe@example.com";
+    /**
+     * The mail that will be use for the owner of the antiquity
+     */
+    private static final String mailAntiquarian = "alexis.zarzycki0212@gmail.com";
+
+    /**
      * SetUp to create a antiquity
      */
     @BeforeEach
     public void setUp(){
-        listing = new Listing(1,100.0,"C'est Jésus","Statut","noahverly@hotmail.be",0,true,1);
+        listing = new Listing(1,100.0,"C'est Jésus","Statut",mailAntiquarian,0,true,mailSeller);
     }
 
     /**

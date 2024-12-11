@@ -2,7 +2,6 @@ package be.anticair.anticairapi.keycloak.service;
 
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.Class.PhotoAntiquity;
-import jakarta.transaction.Transactional;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,9 +62,9 @@ public class ListingService {
             throw new IllegalArgumentException("Price, description, and title are required");
         }
 
-        newListing.setMailMember(email);
+        newListing.setMailSeller(email);
         newListing.setState(0);  // Initialized to 0 (not yet verified)
-        newListing.setEstAffiche(false);  // Initialized to false (not yet displayed)
+        newListing.setIsDisplay(false);  // Initialized to false (not yet displayed)
 
         // Save the listing
         Listing savedListing = ListingRepository.save(newListing);
@@ -92,9 +90,10 @@ public class ListingService {
             antiquity.setPriceAntiquity(updatedListing.getPriceAntiquity());
             antiquity.setDescriptionAntiquity(updatedListing.getDescriptionAntiquity());
             antiquity.setTitleAntiquity(updatedListing.getTitleAntiquity());
-            antiquity.setMailMember(updatedListing.getMailMember());
+            antiquity.setMailSeller(updatedListing.getMailSeller());
+            antiquity.setMailAntiquarian(updatedListing.getMailAntiquarian());
             antiquity.setState(updatedListing.getState());
-            antiquity.setEstAffiche(updatedListing.getEstAffiche());
+            antiquity.setIsDisplay(updatedListing.getIsDisplay());
             return ListingRepository.save(antiquity);
         }).orElseThrow(() -> new RuntimeException("Antiquity not found with id: " + id));
     }
