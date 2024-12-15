@@ -22,10 +22,16 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
+    /**
+     * The repository of antiquity who all the crud
+     */
     @Autowired
     @Lazy
     private ListingRepository listingRepository;
 
+    /**
+     * The service of antiquity
+     */
     @Autowired
     @Lazy
     private ListingService listingService;
@@ -260,6 +266,11 @@ public class UserService {
         }
     }
 
+    /**
+     * Fonction to redistribute Antiquity
+     * @param userEmail the email of the user to get the status
+     * @return string, to know what was happened
+     */
     public String redistributeAntiquity(String userEmail) {
     //Get the new antiquarian
         if(userEmail == null || userEmail.isEmpty()){ return "No email address provided"; }
