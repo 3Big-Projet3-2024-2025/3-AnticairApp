@@ -65,6 +65,13 @@ public class ListingService {
             throw new IllegalArgumentException("Price, description, and title are required");
         }
 
+
+        //NEED TO BE MODIFIED
+        newListing.setMailAntiquarian(user.getEmail());
+        //NEED TO BE MODIFIED
+
+
+
         newListing.setMailSeller(email);
         newListing.setState(0);  // Initialized to 0 (not yet verified)
         newListing.setIsDisplay(false);  // Initialized to false (not yet displayed)
