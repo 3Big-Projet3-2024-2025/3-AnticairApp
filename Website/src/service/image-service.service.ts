@@ -14,9 +14,16 @@ export class ImageServiceService {
     const token = this.authService.getToken();
     return this.http.get<Blob>(`http://localhost:8080${filePath}`, {
       headers: { Authorization: `Bearer ${token}` },
-      responseType: 'blob' as 'json'  // Récupère les images en tant que Blob.
+      responseType: 'blob' as 'json'  // Convert the image to blob.
     }).pipe(
-      map((blob: Blob | MediaSource) => URL.createObjectURL(blob))  // Convertit Blob en URL.
+      map((blob: Blob | MediaSource) => URL.createObjectURL(blob))  // Convert Blob to url.
     );
+  }
+
+  getImageFile(filePath: String): Observable<Blob>{
+    const token = this.authService.getToken();
+    return this.http.get<Blob>(`http://localhost:8080${filePath}`, {
+      headers: { Authorization: `Bearer ${token}` }, responseType: 'blob' as 'json'
+    })
   }
 }

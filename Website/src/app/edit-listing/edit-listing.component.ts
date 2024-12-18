@@ -10,10 +10,11 @@ import { forkJoin } from 'rxjs';
   templateUrl: './edit-listing.component.html',
   styleUrl: './edit-listing.component.css'
 })
-export class EditListingComponent implements OnInit{
+export class EditListingComponent implements OnInit {
   antiquity!: Antiquity;
-  imagePreviews: String[] = []; // Prévisualisations des images sélectionnées
-  selectedFiles: File[] = []; // Fichiers sélectionnés pour upload
+  imagePreviews: String[] = []; // Previews of selected images
+  selectedFiles: File[] = []; // Selected files for upload
+  BlobFiles: Blob[] = []; // Loaded Blob files
 
   constructor(
     private route: ActivatedRoute,
@@ -23,34 +24,63 @@ export class EditListingComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    // Récupérer l'ID de l'URL
+    // Retrieve the ID from the URL
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadAntiquityById(id);
     }
   }
 
-  // Charger l'antiquité via l'API
+  // Load the antiquity from the API by its ID
   loadAntiquityById(id: string) {
     this.antiquityService.getAntiquityById(id).subscribe({
       next: (data) => {
         this.antiquity = data;
 
-        const imageObservables = data.photos.map(photoPath =>
-          this.imageService.getImageUrl(photoPath)
+        // Log photos for debugging
+        data.photos.forEach((photoPath, index) => {
+          console.log(`Photo ${index}: ${photoPath}`);
+        });
+
+        // Prepare observables to load images
+        const imageObservables = data.photos.map(photoPath => 
+          this.imageService.getImageFile(photoPath)
         );
 
+        // Load images using forkJoin
         forkJoin(imageObservables).subscribe({
-          next: urls => this.imagePreviews = urls,
-          error: err => console.error('Erreur avec les images', err)
+          next: (urls) => {
+            this.BlobFiles = urls;
+            console.log('BlobFiles loaded:', this.BlobFiles);
+
+            // Process images after they are loaded
+            this.BlobFiles.forEach((photoPath) => {
+              const preview = URL.createObjectURL(photoPath);
+              this.imagePreviews.push(preview);
+              this.selectedFiles.push(new File([photoPath], this.extractBlobFileName(preview)));
+            });
+
+            console.log('Image previews:', this.imagePreviews);
+          },
+          error: (err) => console.error('Error loading images:', err),
         });
       },
-      error: err => console.error('Erreur avec l’antiquité', err)
+      error: (err) => console.error('Error loading antiquity:', err),
     });
   }
 
+  // Extract the file name from a Blob URL
+  extractBlobFileName(url: string): string {
+    try {
+      const parts = url.split('/');
+      return parts[parts.length - 1];
+    } catch (error) {
+      console.error('Error extracting Blob file name:', error);
+      return '';
+    }
+  }
 
-  // Gestion de la sélection de fichiers
+  // Handle file selection from the file input
   onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) {
@@ -58,12 +88,11 @@ export class EditListingComponent implements OnInit{
         if (this.imagePreviews.length < 10) {
           this.selectedFiles.push(file);
 
-          // Prévisualisation des fichiers
+          // Preview the selected files
           const reader = new FileReader();
           reader.onload = (e: ProgressEvent<FileReader>) => {
             if (e.target?.result) {
               this.imagePreviews.push(e.target.result as string);
-             
             }
           };
           reader.readAsDataURL(file);
@@ -72,35 +101,41 @@ export class EditListingComponent implements OnInit{
     }
   }
 
-  // Supprimer une image de la prévisualisation
+  // Remove an image from the previews
   removeImage(index: number): void {
-    this.imagePreviews.splice(index, 1); // Supprimer l'image de l'aperçu
-    this.selectedFiles.splice(index, 1); // Supprimer le fichier correspondant
+    this.imagePreviews.splice(index, 1); // Remove the image from the preview list
+    this.selectedFiles.splice(index, 1); // Remove the corresponding file
   }
 
-  // Soumission du formulaire
+  // Submit the form
   onSubmit(): void {
     if (!this.antiquity.idAntiquity) {
-      console.error('ID de l\'antiquité manquant');
+      console.error('Antiquity ID is missing');
       return;
     }
-  
-    // Envoyer l'antiquité avec les images sélectionnées
+    if (this.selectedFiles.length <= 0) {
+      alert("The antiquity must have at least one image");
+      return;
+    }
+    if(this.selectedFiles.length > 10){
+      alert("The antiquity must have max 10 images");
+      return;
+    }
+
+    // Send the updated antiquity with selected images
     this.antiquityService.updateAntiquityWithPhotos(
       this.antiquity.idAntiquity, 
       this.antiquity, 
-      this.selectedFiles.length > 0 ? this.selectedFiles : undefined
+      this.selectedFiles
     ).subscribe({
       next: () => {
-        alert('Antiquité mise à jour avec succès');
-        this.router.navigate(['/antiquities']); 
+        alert('Antiquity updated successfully');
+        this.router.navigate(['/antiquities']);
       },
       error: (err) => {
-        console.error('Erreur lors de la mise à jour :', err);
-        alert('Erreur lors de la mise à jour de l\'antiquité');
+        console.error('Error updating antiquity:', err);
+        alert('Error updating the antiquity');
       }
     });
   }
-  
-
 }
