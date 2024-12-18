@@ -215,7 +215,7 @@ public class ListingService {
         otherInformation.put("title", antiquity.getTitleAntiquity());
         otherInformation.put("description", antiquity.getDescriptionAntiquity());
         otherInformation.put("price", antiquity.getPriceAntiquity().toString());
-        this.emailService.sendHtmlEmail(emailNewAntiquarian, "verlynoah@33gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
+        this.emailService.sendHtmlEmail(emailNewAntiquarian, "info@anticairapp.sixela.be", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
         return true;
     }
 }
