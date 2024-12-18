@@ -71,7 +71,7 @@ public class UserService {
             return users;
         } catch (Exception e) {
             // Debug log for exception
-            throw new NotFoundException("Error while retrieving users with email: " + userEmail, e);
+            throw new NotFoundException("No users found with email: " + userEmail, e);
         }
     }
 
