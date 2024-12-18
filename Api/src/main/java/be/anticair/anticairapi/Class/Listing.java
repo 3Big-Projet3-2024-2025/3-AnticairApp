@@ -1,6 +1,10 @@
 package be.anticair.anticairapi.Class;
 
+
+import be.anticair.anticairapi.enumeration.AntiquityState;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,6 +44,7 @@ public class Listing {
 
         @Column(name = "mail_seller")
         private String mailSeller;
+
 
 
         /**

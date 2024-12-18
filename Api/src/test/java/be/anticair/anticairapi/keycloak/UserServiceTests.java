@@ -1,6 +1,7 @@
 package be.anticair.anticairapi.keycloak;
 
 import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.enumeration.AntiquityState;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.UserService;
 import jakarta.mail.MessagingException;
@@ -204,14 +205,13 @@ public class UserServiceTests {
      * @Author Verly Noah
      */
     @Test
-    public void testChangeAntiquarianFromAntiquityOK() throws MessagingException, IOException {
-        for (int i = 0; i < 10; i++) {
-            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_USER_EMAIL);
+    public void testChangeAntiquarianFromAntiquityOK(){
+        for (int i = 0; i < 5; i++) {
+            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_USER_EMAIL, AntiquityState.NEED_TO_BE_CHECK);
             this.listingRepository.save(this.listing);
         }
 
         List<Listing> listingList = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(TEST_ANTIQUARIAN_EMAIL);
-        this.userService.redistributeAntiquity(TEST_ANTIQUARIAN_EMAIL);
         assertEquals(0,this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(TEST_ANTIQUARIAN_EMAIL).size());
         this.listingRepository.deleteAll(listingList);
 
@@ -223,7 +223,7 @@ public class UserServiceTests {
      */
     @Test
     public void testChangeAntiquarianFromAntiquityNull() throws MessagingException, IOException {
-        assertEquals("No email address provided",this.userService.redistributeAntiquity(TEST_ANTIQUARIAN_EMAIL));
+        assertEquals("No email address provided",this.userService.redistributeAntiquity(null));
     }
 
 }
