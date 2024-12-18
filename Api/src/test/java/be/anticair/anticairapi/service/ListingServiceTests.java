@@ -4,12 +4,14 @@ import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.ListingService;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,7 +106,7 @@ public class ListingServiceTests {
      * @Author Verly Noah
      */
     @Test
-    public void ChangeAntiquarianTestFromListingService(){
+    public void ChangeAntiquarianTestFromListingService() throws MessagingException, IOException {
         for (int i = 0; i < 10; i++) {
             this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
             this.listingRepository.save(this.listing);

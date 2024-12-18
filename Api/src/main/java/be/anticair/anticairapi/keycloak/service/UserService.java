@@ -1,6 +1,8 @@
 package be.anticair.anticairapi.keycloak.service;
 
 import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.enumeration.TypeOfMail;
+import jakarta.mail.MessagingException;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -35,6 +38,8 @@ public class UserService {
     @Autowired
     @Lazy
     private ListingService listingService;
+
+    private EmailService emailService;
 
     private final Keycloak keycloak;
 
@@ -271,7 +276,7 @@ public class UserService {
      * @param userEmail the email of the user to get the status
      * @return string, to know what was happened
      */
-    public String redistributeAntiquity(String userEmail) {
+    public String redistributeAntiquity(String userEmail) throws MessagingException, IOException {
     //Get the new antiquarian
         if(userEmail == null || userEmail.isEmpty()){ return "No email address provided"; }
         //Get all the antiquarian
@@ -294,6 +299,7 @@ public class UserService {
                 return "Error while changing antiquarian";
             }
         }
+        this.emailService.sendHtmlEmail(userEmail,"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,null);
         return "Antiquity's antiquarian changed";
 
     }
