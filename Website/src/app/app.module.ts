@@ -40,8 +40,6 @@ export function initializeKeycloak(authService: AuthService) {
     SidebarComponent,
     UsersComponent,
     EditGroupsComponent,
-    PhonenumberPipe,
-    CreateListingComponent,
     ForcePasswordResetComponent,
     ManageUsersComponent,
   ],
