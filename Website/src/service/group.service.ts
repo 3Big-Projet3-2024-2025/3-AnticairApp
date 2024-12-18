@@ -21,7 +21,6 @@ export class GroupService {
       );
     } catch (error) {
       console.error('Erreur lors de l\'ajout au groupe:', error);
-      // Affichez un message d'erreur ou gérez l'erreur ici
     }
   }
 }

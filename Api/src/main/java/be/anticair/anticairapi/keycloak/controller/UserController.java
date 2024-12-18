@@ -1,15 +1,18 @@
 package be.anticair.anticairapi.keycloak.controller;
 
 import be.anticair.anticairapi.keycloak.service.UserService;
+import jakarta.mail.MessagingException;
 import org.apache.catalina.User;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -124,5 +127,37 @@ public class UserController {
         return ResponseEntity.ok(responseMessage);
     }
 
+    /**
+     * Get the status of a user
+     * @return ResponseEntity containing a Json
+     * @Author Zarzycki Alexis
+     */
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, String>> getUserStatus(
+            @RequestParam String emailId
+    ){
+        String value = String.valueOf(userService.getUserStatus(emailId));
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", value);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    /**
+     * Redistrute the antiquity of a antiquarian
+     * @return ResponseEntity containing a Json
+     * @Author Verly Noah
+     */
+    @PutMapping("/redistributeAntiquity")
+    public ResponseEntity<Map<String, String>> redistributeAntiquity(
+            @RequestParam String emailId
+    ) throws MessagingException, IOException {
+        String value = String.valueOf(userService.redistributeAntiquity(emailId));
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", value);
+        if(Objects.equals(responseMessage.get("message"), "Antiquity's antiquarian changed")){
+            return ResponseEntity.ok(responseMessage);
+        }
+        return ResponseEntity.badRequest().body(responseMessage);
+    }
 
 }

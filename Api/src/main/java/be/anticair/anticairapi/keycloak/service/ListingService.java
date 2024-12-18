@@ -1,6 +1,9 @@
 package be.anticair.anticairapi.keycloak.service;
 
+import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.Class.PhotoAntiquity;
+import be.anticair.anticairapi.enumeration.TypeOfMail;
+import jakarta.mail.MessagingException;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -27,6 +32,8 @@ public class ListingService {
 
     @Autowired
     private ListingRepository ListingRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private UserService userService;
@@ -64,9 +71,16 @@ public class ListingService {
             throw new IllegalArgumentException("Price, description, and title are required");
         }
 
-        newListing.setMailMember(email);
+
+        //NEED TO BE MODIFIED
+        newListing.setMailAntiquarian(user.getEmail());
+        //NEED TO BE MODIFIED
+
+
+
+        newListing.setMailSeller(email);
         newListing.setState(0);  // Initialized to 0 (not yet verified)
-        newListing.setEstAffiche(false);  // Initialized to false (not yet displayed)
+        newListing.setIsDisplay(false);  // Initialized to false (not yet displayed)
 
         // Save the listing
         Listing savedListing = ListingRepository.save(newListing);
@@ -92,13 +106,66 @@ public class ListingService {
             antiquity.setPriceAntiquity(updatedListing.getPriceAntiquity());
             antiquity.setDescriptionAntiquity(updatedListing.getDescriptionAntiquity());
             antiquity.setTitleAntiquity(updatedListing.getTitleAntiquity());
-            antiquity.setMailMember(updatedListing.getMailMember());
+            antiquity.setMailSeller(updatedListing.getMailSeller());
+            antiquity.setMailAntiquarian(updatedListing.getMailAntiquarian());
             antiquity.setState(updatedListing.getState());
-            antiquity.setEstAffiche(updatedListing.getEstAffiche());
+            antiquity.setIsDisplay(updatedListing.getIsDisplay());
             return ListingRepository.save(antiquity);
         }).orElseThrow(() -> new RuntimeException("Antiquity not found with id: " + id));
     }
-}
 
+    public ListingWithPhotosDto getListingById(Integer id) {
+        // Get the listing
+        Listing listing = ListingRepository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new RuntimeException("Listing not found with id " + id));
+
+        // get the images associates with the antiquity
+        List<PhotoAntiquity> photos = photoAntiquityService.findByIdAntiquity(id);
+
+        // create and return the objects
+        return new ListingWithPhotosDto(listing, photos);
+    }
+
+    /**
+     *Function to apply the commission
+     *
+     * @param id the id of the antiquity
+     * @return the antiquity with the commission
+     * @Author Verly Noah
+     */
+    public Listing applyCommission(Integer id){
+        //Check if the id is valid
+        if(id==null ||id<1) return null;
+        //Get the antiquity with the id
+        Optional<Listing> listing = ListingRepository.findById(Long.valueOf(id));
+        //If there isn't antiquity with this id, return null
+        if(listing.isEmpty()) {return null;}
+        //Applied the commission
+        listing.get().applyCommission();
+        //Save the change
+        return ListingRepository.save(listing.get());
+    }
+
+    /**
+     * Allow to change the antiquarian of the antiquity
+     *
+     * @param antiquity the antiquity that we want to change the antiquarian
+     * @param emailNewAntiquarian the email of the new antiquarian
+     * @return a boolean, true if the change has been made, false, in case of a problem
+     */
+    public boolean changeListingAntiquarian(Listing antiquity, String emailNewAntiquarian) throws MessagingException, IOException {
+        if(antiquity==null || emailNewAntiquarian.isEmpty()) return false;
+        if(userService.getUsersByEmail(emailNewAntiquarian).getFirst() == null) {return false;}
+        if(!this.userService.getUserStatus(emailNewAntiquarian)) return false;
+        antiquity.setMailAntiquarian(emailNewAntiquarian);
+        ListingRepository.save(antiquity);
+        Map<String,String> otherInformation = new HashMap<>();
+        otherInformation.put("title", antiquity.getTitleAntiquity());
+        otherInformation.put("description", antiquity.getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.getPriceAntiquity().toString());
+        this.emailService.sendHtmlEmail(emailNewAntiquarian, "verlynoah@33gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
+        return true;
+    }
+}
 
 
