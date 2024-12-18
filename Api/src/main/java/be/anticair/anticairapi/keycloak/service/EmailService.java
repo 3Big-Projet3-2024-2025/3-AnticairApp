@@ -1,7 +1,7 @@
 package be.anticair.anticairapi.keycloak.service;
 
+import be.anticair.anticairapi.enumeration.TypeOfMail;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -17,29 +17,50 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Service to send email with html template
+ * @Author Verly Noah
+ */
 @Service
 public class EmailService {
+    /**
+     * name of the directory with the template
+     */
     private static final String URL_TEMPLATE_HTML = "/TemplateHTML/";
+    /**
+     * service to have information about the users
+     */
     @Autowired
     @Lazy
     private UserService userService;
+    /**
+     * Allow tos send a mail
+     */
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendHtmlEmail(String receiver, String sender, String subject, int typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
+    /**
+     * Function to send a mail with html template
+     * @param receiver the mail of the receiver
+     * @param sender the mail of the sender
+     * @param typeOfMail A enumeration with the type of mail a integer and the name of the template
+     * @param otherInformation other information, who aren't shared with all template
+     * @throws MessagingException error during the creation of the mail
+     * @throws IOException error if the access of the template isn't a success
+     * @Author Verly Noah
+     */
+    public void sendHtmlEmail(String receiver, String sender, TypeOfMail typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
+        if(receiver.isEmpty() || sender.isEmpty() ) return;
        try {
            //Allow to create email
-           MimeMessage message= this.setInformationMail(sender,receiver,subject);
+           MimeMessage message= this.setInformationMail(sender,receiver,typeOfMail.getSubject());
 
-           String htmlTemplate = "";
-           switch (typeOfMail) {
-               case 1: //Valdiation of an antiquity, so notify the owner
-                  htmlTemplate=this.loadFilePath("ValdiationOfAnAntiquity.html");
+           String htmlTemplate = this.loadFilePath(typeOfMail.getTemplateHTMLName1());
+           switch (typeOfMail.getTypeOfMail()) {
+               case 1: //Validation of an antiquity, so notify the owner
                   htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    break;
                case 2: //Application of the commission, so notify the antiquarian
-                   htmlTemplate=this.loadFilePath("ConfirmationOfApplicationCommission.html");
 
                    htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    double priceWithCommission = Double.parseDouble(otherInformation.get("price"));
@@ -48,25 +69,30 @@ public class EmailService {
                    String commissionString = Double.toString(priceWithCommission);
                    htmlTemplate = htmlTemplate.replace("${commission}", commissionString);
                    break;
-               case 3: //Valdiation of an antiquity, so notify the owner
-                   htmlTemplate=this.loadFilePath("RejectionOfAntiquity.html");
+               case 3: //Rejection of an antiquity, so notify the owner
                    htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    htmlTemplate = htmlTemplate.replace("${note_title}", otherInformation.get("note_title"));
                    htmlTemplate = htmlTemplate.replace("${note_description}", otherInformation.get("note_description"));
                    htmlTemplate = htmlTemplate.replace("${note_price}", otherInformation.get("note_price"));
+                   htmlTemplate = htmlTemplate.replace("${note_photo}", otherInformation.get("note_photo"));
+                   break;
+               case 4: //Warning the initial antiquarian that one of his antiquity has been redistributed
+                   break;
+               case 5: //Warning the new antiquarian that he get a new antiquity
+                   htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    break;
 
 
-               default: // Default mail
-                   htmlTemplate = "";
-                   break;
+               default: // Just in case
+                  return;
 
            }
            //Shared information
            htmlTemplate = this.replaceSharedInformation(htmlTemplate,receiver);
 
-
+           //Set the content of the mail
            message.setContent(htmlTemplate, "text/html; charset=utf-8");
+           //Send it
            mailSender.send(message);
        }catch (MessagingException e){
            throw new MessagingException("Error while sending email : " + e.getMessage());
@@ -80,7 +106,7 @@ public class EmailService {
      * @param receiver Email of the receiver
      * @param subject Subject of the email
      * @return return the based email
-     * @throws MessagingException
+     * @throws MessagingException error during the creation of the mail
      * @Author Verly Noah
      */
     private MimeMessage setInformationMail(String sender, String receiver, String subject) throws MessagingException {
@@ -104,7 +130,7 @@ public class EmailService {
      * Allow to load the base information of the mail
      * @param fileName name of the file with the template
      * @return return the based email
-     * @throws MessagingException
+     * @throws IOException error if the access of the template isn't a success
      * @Author Verly Noah
      */
     private String loadFilePath(String fileName) throws IOException {
@@ -112,7 +138,7 @@ public class EmailService {
             // Constructing the absolute path to the HTML template
             String filePath = System.getProperty("user.dir") + URL_TEMPLATE_HTML + fileName;
 
-            // Lire le fichier HTML
+            // read the html template
             return new String(Files.readAllBytes(Paths.get(filePath)));
         }catch (IOException e){
             throw new IOException(e.getMessage());
@@ -125,19 +151,27 @@ public class EmailService {
      * @param htmlTemplate name of the file with the template
      * @param receiver Email of the receiver
      * @return return the based email
-     * @throws MessagingException
      * @Author Verly Noah
      */
     private String replaceSharedInformation(String htmlTemplate, String receiver){
         //Get information about the receiver
         List<UserRepresentation> users = userService.getUsersByEmail(receiver);
+        //Replace the name
         htmlTemplate = htmlTemplate.replace("${receiver_name}", users.getFirst().getLastName()+" "+users.getFirst().getFirstName());
 
+        //Replace the year
         String currentYear = String.valueOf(LocalDate.now().getYear());
         htmlTemplate = htmlTemplate.replace("${current_year}", currentYear);
         return htmlTemplate;
     }
 
+    /**
+     * Allorw to repalce all the antiquity's information
+     * @param htmlTemplate the template html
+     * @param otherInformation the antiquity's information
+     * @return the template with the antiquity's information
+     * @Author Verly Noah
+     */
     private String replaceAntiquityInformation(String htmlTemplate, Map<String,String> otherInformation){
         htmlTemplate = htmlTemplate.replace("${title}", otherInformation.get("title"));
         htmlTemplate = htmlTemplate.replace("${description}", otherInformation.get("description"));
