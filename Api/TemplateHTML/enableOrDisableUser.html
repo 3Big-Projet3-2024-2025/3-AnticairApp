@@ -10,43 +10,80 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #1a202c;
+            color: #f4f4f4;
         }
+
         .email-container {
             width: 100%;
             max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border: 1px solid #dddddd;
-            border-radius: 5px;
+            margin: 20px auto;
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .header {
-            background-color: #4CAF50;
-            color: white;
+            background-color: #ecc94b;
+            color: #1a202c;
             padding: 20px;
             text-align: center;
             font-size: 24px;
+            font-weight: bold;
         }
+
         .content {
             padding: 20px;
             line-height: 1.6;
-            color: #333333;
+            color: #f7fafc;
+            text-align: left;
         }
+
         .button {
             display: inline-block;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #ecc94b;
+            color: #1a202c;
             padding: 12px 20px;
             margin-top: 20px;
             text-decoration: none;
             border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
         }
+
+        .button:hover {
+            background-color: #d69e2e;
+            transition: background-color 0.3s ease;
+        }
+
         .footer {
             text-align: center;
             padding: 10px;
             font-size: 12px;
-            color: #777777;
+            color: #a0aec0;
+            background-color: #2d3748;
+            border-top: 1px solid #4a5568;
         }
+
+        a {
+            color: #ecc94b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:visited {
+            color: #ecc94b;
+        }
+
+        a:hover {
+            color: #d69e2e;
+        }
+
+        a:active {
+            color: #b7791f;
+        }
+
     </style>
 </head>
 <body>
@@ -63,7 +100,7 @@
                 <div class="content">
                     <h2>Hello ${receiver_name},</h2>
 
-                    <p>We send you this email to let you know that all the antiquity that you was the checker has been redistributed</p>
+                    <p>Your account has been ${account_newstatus}</p>
                     <p>
                         Thank you,<br>
                         Anticair'App's team.

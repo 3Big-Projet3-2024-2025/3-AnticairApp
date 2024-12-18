@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,12 +41,16 @@ public class UserService {
     @Lazy
     private ListingService listingService;
 
+    @Autowired
     private EmailService emailService;
 
     private final Keycloak keycloak;
 
     @Value("${keycloak.realm}")
     private String realm;
+
+    @Value("${spring.mail.username}")
+    private String sender;
 
     @Autowired
     public UserService(Keycloak keycloak) {
@@ -199,6 +205,10 @@ public class UserService {
             // Actually update the user in Keycloak
             keycloak.realm(realm).users().get(userId).update(user);
 
+            // Creating the map to store user's status
+            Map<String, String> otherInformation = new HashMap<>();
+            otherInformation.put("account_newstatus", "disabled");
+            emailService.sendHtmlEmail(userEmail, "info@anticairapp.sixela.be", TypeOfMail.ENABLEORDISABLEUSER, otherInformation);
             return true;
         } catch (NotFoundException e) {
             throw new NotFoundException("No users found with email: " + userEmail);
@@ -235,6 +245,10 @@ public class UserService {
             // Actually update the user in Keycloak
             keycloak.realm(realm).users().get(userId).update(user);
 
+            // Creating the map to store user's status
+            Map<String, String> otherInformation = new HashMap<>();
+            otherInformation.put("account_newstatus", "enabled");
+            this.emailService.sendHtmlEmail(userEmail, sender, TypeOfMail.ENABLEORDISABLEUSER, otherInformation);
             return true;
         } catch (NotFoundException e) {
             throw new NotFoundException("No users found with email: " + userEmail);
@@ -299,7 +313,7 @@ public class UserService {
                 return "Error while changing antiquarian";
             }
         }
-        this.emailService.sendHtmlEmail(userEmail,"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,null);
+        this.emailService.sendHtmlEmail(userEmail, sender, TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,null);
         return "Antiquity's antiquarian changed";
 
     }
