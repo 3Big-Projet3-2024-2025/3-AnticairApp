@@ -31,7 +31,7 @@
 
             <!-- Price Field -->
             <div class="mb-4">
-                <label for="price" class="block text-gray-400 font-semibold mb-2">Price</label>
+                <label for="price" class="block text-gray-400 font-semibold mb-2">Price (euro/€)</label>
                 <input type="number" name="price" id="price" required 
                     [(ngModel)]="price" 
                     step="0.01" min="0"
@@ -40,7 +40,7 @@
 
             <!-- Photos Field (Multiple Files) -->
             <div class="mb-4">
-                <label for="photos" class="block text-gray-400 font-semibold mb-2">Photos</label>
+                <label for="photos" class="block text-gray-400 font-semibold mb-2">Pictures (only .jpg files)</label>
                 <input type="file" name="photos" id="photos" multiple 
                     (change)="onFileSelected($event)"
                     class="w-full p-3 bg-gray-700 text-gray-200 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -92,7 +92,7 @@
 
                 <!-- Price Field -->
                 <div class="mb-4">
-                    <label for="price" class="block text-gray-700 font-semibold mb-2">Price</label>
+                    <label for="price" class="block text-gray-700 font-semibold mb-2">Price (euro/€)</label>
                     <input type="number" name="price" id="price" required 
                         [(ngModel)]="price" 
                         step="0.01" min="0"
@@ -101,7 +101,7 @@
 
                 <!-- Photos Field (Multiple Files) -->
                 <div class="mb-4">
-                    <label for="photos" class="block text-gray-700 font-semibold mb-2">Photos</label>
+                    <label for="photos" class="block text-gray-700 font-semibold mb-2">Pictures (only .jpg files)</label>
                     <input type="file" name="photos" id="photos" multiple 
                         (change)="onFileSelected($event)"
                         class="w-full p-3 bg-gray-200 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
