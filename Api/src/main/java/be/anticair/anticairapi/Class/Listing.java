@@ -1,8 +1,16 @@
 package be.anticair.anticairapi.Class;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Table(name = "antiquity")
 public class Listing {
 
@@ -20,82 +28,23 @@ public class Listing {
         @Column(name = "title_antiquity")
         private String titleAntiquity;
 
-        @Column(name = "mail_member")
-        private String mailMember;
+        @Column(name = "mail_antiquarian")
+        private String mailAntiquarian;
 
         @Column(name = "state")
         private Integer state;
 
-        @Column(name = "est_affiche")
-        private Boolean estAffiche;
+        @Column(name = "is_display")
+        private Boolean isDisplay;
 
-        @Column(name = "id_member")
-        private Integer idMember;
+        @Column(name = "mail_seller")
+        private String mailSeller;
 
-        // Getters et setters
-
-
-        public Integer getIdAntiquity() {
-                return idAntiquity;
-        }
-
-        public void setIdAntiquity(Integer idAntiquity) {
-                this.idAntiquity = idAntiquity;
-        }
-
-        public Double getPriceAntiquity() {
-                return priceAntiquity;
-        }
-
-        public void setPriceAntiquity(Double priceAntiquity) {
-                this.priceAntiquity = priceAntiquity;
-        }
-
-        public String getDescriptionAntiquity() {
-                return descriptionAntiquity;
-        }
-
-        public void setDescriptionAntiquity(String descriptionAntiquity) {
-                this.descriptionAntiquity = descriptionAntiquity;
-        }
-
-        public String getTitleAntiquity() {
-                return titleAntiquity;
-        }
-
-        public void setTitleAntiquity(String titleAntiquity) {
-                this.titleAntiquity = titleAntiquity;
-        }
-
-        public String getMailMember() {
-                return mailMember;
-        }
-
-        public void setMailMember(String mailMember) {
-                this.mailMember = mailMember;
-        }
-
-        public Integer getState() {
-                return state;
-        }
-
-        public void setState(Integer state) {
-                this.state = state;
-        }
-
-        public Boolean getEstAffiche() {
-                return estAffiche;
-        }
-
-        public void setEstAffiche(Boolean estAffiche) {
-                this.estAffiche = estAffiche;
-        }
-
-        public Integer getIdMember() {
-                return idMember;
-        }
-
-        public void setIdMember(Integer idMember) {
-                this.idMember = idMember;
+        /**
+         * Function to apply the commission
+         * @Author Verly Noah
+         */
+        public void applyCommission(){
+                this.priceAntiquity += this.priceAntiquity * 0.20;
         }
 }
