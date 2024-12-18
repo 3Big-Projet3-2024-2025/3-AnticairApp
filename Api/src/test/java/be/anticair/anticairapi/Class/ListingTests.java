@@ -1,5 +1,6 @@
 package be.anticair.anticairapi.Class;
 
+import be.anticair.anticairapi.enumeration.AntiquityState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,18 +26,18 @@ public class ListingTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String mailSeller = "john.doe@example.com";
+    private static final String mailSeller = "testmail2@gmail.com";
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String mailAntiquarian = "alexis.zarzycki0212@gmail.com";
+    private static final String mailAntiquarian = "testmail1@gmail.com";
 
     /**
      * SetUp to create a antiquity
      */
     @BeforeEach
     public void setUp(){
-        listing = new Listing(1,100.0,"C'est Jésus","Statut",mailAntiquarian,0,true,mailSeller);
+        listing = new Listing(1,100.0,"C'est Jésus","Statut",mailAntiquarian,0,true,mailSeller, AntiquityState.NEED_TO_BE_CHECK);
     }
 
     /**
