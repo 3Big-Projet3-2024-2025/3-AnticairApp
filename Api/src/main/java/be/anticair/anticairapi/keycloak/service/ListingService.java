@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static be.anticair.anticairapi.enumeration.AntiquityState.*;
 
@@ -76,18 +73,24 @@ public class ListingService {
             throw new IllegalArgumentException("Price, description, and title are required");
         }
 
+        List<UserRepresentation> usersAntiquarians = userService.getUsersByGroupName("Antiquarian");
+        if(usersAntiquarians.isEmpty()) {
+            throw new RuntimeException("Antiquarian not found");
+        }
 
-        //NEED TO BE MODIFIED
-        newListing.setMailAntiquarian(user.getEmail());
-        //NEED TO BE MODIFIED
-
-
+        UserRepresentation userAntiquarian;
+        // Get a random antiquarian different from the author of the listing
+        do {
+            Random random = new Random();
+            userAntiquarian = usersAntiquarians.get(random.nextInt(usersAntiquarians.size()));
+        } while (email.equals(userAntiquarian.getEmail()));
 
         newListing.setMailSeller(email);
         newListing.setState(0);  // Initialized to 0 (not yet verified)
         newListing.setIsDisplay(false);  // Initialized to false (not yet displayed)
+        newListing.setMailAntiquarian(userAntiquarian.getEmail());
 
-        // Save the listing
+        // Save the listing if it has all the required fields
         Listing savedListing = ListingRepository.save(newListing);
 
         // Save the photos
