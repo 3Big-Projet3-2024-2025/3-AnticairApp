@@ -3,6 +3,7 @@ package be.anticair.anticairapi.keycloak;
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.UserService;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +11,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.UserRepresentation;
 import jakarta.ws.rs.NotFoundException;
+
+import java.io.IOException;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -201,7 +204,7 @@ public class UserServiceTests {
      * @Author Verly Noah
      */
     @Test
-    public void testChangeAntiquarianFromAntiquityOK(){
+    public void testChangeAntiquarianFromAntiquityOK() throws MessagingException, IOException {
         for (int i = 0; i < 10; i++) {
             this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_USER_EMAIL);
             this.listingRepository.save(this.listing);
@@ -219,7 +222,7 @@ public class UserServiceTests {
      * @Author Verly Noah
      */
     @Test
-    public void testChangeAntiquarianFromAntiquityNull(){
+    public void testChangeAntiquarianFromAntiquityNull() throws MessagingException, IOException {
         assertEquals("No email address provided",this.userService.redistributeAntiquity(TEST_ANTIQUARIAN_EMAIL));
     }
 
