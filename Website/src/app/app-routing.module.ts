@@ -8,6 +8,7 @@ import { UsersComponent } from './admin/users/users.component';
 import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
 import { CreateListingComponent } from './create-listing/create-listing.component';
 import {ManageUsersComponent} from './admin/users/manage-users/manage-users.component';
+import { EditListingComponent } from './edit-listing/edit-listing.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'admin/users', component: UsersComponent, canActivate: [AdminGuard] },
   { path: 'admin/users/edit-groups/:email', component: EditGroupsComponent, canActivate: [AdminGuard] },
   { path: 'admin/manage-users', component: ManageUsersComponent }, // Route pour le composant Admin
+  { path: 'edit/:id', component: EditListingComponent},
   { path: '**', redirectTo: '/home' }
 ];
 
