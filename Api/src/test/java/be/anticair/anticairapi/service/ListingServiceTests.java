@@ -124,12 +124,13 @@ public class ListingServiceTests {
         }
 
     }
+
     /**
-     * Test to check if the changeListing antiquarian work
+     * Test to reject an antiquity
      * @Author Verly Noah
      */
     @Test
-    public void rejecteAntiquarianTestFromListingService() throws MessagingException, IOException {
+    public void rejectAntiquarianTestFromListingService() throws MessagingException, IOException {
         this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
         this.listing = this.listingRepository.save(this.listing);
         Map<String,String> otherInformation = new HashMap<>();
@@ -142,7 +143,25 @@ public class ListingServiceTests {
         otherInformation.put("note_price","test");
         otherInformation.put("note_photo","test");
         this.listing = this.listingService.rejectAntiquity(otherInformation);
-        assertEquals(-1, this.listing.getState());
+        assertEquals(AntiquityState.REJECTED.getState(), this.listing.getState());
+        this.cleanListing(listing);
+    }
+
+    /**
+     * Test to accept an antiquity
+     * @Author Verly Noah
+     */
+    @Test
+    public void acceptAntiquarianTestFromListingService() throws MessagingException, IOException {
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
+        this.listing = this.listingRepository.save(this.listing);
+        Map<String,String> otherInformation = new HashMap<>();
+        otherInformation.put("title",listing.getTitleAntiquity());
+        otherInformation.put("description",listing.getDescriptionAntiquity());
+        otherInformation.put("price",listing.getPriceAntiquity().toString());
+        otherInformation.put("id",listing.getIdAntiquity().toString());
+        this.listing = this.listingService.acceptAntiquity(otherInformation);
+        assertEquals(AntiquityState.ACCEPTED.getState(), this.listing.getState());
         this.cleanListing(listing);
     }
 }
