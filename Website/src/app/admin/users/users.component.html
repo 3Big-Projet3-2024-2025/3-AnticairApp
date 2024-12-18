@@ -76,9 +76,9 @@
                         <td class="px-6 py-4 text-sm text-gray-100">
                             <button class="px-4 py-2 bg-blue-500 text-white rounded"
                                 [routerLink]="['/admin/users/edit-groups', user.email]">Edit Groups</button>
-                                <button class="px-4 py-2 bg-blue-500 text-white rounded mt-4"
+                            <button class="px-4 py-2 bg-blue-500 text-white rounded mt-4 ml-4"
                                 (click)="changeUserStatus(user.email, user.enabled ? 'Enabled' : 'Disabled')">
-                                    {{ user.enabled ? 'Disable' : 'Enable' }}</button>
+                                {{ user.enabled ? 'Disable' : 'Enable' }}</button>
                         </td>
                     </tr>
                 </tbody>
@@ -180,7 +180,7 @@
                             <td class="px-6 py-4 text-sm text-gray-700">
                                 <button class="px-4 py-2 bg-blue-500 text-white rounded"
                                     [routerLink]="['/admin/users/edit-groups', user.email]">Edit Groups</button>
-                                <button class="px-4 py-2 bg-blue-500 text-white rounded"
+                                <button class="px-4 py-2 bg-blue-500 text-white rounded mt-4 ml-4"
                                     (click)="changeUserStatus(user.email, user.enabled ? 'Enabled' : 'Disabled')">
                                     {{ user.enabled ? 'Disable' : 'Enable' }}
                                 </button>

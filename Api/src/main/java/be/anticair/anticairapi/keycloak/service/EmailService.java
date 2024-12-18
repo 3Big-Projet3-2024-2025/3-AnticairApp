@@ -81,8 +81,9 @@ public class EmailService {
                case 5: //Warning the new antiquarian that he get a new antiquity
                    htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    break;
-
-
+               case 6: // Warning the user that is account status has been changed
+                   htmlTemplate = htmlTemplate.replace("${account_newstatus}", otherInformation.get("account_newstatus"));
+                   break;
                default: // Just in case
                   return;
 
@@ -166,7 +167,7 @@ public class EmailService {
     }
 
     /**
-     * Allorw to repalce all the antiquity's information
+     * Allow to repalce all the antiquity's information
      * @param htmlTemplate the template html
      * @param otherInformation the antiquity's information
      * @return the template with the antiquity's information
@@ -178,5 +179,7 @@ public class EmailService {
         htmlTemplate = htmlTemplate.replace("${price}", otherInformation.get("price"));
         return htmlTemplate;
     }
+
+
 
 }
