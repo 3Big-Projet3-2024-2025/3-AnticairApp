@@ -8,6 +8,7 @@ import { UsersComponent } from './admin/users/users.component';
 import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
 import { CreateListingComponent } from './create-listing/create-listing.component';
 import { EditListingComponent } from './edit-listing/edit-listing.component';
+import { editAntiquityGuard } from './edit-antiquity.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -18,7 +19,7 @@ const routes: Routes = [
   { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AdminGuard] },
   { path: 'admin/users', component: UsersComponent, canActivate: [AdminGuard] },
   { path: 'admin/users/edit-groups/:email', component: EditGroupsComponent, canActivate: [AdminGuard] },
-  { path: 'edit/:id', component: EditListingComponent},
+  { path: 'edit/:id', component: EditListingComponent, canActivate: [editAntiquityGuard]},
   { path: '**', redirectTo: '/home' }
 ];
 
