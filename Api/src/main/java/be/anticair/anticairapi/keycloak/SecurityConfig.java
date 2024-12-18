@@ -39,10 +39,13 @@ public class SecurityConfig {
                         .jwt(Customizer.withDefaults())
                 )
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/uploads/**").authenticated()
                         .anyRequest().authenticated()
                 );
         return http.build();
     }
+
+
 
     /**
      * Creates a JWT decoder using Keycloak's JWKS endpoint

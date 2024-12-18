@@ -15,9 +15,9 @@ public class ListingWithPhotosDto {
     private Double priceAntiquity;
     private String descriptionAntiquity;
     private String titleAntiquity;
-    private String mailMember;
+    private String mailSeller;
     private Integer state;
-    private Boolean estAffiche;
+    private Boolean isDisplay;
     private String mailAntiquarian;
     private List<String> photos;
 
@@ -26,9 +26,9 @@ public class ListingWithPhotosDto {
         this.priceAntiquity = listing.getPriceAntiquity();
         this.descriptionAntiquity = listing.getDescriptionAntiquity();
         this.titleAntiquity = listing.getTitleAntiquity();
-        this.mailMember = listing.getMailSeller();
+        this.mailSeller = listing.getMailSeller();
         this.state = listing.getState();
-        this.estAffiche = listing.getIsDisplay();
+        this.isDisplay = listing.getIsDisplay();
         this.mailAntiquarian = listing.getMailAntiquarian();
         this.photos = photos.stream()
                 .map(PhotoAntiquity::getPathPhoto)

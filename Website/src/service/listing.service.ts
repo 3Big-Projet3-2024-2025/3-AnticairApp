@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '../app/auth.service';
 import { Observable } from 'rxjs';
+import { Antiquity } from '../modele/DtoListing';
 
 @Injectable({
   providedIn: 'root'
@@ -44,5 +45,25 @@ export class ListingService {
     
     // Send the request to API
     return this.http.post(this.privateUrl + '/create', formData, { headers });
+  }
+
+  getAntiquityById(id: string):Observable<Antiquity>{
+    return this.http.get<Antiquity>(this.privateUrl + '/' + id); 
+  }
+
+  updateAntiquityWithPhotos(id: number, antiquity: Antiquity, images?: File[]): Observable<any> {
+    const formData = new FormData();
+    
+    // Convertir l'antiquité en JSON string
+    formData.append('antiquity', JSON.stringify(antiquity));
+    
+    // Ajouter les images si présentes
+    if (images && images.length > 0) {
+      images.forEach((file, index) => {
+        formData.append('images', file, file.name);
+      });
+    }
+    
+    return this.http.put<any>(`${this.privateUrl}/${id}`, formData);
   }
 }
