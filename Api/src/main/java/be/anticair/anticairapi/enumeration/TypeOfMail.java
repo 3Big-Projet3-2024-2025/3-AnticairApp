@@ -12,8 +12,8 @@ public enum TypeOfMail {
     CONFIRMATIONOFAPPLICATIONCOMMISSION (2, "ConfirmationOfApplicationCommission.html", "Confirmation of the commission application"),
     REJECTIONOFANTIQUITY (3, "RejectionOfAntiquity.html", "Refusal to validate your antique"),
     REDISTRIBUTEANTIQUITYINITANTIQUARIAN (4, "redistributeAntiquityInitAntiquarian.html", "Redistribution of your antiquity"),
-    REDISTRIBUTEANTIQUITYNEWANTIQUARIAN (5, "redistributeAntiquityNewAntiquarian.html", "A new to antiquity to be checked");
-
+    REDISTRIBUTEANTIQUITYNEWANTIQUARIAN (5, "redistributeAntiquityNewAntiquarian.html", "A new to antiquity to be checked"),
+    ENABLEORDISABLEUSER(6, "enableOrDisableUser.html", "Your account has been updated");
     /**
      * The type of mail to the mailService
      */
