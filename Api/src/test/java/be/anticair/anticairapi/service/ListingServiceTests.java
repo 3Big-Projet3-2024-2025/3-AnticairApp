@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,11 +53,11 @@ public class ListingServiceTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_ANTIQUARIAN_EMAIL = "testmail2@gmail.com";
+    private static final String TEST_ANTIQUARIAN_EMAIL = "testantiquarian1@gmail.com";
     /**
      * The mail that will be use for the new owner of the antiquity
      */
-    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "testmail1@gmail.com";
+    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "testantiquarian2@gmail.com";
 
     /**
      * Function which allow to delete a antiquity
@@ -121,5 +123,26 @@ public class ListingServiceTests {
             this.cleanListing(listing);
         }
 
+    }
+    /**
+     * Test to check if the changeListing antiquarian work
+     * @Author Verly Noah
+     */
+    @Test
+    public void rejecteAntiquarianTestFromListingService() throws MessagingException, IOException {
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
+        this.listing = this.listingRepository.save(this.listing);
+        Map<String,String> otherInformation = new HashMap<>();
+        otherInformation.put("title",listing.getTitleAntiquity());
+        otherInformation.put("description",listing.getDescriptionAntiquity());
+        otherInformation.put("price",listing.getPriceAntiquity().toString());
+        otherInformation.put("id",listing.getIdAntiquity().toString());
+        otherInformation.put("note_title","test");
+        otherInformation.put("note_description","test");
+        otherInformation.put("note_price","test");
+        otherInformation.put("note_photo","test");
+        this.listing = this.listingService.rejectAntiquity(otherInformation);
+        assertEquals(-1, this.listing.getState());
+        this.cleanListing(listing);
     }
 }
