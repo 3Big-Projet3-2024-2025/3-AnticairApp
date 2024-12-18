@@ -1,11 +1,16 @@
 package be.anticair.anticairapi.Class;
 
+
+import be.anticair.anticairapi.enumeration.AntiquityState;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,6 +44,8 @@ public class Listing {
 
         @Column(name = "mail_seller")
         private String mailSeller;
+
+
 
         /**
          * Function to apply the commission

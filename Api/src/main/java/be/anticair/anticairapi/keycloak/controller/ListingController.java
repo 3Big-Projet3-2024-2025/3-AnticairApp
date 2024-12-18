@@ -9,11 +9,14 @@ import be.anticair.anticairapi.keycloak.service.PhotoAntiquityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -38,20 +41,34 @@ public class ListingController {
      * @return ResponseEntity indicating the update status.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateAntiquityWithPhotos(@PathVariable Integer id, @RequestParam("antiquity") String antiquityJson, @RequestParam(value = "images", required = false) List<MultipartFile> images) {
+    public ResponseEntity<Map<String,String>> updateAntiquityWithPhotos(@PathVariable Integer id, @RequestParam("antiquity") String antiquityJson, @RequestParam(value = "images", required = false) List<MultipartFile> images) {
         try {
             // Deserialize the antiquity JSON into a Listing object
             ObjectMapper objectMapper = new ObjectMapper();
             Listing antiquity = objectMapper.readValue(antiquityJson, Listing.class);
 
             // Call the Listing service and the Images service to update the antiquity
-            listingService.updateListing(Long.valueOf(id), antiquity);
-            photoAntiquityService.updatePhotos(id, images);
+            if(antiquity != null){
+                listingService.updateListing(Long.valueOf(id), antiquity);
+            }
+            if(images!=null){
+                photoAntiquityService.updatePhotos(id, images);
+            }
 
-            return ResponseEntity.ok("Antiquity and images updated successfully.");
+
+
+
+
+
+
+            Map<String, String> responseMessage = new HashMap<>();
+            responseMessage.put("message", "Antiquity updated successfully");
+            return ResponseEntity.ok(responseMessage);
         } catch (Exception e) {
+            Map<String, String> responseMessage = new HashMap<>();
+            responseMessage.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error : " + e.getMessage());
+                    .body(responseMessage);
         }
     }
 
@@ -98,7 +115,7 @@ public class ListingController {
 
         } catch (Exception e) {
             // Manage unexpected exceptions
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
