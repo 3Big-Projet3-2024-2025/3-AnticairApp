@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PhotoAntiquityService {
@@ -117,33 +118,25 @@ public class PhotoAntiquityService {
             directoryPath.mkdirs();  // Create the directory
         }
 
-        String originalFileName = file.getOriginalFilename();
-
-        // Replace spaces and special characters in the file name
-        String fileName = originalFileName.replaceAll("\\s+", "_").replaceAll("[^a-zA-Z0-9._-]", "");
-
-        // Export the file extension
-        String extension = "";
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
-            extension = fileName.substring(dotIndex);  // Get the file extension
-            fileName = fileName.substring(0, dotIndex);  // Delete the extension from the file name
-        }
-
-        // Create the file path
-        String filePath = directory + fileName + extension;
-        File dest = new File(filePath);
-
-        // If the file already exists, add a timestamp to the file name
-        while (dest.exists()) {
-            fileName = originalFileName.substring(0, originalFileName.lastIndexOf('.')); // Remove the extension
-            String newFileName = fileName + "_" + System.currentTimeMillis() + extension;
-            dest = new File(directory + newFileName);
-        }
-
         if (file.isEmpty()) {
             throw new IOException("The file is empty!");
         }
+
+        // Generate a unique name for the file (UUID)
+        String extension = "";
+        String originalFileName = file.getOriginalFilename();
+        if (originalFileName != null) {
+            int dotIndex = originalFileName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
+                extension = originalFileName.substring(dotIndex); // Extract the file extension
+            }
+        }
+
+        String newFileName = UUID.randomUUID().toString() + extension; // Create a unique name
+
+        // Create the file path
+        String filePath = directory + newFileName;
+        File dest = new File(filePath);
 
         // Save the file
         file.transferTo(dest);
