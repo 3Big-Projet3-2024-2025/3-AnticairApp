@@ -48,8 +48,14 @@ public class ListingController {
             Listing antiquity = objectMapper.readValue(antiquityJson, Listing.class);
 
             // Call the Listing service and the Images service to update the antiquity
-            listingService.updateListing(Long.valueOf(id), antiquity);
-            photoAntiquityService.updatePhotos(id, images);
+            if(antiquity != null){
+                listingService.updateListing(Long.valueOf(id), antiquity);
+            }
+            if(images!=null){
+                photoAntiquityService.updatePhotos(id, images);
+            }
+
+
 
 
 
@@ -60,7 +66,7 @@ public class ListingController {
             return ResponseEntity.ok(responseMessage);
         } catch (Exception e) {
             Map<String, String> responseMessage = new HashMap<>();
-            responseMessage.put("message", "Antiquity not updated successfully");
+            responseMessage.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(responseMessage);
         }

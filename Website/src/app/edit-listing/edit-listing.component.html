@@ -1,11 +1,11 @@
 <!-- edit-antiquity.component.html -->
 <div class="container mx-auto p-4">
-    <h2 class="text-2xl font-bold mb-4">Modifier l'Antiquité</h2>
+    <h2 class="text-2xl font-bold mb-4">Modify Antiquity</h2>
   
     <form (ngSubmit)="onSubmit()" class="space-y-6">
-      <!-- Champ Titre -->
+      <!-- Champ Title -->
       <div class="flex flex-col">
-        <label for="titleAntiquity" class="mb-2 font-medium">Titre</label>
+        <label for="titleAntiquity" class="mb-2 font-medium">Title</label>
         <input
           type="text"
           id="titleAntiquity"
@@ -31,35 +31,25 @@
   
       <!-- Champ Prix -->
       <div class="flex flex-col">
-        <label for="priceAntiquity" class="mb-2 font-medium">Prix</label>
-        <input
-          type="number"
-          id="priceAntiquity"
-          [(ngModel)]="antiquity.priceAntiquity"
-          name="priceAntiquity"
-          class="border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-300"
-          required
-        />
+        <label for="priceAntiquity" class="mb-2 font-medium">Price</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-500">€</span>
+          <input
+            type="number"
+            id="priceAntiquity"
+            [(ngModel)]="antiquity.priceAntiquity"
+            name="priceAntiquity"
+            class="border border-gray-300 rounded p-2 pl-8 focus:outline-none focus:ring focus:ring-blue-300"
+            step="0.01"
+            required
+          />
+        </div>
       </div>
   
-      <!-- Champ Statut -->
-      <div class="flex flex-col">
-        <label for="state" class="mb-2 font-medium">État</label>
-        <select
-          id="state"
-          [(ngModel)]="antiquity.state"
-          name="state"
-          class="border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-300"
-          required
-        >
-          <option [value]="1">Neuf</option>
-          <option [value]="2">Usagé</option>
-        </select>
-      </div>
   
       <!-- Gestion des Images -->
       <div class="flex flex-col">
-        <label for="photos" class="mb-2 font-medium">Photos (jusqu'à 10)</label>
+        <label for="photos" class="mb-2 font-medium">Images (max 10)</label>
         <input
           type="file"
           id="photos"
@@ -89,7 +79,7 @@
         type="submit" 
         class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
       >
-        Enregistrer
+        Save
       </button>
     </form>
   </div>
