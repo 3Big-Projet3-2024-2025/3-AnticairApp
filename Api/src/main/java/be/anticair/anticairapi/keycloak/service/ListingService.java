@@ -146,7 +146,8 @@ public class ListingService {
         antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
         try {
             this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
-            return antiquity.get();
+
+            return this.applyCommission(Integer.valueOf(otherInformation.get("id")));
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
