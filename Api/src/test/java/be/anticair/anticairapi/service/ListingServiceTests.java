@@ -14,7 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import java.util.Collections;
+
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +70,61 @@ public class ListingServiceTests {
      */
     public void cleanListing(Listing listing){
         this.listingRepository.delete(listing);
+    }
+
+    /**
+     * Test to check if the createListing service work
+     * @Author Blommaert Youry
+     */
+    @Test
+    public void testCreateListing_Success() {
+        listing = new Listing();
+        listing.setPriceAntiquity(100.0);
+        listing.setDescriptionAntiquity("A description");
+        listing.setTitleAntiquity("Pandora's box");
+
+        Listing createdListing = listingService.createListing(TEST_SELLER_EMAIL, listing, new ArrayList<>());
+
+        assertNotNull(createdListing);
+        assertNotNull(createdListing.getMailSeller());
+        assertEquals(TEST_SELLER_EMAIL, createdListing.getMailSeller());
+        assertTrue(listingRepository.findById((long)createdListing.getIdAntiquity()).isPresent());
+        this.cleanListing(createdListing);
+    }
+
+    /**
+     * Test to check if the createListing service work with a user not in the database
+     * @Author Blommaert Youry
+     */
+    @Test
+    public void testCreateListing_UserNotFound() {
+        listing = new Listing();
+        listing.setPriceAntiquity(100.0);
+        listing.setDescriptionAntiquity("A description");
+        listing.setTitleAntiquity("A title");
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            listingService.createListing("nonexistent@example.com", listing, Collections.emptyList());
+        });
+
+        assertEquals("No users found with email: nonexistent@example.com", exception.getMessage());
+        assertTrue(listingRepository.findAll().isEmpty());
+    }
+
+    /**
+     * Test to check if the createListing service work with missing required fields
+     * @Author Blommaert Youry
+     */
+    @Test
+    public void testCreateListing_MissingRequiredFields() {
+        listing = new Listing();
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            listingService.createListing(TEST_SELLER_EMAIL, listing, Collections.emptyList());
+        });
+
+        assertEquals("Price, description, and title are required", exception.getMessage());
+        assertTrue(listingRepository.findAll().isEmpty());
     }
 
 
