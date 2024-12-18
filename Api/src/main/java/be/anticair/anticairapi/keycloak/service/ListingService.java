@@ -2,6 +2,8 @@ package be.anticair.anticairapi.keycloak.service;
 
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.Class.PhotoAntiquity;
+import be.anticair.anticairapi.enumeration.TypeOfMail;
+import jakarta.mail.MessagingException;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -28,6 +32,8 @@ public class ListingService {
 
     @Autowired
     private ListingRepository ListingRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private UserService userService;
@@ -147,12 +153,17 @@ public class ListingService {
      * @param emailNewAntiquarian the email of the new antiquarian
      * @return a boolean, true if the change has been made, false, in case of a problem
      */
-    public boolean changeListingAntiquarian(Listing antiquity, String emailNewAntiquarian) {
+    public boolean changeListingAntiquarian(Listing antiquity, String emailNewAntiquarian) throws MessagingException, IOException {
         if(antiquity==null || emailNewAntiquarian.isEmpty()) return false;
         if(userService.getUsersByEmail(emailNewAntiquarian).getFirst() == null) {return false;}
         if(!this.userService.getUserStatus(emailNewAntiquarian)) return false;
         antiquity.setMailAntiquarian(emailNewAntiquarian);
         ListingRepository.save(antiquity);
+        Map<String,String> otherInformation = new HashMap<>();
+        otherInformation.put("title", antiquity.getTitleAntiquity());
+        otherInformation.put("description", antiquity.getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.getPriceAntiquity().toString());
+        this.emailService.sendHtmlEmail(emailNewAntiquarian, "verlynoah@33gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
         return true;
     }
 }

@@ -13,7 +13,7 @@ public class PhotoAntiquity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_photo")
+    @Column(name = "id_photo", updatable = false)
     private Integer idPhoto;
 
     @Column(name = "path_photo", unique = true, nullable = false)
