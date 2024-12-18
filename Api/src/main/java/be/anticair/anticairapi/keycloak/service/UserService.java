@@ -14,9 +14,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 
 /**
  * Service that manage user's
@@ -39,6 +42,8 @@ public class UserService {
     @Lazy
     private ListingService listingService;
 
+    @Autowired
+    @Lazy
     private EmailService emailService;
 
     private final Keycloak keycloak;
@@ -294,12 +299,18 @@ public class UserService {
     //Change all the antiquarian's antiquity
         List<Listing> listings = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(userEmail);
         if(listings.isEmpty()){ return "Antiquity's antiquarian changed";}
+        Map<String,String> otherInformation = new HashMap<>();
         for(Listing listing : listings){
             if(!this.listingService.changeListingAntiquarian(listing, allAntiquarian.get(randomUser).getEmail())){
                 return "Error while changing antiquarian";
             }
+            otherInformation.put("title",listing.getTitleAntiquity());
+            otherInformation.put("description",listing.getDescriptionAntiquity());
+            otherInformation.put("price", listing.getPriceAntiquity().toString());
+            this.emailService.sendHtmlEmail(allAntiquarian.get(randomUser).getEmail(),"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,otherInformation);
         }
-        this.emailService.sendHtmlEmail(userEmail,"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,null);
+        otherInformation.clear();
+        this.emailService.sendHtmlEmail(userEmail,"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYINITANTIQUARIAN,otherInformation);
         return "Antiquity's antiquarian changed";
 
     }
