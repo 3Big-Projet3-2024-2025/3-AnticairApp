@@ -43,18 +43,17 @@ public class EmailService {
      * Function to send a mail with html template
      * @param receiver the mail of the receiver
      * @param sender the mail of the sender
-     * @param subject the subject of the mail
      * @param typeOfMail A enumeration with the type of mail a integer and the name of the template
      * @param otherInformation other information, who aren't shared with all template
      * @throws MessagingException error during the creation of the mail
      * @throws IOException error if the access of the template isn't a success
      * @Author Verly Noah
      */
-    public void sendHtmlEmail(String receiver, String sender, String subject, TypeOfMail typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
-        if(receiver.isEmpty() || sender.isEmpty() || subject.isEmpty()) return;
+    public void sendHtmlEmail(String receiver, String sender, TypeOfMail typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
+        if(receiver.isEmpty() || sender.isEmpty() ) return;
        try {
            //Allow to create email
-           MimeMessage message= this.setInformationMail(sender,receiver,subject);
+           MimeMessage message= this.setInformationMail(sender,receiver,typeOfMail.getSubject());
 
            String htmlTemplate = this.loadFilePath(typeOfMail.getTemplateHTMLName1());
            switch (typeOfMail.getTypeOfMail()) {
@@ -75,6 +74,7 @@ public class EmailService {
                    htmlTemplate = htmlTemplate.replace("${note_title}", otherInformation.get("note_title"));
                    htmlTemplate = htmlTemplate.replace("${note_description}", otherInformation.get("note_description"));
                    htmlTemplate = htmlTemplate.replace("${note_price}", otherInformation.get("note_price"));
+                   htmlTemplate = htmlTemplate.replace("${note_photo}", otherInformation.get("note_photo"));
                    break;
                case 4: //Warning the initial antiquarian that one of his antiquity has been redistributed
                    break;

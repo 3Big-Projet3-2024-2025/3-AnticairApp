@@ -1,12 +1,14 @@
 package be.anticair.anticairapi.keycloak.controller;
 
 import be.anticair.anticairapi.keycloak.service.UserService;
+import jakarta.mail.MessagingException;
 import org.apache.catalina.User;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +150,7 @@ public class UserController {
     @PutMapping("/redistributeAntiquity")
     public ResponseEntity<Map<String, String>> redistributeAntiquity(
             @RequestParam String emailId
-    ){
+    ) throws MessagingException, IOException {
         String value = String.valueOf(userService.redistributeAntiquity(emailId));
         Map<String, String> responseMessage = new HashMap<>();
         responseMessage.put("message", value);
