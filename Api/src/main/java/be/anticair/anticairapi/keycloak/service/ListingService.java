@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static be.anticair.anticairapi.enumeration.AntiquityState.*;
+
 /**
  * Service for performing listing-related operations.
  *
@@ -108,7 +110,7 @@ public class ListingService {
     public Listing rejectAntiquity(Map<String,String> otherInformation){
         Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
         if(antiquity.isEmpty()){return null;}
-        antiquity.get().setState(-1);
+        antiquity.get().setState(REJECTED.getState());
 
         otherInformation.put("title",antiquity.get().getTitleAntiquity());
         otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
@@ -129,6 +131,26 @@ public class ListingService {
         }
     }
 
+    public Listing acceptAntiquity(Map<String,String> otherInformation){
+        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
+        if(antiquity.isEmpty()){return null;}
+        antiquity.get().setState(ACCEPTED.getState());
+
+        otherInformation.put("title",antiquity.get().getTitleAntiquity());
+        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
+
+        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
+        try {
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
+            return antiquity.get();
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Listing updateListing(Long id, Listing updatedListing) {
         return ListingRepository.findById(id).map(antiquity -> {
             antiquity.setPriceAntiquity(updatedListing.getPriceAntiquity());
@@ -138,31 +160,7 @@ public class ListingService {
             antiquity.setMailAntiquarian(updatedListing.getMailAntiquarian());
             antiquity.setState(updatedListing.getState());
             antiquity.setIsDisplay(updatedListing.getIsDisplay());
-            Listing savedListing = ListingRepository.save(antiquity);
-            Map<String,String> otherInformation = new HashMap<>();
-            switch (savedListing.getStateEnumeration()){
-                case NEED_TO_BE_CHECK:
-                    break;
-                case ACCEPTED :
-                    this.applyCommission(savedListing.getIdAntiquity());
-                    otherInformation.put("title",savedListing.getTitleAntiquity());
-                    otherInformation.put("description",savedListing.getDescriptionAntiquity());
-                    otherInformation.put("price", savedListing.getPriceAntiquity().toString());
-                    try {
-                        this.emailService.sendHtmlEmail(savedListing.getMailAntiquarian(),"",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
-                    } catch (MessagingException e) {
-                        throw new RuntimeException(e);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-                case ACCEPTED_BUT_MODIFIED :
-                    break;
-                case SOLD :
-                    break;
-
-            }
-            return savedListing;
+            return ListingRepository.save(antiquity);
         }).orElseThrow(() -> new RuntimeException("Antiquity not found with id: " + id));
     }
 
