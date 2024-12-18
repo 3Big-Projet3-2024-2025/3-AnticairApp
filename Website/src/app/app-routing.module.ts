@@ -9,10 +9,12 @@ import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.compo
 import { CreateListingComponent } from './create-listing/create-listing.component';
 import {ManageUsersComponent} from './admin/users/manage-users/manage-users.component';
 import { EditListingComponent } from './edit-listing/edit-listing.component';
+import {ProfileComponent} from './profile/profile.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'profile', component: ProfileComponent },
   { path: 'sell', component: SellComponent },
   { path: 'create-listing', component: CreateListingComponent },
   { path: 'admin', redirectTo: '/admin/dashboard', pathMatch: 'full'},

@@ -40,6 +40,27 @@ public class UserController {
     }
 
     /**
+     * Constructor with dependency injection for the UserService.
+     *
+     * @param userDetails the service to edit user details.
+     * @Author Dewever David
+     */
+    @PutMapping("/update")
+    public ResponseEntity<Map<String, String>> updateUserProfile(
+            @RequestBody Map<String, Object> userDetails) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            userService.updateUserProfile(userDetails);
+            response.put("message", "User profile updated successfully.");
+            return ResponseEntity.ok(response); // Return valid json
+        } catch (Exception e) {
+            response.put("error", "Error updating user profile: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+
+    /**
      * Get all users from the database.
      *
      * @return a ResponseEntity containing a list of all users.
