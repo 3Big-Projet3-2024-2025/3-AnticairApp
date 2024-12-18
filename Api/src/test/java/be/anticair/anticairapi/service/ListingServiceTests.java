@@ -2,6 +2,7 @@ package be.anticair.anticairapi.service;
 
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
+import be.anticair.anticairapi.enumeration.AntiquityState;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import jakarta.mail.MessagingException;
@@ -46,15 +47,15 @@ public class ListingServiceTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_SELLER_EMAIL = "john.doe@example.com";
+    private static final String TEST_SELLER_EMAIL = "testseller@gmail.com";
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_ANTIQUARIAN_EMAIL = "alexis.zarzycki0212@gmail.com";
+    private static final String TEST_ANTIQUARIAN_EMAIL = "testmail2@gmail.com";
     /**
      * The mail that will be use for the new owner of the antiquity
      */
-    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "antiquarian@anticairapp.sixela.be";
+    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "testmail1@gmail.com";
 
     /**
      * Function which allow to delete a antiquity
@@ -73,7 +74,7 @@ public class ListingServiceTests {
     @Test
     public void applyCommission(){
         //Creation of an antiquity
-        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
         //The photos for the antiquity
         List<MultipartFile> photos = new ArrayList<>();
         //Add the antiquity in the database
@@ -108,7 +109,7 @@ public class ListingServiceTests {
     @Test
     public void ChangeAntiquarianTestFromListingService() throws MessagingException, IOException {
         for (int i = 0; i < 10; i++) {
-            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
+            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
             this.listingRepository.save(this.listing);
         }
         List<Listing> listingList = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(TEST_ANTIQUARIAN_EMAIL);
