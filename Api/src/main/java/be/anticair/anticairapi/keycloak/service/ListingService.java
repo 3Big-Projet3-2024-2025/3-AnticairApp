@@ -1,7 +1,6 @@
 package be.anticair.anticairapi.keycloak.service;
 
 import be.anticair.anticairapi.Class.PhotoAntiquity;
-import jakarta.transaction.Transactional;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
