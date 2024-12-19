@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 
 /**
  * Service that manage user's
@@ -40,12 +42,19 @@ public class UserService {
     @Lazy
     private ListingService listingService;
 
+    @Autowired
+
+    @Lazy
+
     private EmailService emailService;
 
     private final Keycloak keycloak;
 
     @Value("${keycloak.realm}")
     private String realm;
+
+    @Value("${spring.mail.username}")
+    private String sender;
 
     @Autowired
     public UserService(Keycloak keycloak) {
@@ -72,7 +81,7 @@ public class UserService {
             return users;
         } catch (Exception e) {
             // Debug log for exception
-            throw new NotFoundException("Error while retrieving users with email: " + userEmail, e);
+            throw new NotFoundException("No users found with email: " + userEmail, e);
         }
     }
 
@@ -200,6 +209,10 @@ public class UserService {
             // Actually update the user in Keycloak
             keycloak.realm(realm).users().get(userId).update(user);
 
+            // Creating the map to store user's status
+            Map<String, String> otherInformation = new HashMap<>();
+            otherInformation.put("account_newstatus", "disabled");
+            emailService.sendHtmlEmail(userEmail, "info@anticairapp.sixela.be", TypeOfMail.ENABLEORDISABLEUSER, otherInformation);
             return true;
         } catch (NotFoundException e) {
             throw new NotFoundException("No users found with email: " + userEmail);
@@ -236,6 +249,10 @@ public class UserService {
             // Actually update the user in Keycloak
             keycloak.realm(realm).users().get(userId).update(user);
 
+            // Creating the map to store user's status
+            Map<String, String> otherInformation = new HashMap<>();
+            otherInformation.put("account_newstatus", "enabled");
+            this.emailService.sendHtmlEmail(userEmail, sender, TypeOfMail.ENABLEORDISABLEUSER, otherInformation);
             return true;
         } catch (NotFoundException e) {
             throw new NotFoundException("No users found with email: " + userEmail);
@@ -295,12 +312,20 @@ public class UserService {
     //Change all the antiquarian's antiquity
         List<Listing> listings = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(userEmail);
         if(listings.isEmpty()){ return "Antiquity's antiquarian changed";}
+        Map<String,String> otherInformation = new HashMap<>();
         for(Listing listing : listings){
             if(!this.listingService.changeListingAntiquarian(listing, allAntiquarian.get(randomUser).getEmail())){
                 return "Error while changing antiquarian";
             }
+            otherInformation.put("title",listing.getTitleAntiquity());
+            otherInformation.put("description",listing.getDescriptionAntiquity());
+            otherInformation.put("price", listing.getPriceAntiquity().toString());
+            this.emailService.sendHtmlEmail(allAntiquarian.get(randomUser).getEmail(),"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,otherInformation);
         }
-        this.emailService.sendHtmlEmail(userEmail,"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,null);
+
+        otherInformation.clear();
+        this.emailService.sendHtmlEmail(userEmail,"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYINITANTIQUARIAN,otherInformation);
+
         return "Antiquity's antiquarian changed";
 
     }

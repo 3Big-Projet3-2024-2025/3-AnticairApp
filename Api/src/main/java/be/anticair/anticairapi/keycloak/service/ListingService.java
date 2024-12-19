@@ -8,15 +8,15 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.enumeration.AntiquityState;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
+import static be.anticair.anticairapi.enumeration.AntiquityState.*;
 
 /**
  * Service for performing listing-related operations.
@@ -40,6 +40,8 @@ public class ListingService {
 
     @Autowired
     private PhotoAntiquityService photoAntiquityService;
+
+    private AntiquityState antiquityState;
 
     public Optional<Listing> getAntiquityById(Long id) {
         return ListingRepository.findById(id);
@@ -71,18 +73,24 @@ public class ListingService {
             throw new IllegalArgumentException("Price, description, and title are required");
         }
 
+        List<UserRepresentation> usersAntiquarians = userService.getUsersByGroupName("Antiquarian");
+        if(usersAntiquarians.isEmpty()) {
+            throw new RuntimeException("Antiquarian not found");
+        }
 
-        //NEED TO BE MODIFIED
-        newListing.setMailAntiquarian(user.getEmail());
-        //NEED TO BE MODIFIED
-
-
+        UserRepresentation userAntiquarian;
+        // Get a random antiquarian different from the author of the listing
+        do {
+            Random random = new Random();
+            userAntiquarian = usersAntiquarians.get(random.nextInt(usersAntiquarians.size()));
+        } while (email.equals(userAntiquarian.getEmail()));
 
         newListing.setMailSeller(email);
         newListing.setState(0);  // Initialized to 0 (not yet verified)
         newListing.setIsDisplay(false);  // Initialized to false (not yet displayed)
+        newListing.setMailAntiquarian(userAntiquarian.getEmail());
 
-        // Save the listing
+        // Save the listing if it has all the required fields
         Listing savedListing = ListingRepository.save(newListing);
 
         // Save the photos
@@ -99,6 +107,52 @@ public class ListingService {
         }
 
         return savedListing;
+    }
+
+
+    public Listing rejectAntiquity(Map<String,String> otherInformation){
+        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
+        if(antiquity.isEmpty()){return null;}
+        antiquity.get().setState(REJECTED.getState());
+
+        otherInformation.put("title",antiquity.get().getTitleAntiquity());
+        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
+
+        otherInformation.put("note_title",otherInformation.get("note_title"));
+        otherInformation.put("note_description",otherInformation.get("note_description"));
+        otherInformation.put("note_price",otherInformation.get("note_price"));
+        otherInformation.put("note_photo",otherInformation.get("note_photo"));
+        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
+        try {
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"",TypeOfMail.REJECTIONOFANTIQUITY,otherInformation);
+            return antiquity.get();
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Listing acceptAntiquity(Map<String,String> otherInformation){
+        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
+        if(antiquity.isEmpty()){return null;}
+        antiquity.get().setState(ACCEPTED.getState());
+
+        otherInformation.put("title",antiquity.get().getTitleAntiquity());
+        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
+
+        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
+        try {
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
+
+            return this.applyCommission(Integer.valueOf(otherInformation.get("id")));
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Listing updateListing(Long id, Listing updatedListing) {
@@ -163,7 +217,7 @@ public class ListingService {
         otherInformation.put("title", antiquity.getTitleAntiquity());
         otherInformation.put("description", antiquity.getDescriptionAntiquity());
         otherInformation.put("price", antiquity.getPriceAntiquity().toString());
-        this.emailService.sendHtmlEmail(emailNewAntiquarian, "verlynoah@33gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
+        this.emailService.sendHtmlEmail(emailNewAntiquarian, "info@anticairapp.sixela.be", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
         return true;
     }
 }

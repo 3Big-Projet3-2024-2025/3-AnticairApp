@@ -57,7 +57,7 @@ export class EditListingComponent implements OnInit {
             this.BlobFiles.forEach((photoPath) => {
               const preview = URL.createObjectURL(photoPath);
               this.imagePreviews.push(preview);
-              this.selectedFiles.push(new File([photoPath], this.extractBlobFileName(preview)));
+              this.selectedFiles.push(new File([photoPath], this.extractBlobFileName(preview),{ type: 'image/jpeg' }));
             });
 
             console.log('Image previews:', this.imagePreviews);
@@ -86,15 +86,28 @@ export class EditListingComponent implements OnInit {
     if (input.files) {
       Array.from(input.files).forEach((file) => {
         if (this.imagePreviews.length < 10) {
-          this.selectedFiles.push(file);
-
-          // Preview the selected files
+          // Convert the selected file to JPEG format
           const reader = new FileReader();
+  
           reader.onload = (e: ProgressEvent<FileReader>) => {
             if (e.target?.result) {
-              this.imagePreviews.push(e.target.result as string);
+              const imgDataUrl = e.target.result as string;
+  
+              // Convert the Data URL to a Blob
+              fetch(imgDataUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                  // Create a new File with type JPEG
+                  const newFile = new File([blob], `${file.name.replace(/\.[^/.]+$/, "")}.jpg`, { type: 'image/jpeg' });
+                  
+                  this.selectedFiles.push(newFile);
+  
+                  // Update the preview
+                  this.imagePreviews.push(imgDataUrl);
+                });
             }
           };
+  
           reader.readAsDataURL(file);
         }
       });
@@ -121,6 +134,7 @@ export class EditListingComponent implements OnInit {
       alert("The antiquity must have max 10 images");
       return;
     }
+    this.antiquity.state = 2;
 
     // Send the updated antiquity with selected images
     this.antiquityService.updateAntiquityWithPhotos(
