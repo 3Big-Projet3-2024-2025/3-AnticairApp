@@ -337,4 +337,25 @@ public class UserService {
    private Function<Integer,Integer> getRandom = max ->  (int) (Math.random() * max);
 
 
+    /**
+     * Fonction to update user profile
+     * @param userDetails the details of user.
+     *  @Author Dewever David
+     */
+    public void updateUserProfile(Map<String, Object> userDetails) {
+        String email = (String) userDetails.get("email");
+
+        List<UserRepresentation> users = keycloak.realm(realm).users().search(email);
+        if (users.isEmpty()) {
+            throw new RuntimeException("User not found with email: " + email);
+        }
+
+        UserRepresentation user = users.get(0);
+        user.setFirstName((String) userDetails.get("firstName"));
+        user.setLastName((String) userDetails.get("lastName"));
+        user.singleAttribute("phoneNumber", (String) userDetails.get("phoneNumber"));
+
+        // Mise à jour sur Keycloak
+        keycloak.realm(realm).users().get(user.getId()).update(user);
+    }
 }

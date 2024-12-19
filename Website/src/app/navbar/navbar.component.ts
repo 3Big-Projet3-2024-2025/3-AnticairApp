@@ -24,7 +24,7 @@ export class NavbarComponent implements OnInit {
     });
 
      // Subscribe to login status
-     this.loginStatusSubscription = this.authService.isLoggedIn().subscribe(loggedIn => {
+    this.loginStatusSubscription = this.authService.isLoggedIn().subscribe(loggedIn => {
       this.isUserLoggedIn = loggedIn;
     });
   }
@@ -54,7 +54,7 @@ export class NavbarComponent implements OnInit {
     // Calling keycloak method
     this.authService.login();
   }
-  
+
   // Method to logout from the navbar
   logout() {
     // Calling keycloak method
