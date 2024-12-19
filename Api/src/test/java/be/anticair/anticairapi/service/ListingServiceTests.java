@@ -135,7 +135,7 @@ public class ListingServiceTests {
     @Test
     public void applyCommission(){
         //Creation of an antiquity
-        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         //The photos for the antiquity
         List<MultipartFile> photos = new ArrayList<>();
         //Add the antiquity in the database
@@ -170,7 +170,7 @@ public class ListingServiceTests {
     @Test
     public void ChangeAntiquarianTestFromListingService() throws MessagingException, IOException {
         for (int i = 0; i < 10; i++) {
-            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
+            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
             this.listingRepository.save(this.listing);
         }
         List<Listing> listingList = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(TEST_ANTIQUARIAN_EMAIL);
@@ -190,7 +190,7 @@ public class ListingServiceTests {
      */
     @Test
     public void rejectAntiquarianTestFromListingService() throws MessagingException, IOException {
-        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         this.listing = this.listingRepository.save(this.listing);
         Map<String,String> otherInformation = new HashMap<>();
         otherInformation.put("title",listing.getTitleAntiquity());
@@ -212,7 +212,7 @@ public class ListingServiceTests {
      */
     @Test
     public void acceptAntiquarianTestFromListingService() throws MessagingException, IOException {
-        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL, AntiquityState.ACCEPTED);
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         this.listing = this.listingRepository.save(this.listing);
         Map<String,String> otherInformation = new HashMap<>();
         otherInformation.put("title",listing.getTitleAntiquity());

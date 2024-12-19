@@ -320,11 +320,11 @@ public class UserService {
             otherInformation.put("title",listing.getTitleAntiquity());
             otherInformation.put("description",listing.getDescriptionAntiquity());
             otherInformation.put("price", listing.getPriceAntiquity().toString());
-            this.emailService.sendHtmlEmail(allAntiquarian.get(randomUser).getEmail(),"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,otherInformation);
+            this.emailService.sendHtmlEmail(allAntiquarian.get(randomUser).getEmail(), sender, TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,otherInformation);
         }
 
         otherInformation.clear();
-        this.emailService.sendHtmlEmail(userEmail,"verlynoah33@gmail.com", TypeOfMail.REDISTRIBUTEANTIQUITYINITANTIQUARIAN,otherInformation);
+        this.emailService.sendHtmlEmail(userEmail, sender, TypeOfMail.REDISTRIBUTEANTIQUITYINITANTIQUARIAN,otherInformation);
 
         return "Antiquity's antiquarian changed";
 

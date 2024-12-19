@@ -33,7 +33,7 @@ public class UserServiceTests {
     @Autowired
     private UserService userService;
   
-    private static final String TEST_USER_EMAIL = "john.doe@example.com";
+    private static final String TEST_USER_EMAIL = "testuser@gmail.com";
 
     /**
      * The antiquity that will be used for the test
@@ -43,7 +43,7 @@ public class UserServiceTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_ANTIQUARIAN_EMAIL = "john.doe@example.com";
+    private static final String TEST_ANTIQUARIAN_EMAIL = "testantiquarian2@gmail.com";
 
     /**
      * The Listing repository
@@ -205,13 +205,14 @@ public class UserServiceTests {
      * @Author Verly Noah
      */
     @Test
-    public void testChangeAntiquarianFromAntiquityOK(){
+    public void testChangeAntiquarianFromAntiquityOK() throws MessagingException, IOException {
         for (int i = 0; i < 5; i++) {
-            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_USER_EMAIL, AntiquityState.NEED_TO_BE_CHECK);
+            this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_USER_EMAIL);
             this.listingRepository.save(this.listing);
         }
 
         List<Listing> listingList = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(TEST_ANTIQUARIAN_EMAIL);
+        this.userService.redistributeAntiquity(TEST_ANTIQUARIAN_EMAIL);
         assertEquals(0,this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(TEST_ANTIQUARIAN_EMAIL).size());
         this.listingRepository.deleteAll(listingList);
 
