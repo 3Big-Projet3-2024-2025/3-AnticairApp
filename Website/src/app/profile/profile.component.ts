@@ -3,6 +3,7 @@ import { AuthService } from '../auth.service';
 import { UserService } from '../user.service';
 import { FormsModule } from '@angular/forms';
 import {NgClass, NgIf} from "@angular/common";
+import { ThemeService } from '../theme.service';
 
 @Component({
   selector: 'app-profile',
@@ -15,13 +16,19 @@ export class ProfileComponent implements OnInit {
   showErrorMessage: boolean = false;
   userDetails: any = {};
   isLoading: boolean = true;
+  currentTheme: 'dark' | 'light' = 'light'; // Actual theme, by default light
 
   constructor(
       private authService: AuthService,
-      private userService: UserService
+      private userService: UserService,
+      private themeService: ThemeService
   ) {}
 
+
   async ngOnInit() {
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
     try {
       this.userDetails = this.authService.getUserDetails();
       console.log('User details:', this.userDetails);
