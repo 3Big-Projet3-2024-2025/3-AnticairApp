@@ -24,6 +24,8 @@ export class CreateListingComponent {
   errorMessage: string = '';
   successMessage: string = '';
 
+  stayOnPage: boolean = false;
+
   constructor(
     private themeService: ThemeService,
     private router: Router, 
@@ -38,6 +40,10 @@ export class CreateListingComponent {
 
     this.email = this.authService.getUserDetails().email;
     console.log(this.email);
+  }
+
+  redirectToHome() {
+    this.router.navigate(['/home']);
   }
 
   // Method who manages the file selection
@@ -102,8 +108,18 @@ export class CreateListingComponent {
       this.photos,
     ).subscribe({
       next: (response) => {
-        this.successMessage = 'Listing created successfully!';
         this.resetForm();
+
+        if(this.stayOnPage) {
+          this.successMessage = 'Listing created successfully!';
+        } else {
+          this.successMessage = 'Listing created successfully! You are being redirected to the home page';
+          setTimeout(() => {
+            this.redirectToHome();
+          }, 3000);
+        }
+        
+        
       },
       error: (error) => {
         // Gestion des erreurs

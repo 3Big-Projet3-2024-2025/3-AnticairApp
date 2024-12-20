@@ -57,6 +57,10 @@ public class ListingService {
      * @Author Blommaert Youry
      */
     public Listing createListing(String email, Listing newListing, List<MultipartFile> photos) {
+        if(newListing.getPriceAntiquity() < 0) {
+            throw new IllegalArgumentException("Price is negative");
+        }
+
         List<UserRepresentation> users = userService.getUsersByEmail(email);
 
 
@@ -67,10 +71,10 @@ public class ListingService {
         UserRepresentation user = userService.getUsersByEmail(email).get(0);
 
         // Verify that the listing has a price, description, and title
-        if (newListing.getPriceAntiquity() == null ||
+        if (newListing.getPriceAntiquity() == 0 ||
                 newListing.getDescriptionAntiquity() == null ||
                 newListing.getTitleAntiquity() == null) {
-            throw new IllegalArgumentException("Price, description, and title are required");
+            throw new NullPointerException("Price, description, and title are required");
         }
 
         List<UserRepresentation> usersAntiquarians = userService.getUsersByGroupName("Antiquarian");
