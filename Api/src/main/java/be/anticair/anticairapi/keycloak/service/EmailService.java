@@ -52,6 +52,7 @@ public class EmailService {
     public void sendHtmlEmail(String receiver, String sender, TypeOfMail typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
         if(receiver.isEmpty() || sender.isEmpty() ) return;
        try {
+           System.out.println(sender +" "+ receiver);
            //Allow to create email
            MimeMessage message= this.setInformationMail(sender,receiver,typeOfMail.getSubject());
 
