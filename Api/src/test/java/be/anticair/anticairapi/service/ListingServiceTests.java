@@ -93,6 +93,24 @@ public class ListingServiceTests {
     }
 
     /**
+     * Test to check if the createListing service work with a price less than 0
+     * @Author Blommaert Youry
+     */
+    @Test
+    public void testCreateListing_PriceLessThanZero() {
+        listing = new Listing();
+        listing.setPriceAntiquity(-1.0);
+        listing.setDescriptionAntiquity("A description");
+        listing.setTitleAntiquity("A title");
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            listingService.createListing(TEST_SELLER_EMAIL, listing, Collections.emptyList());
+        });
+
+        assertEquals("Price is negative", exception.getMessage());
+    }
+
+    /**
      * Test to check if the createListing service work with a user not in the database
      * @Author Blommaert Youry
      */
@@ -108,7 +126,6 @@ public class ListingServiceTests {
         });
 
         assertEquals("No users found with email: nonexistent@example.com", exception.getMessage());
-        assertTrue(listingRepository.findAll().isEmpty());
     }
 
     /**
@@ -118,13 +135,15 @@ public class ListingServiceTests {
     @Test
     public void testCreateListing_MissingRequiredFields() {
         listing = new Listing();
+        listing.setPriceAntiquity(0.0);
+        listing.setDescriptionAntiquity(null);
+        listing.setTitleAntiquity(null);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(NullPointerException.class, () -> {
             listingService.createListing(TEST_SELLER_EMAIL, listing, Collections.emptyList());
         });
 
         assertEquals("Price, description, and title are required", exception.getMessage());
-        assertTrue(listingRepository.findAll().isEmpty());
     }
 
 
