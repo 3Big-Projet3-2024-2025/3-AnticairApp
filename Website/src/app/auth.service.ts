@@ -32,15 +32,15 @@ export class AuthService {
             onLoad: 'check-sso',
             silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
           },
-          
+
         });
 
-        const timeoutPromise = new Promise<boolean>((_, reject) => 
+        const timeoutPromise = new Promise<boolean>((_, reject) =>
           setTimeout(() => reject(new Error('Keycloak initialization timed out')), 5000)
         );
 
         await Promise.race([keycloakInitPromise, timeoutPromise]);
-        
+
         this.keycloakInitialized = true;
         await this.loadUserProfile();
         this.loggedInSubject.next(await this.keycloakService.isLoggedIn()); // Update login status
@@ -105,7 +105,7 @@ export class AuthService {
       } else {
         console.error('Cannot logout because Keycloak is not initialized');
       }
-     console.table(this.userDetails);
+      console.table(this.userDetails);
 
     }
 
@@ -114,29 +114,29 @@ export class AuthService {
   async initAdminAccount(): Promise<void> {
 
     // Check if keycloak is initialized
-      if (!this.keycloakInitialized) {
-        console.error('Cannot logout because Keycloak is not initialized');
-        return;
-      }
-  
-      // Check if the inforamtions about the user is storaged and if he has a email
-      if (!this.userDetails || !this.userDetails.email) {
-        console.error('No information about the user');
-        return;
-      }
-  
-      // Get the raw token
-      const rawToken = await this.keycloakService.getToken();
-      // Get the number of users in the database 
-      const nbrUser = await this.userService.numberOfUsers(rawToken);
-      // If the number of users in the database is 1, the user will be add to the group Admin
-      if (1 == nbrUser) {
-        // Add the user in the group Admin
-        await this.groupService.addGroupByEmail(this.userDetails.email, "Admin", rawToken);
-      }
-    
+    if (!this.keycloakInitialized) {
+      console.error('Cannot logout because Keycloak is not initialized');
+      return;
+    }
+
+    // Check if the inforamtions about the user is storaged and if he has a email
+    if (!this.userDetails || !this.userDetails.email) {
+      console.error('No information about the user');
+      return;
+    }
+
+    // Get the raw token
+    const rawToken = await this.keycloakService.getToken();
+    // Get the number of users in the database
+    const nbrUser = await this.userService.numberOfUsers(rawToken);
+    // If the number of users in the database is 1, the user will be add to the group Admin
+    if (1 == nbrUser) {
+      // Add the user in the group Admin
+      await this.groupService.addGroupByEmail(this.userDetails.email, "Admin", rawToken);
+    }
+
   }
-  
+
   // Returns user details if available
   getUserDetails(): any {
     return this.userDetails;
