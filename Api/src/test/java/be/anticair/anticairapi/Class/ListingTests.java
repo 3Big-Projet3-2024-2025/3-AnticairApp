@@ -37,7 +37,7 @@ public class ListingTests {
      */
     @BeforeEach
     public void setUp(){
-        listing = new Listing(1,100.0,"C'est Jésus","Statut",mailAntiquarian,0,true,mailSeller, AntiquityState.NEED_TO_BE_CHECK);
+        listing = new Listing(1,100.0,"C'est Jésus","Statut",mailAntiquarian,0,true,mailSeller);
     }
 
     /**
