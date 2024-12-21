@@ -85,6 +85,8 @@ public class EmailService {
                case 6: // Warning the user that is account status has been changed
                    htmlTemplate = htmlTemplate.replace("${account_newstatus}", otherInformation.get("account_newstatus"));
                    break;
+               case 10:
+                   break;
                default: // Just in case
                   return;
 

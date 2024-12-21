@@ -37,9 +37,11 @@ public class RGPDController {
                 response.put("error", "Email is required.");
                 return ResponseEntity.badRequest().body(response);
             }
-//            userService.updateRGPDUserProfile(userDetails);
             Map<String,String> otherInformation = new HashMap<>();
-           emailService.sendHtmlEmail(email,"info@anticairapp.sixela.be", TypeOfMail.DELETEUSERDATA, otherInformation);
+            emailService.sendHtmlEmail(email,"info@anticairapp.sixela.be", TypeOfMail.DELETEUSERDATA, otherInformation);
+           // userService.updateRGPDUserProfile(userDetails);
+
+
             response.put("message", "User profile updated successfully.");
             return ResponseEntity.ok(response); // Return valid json
         } catch (Exception e) {
