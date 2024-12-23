@@ -128,4 +128,29 @@ public class ListingController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+    @PutMapping("/rejectAntiquity")
+    public ResponseEntity<Map<String,String>> rejectAntiquity(@RequestBody Map<String, String> otherInformation) {
+        Listing rejectedAntiquity= this.listingService.rejectAntiquity(otherInformation);
+        Map<String, String> responseMessage = new HashMap<>();
+        if(rejectedAntiquity != null){
+            responseMessage.put("message", "Antiquity has been rejected");
+            return ResponseEntity.ok(responseMessage);
+        }
+        responseMessage.put("message", "Error while rejecting antiquity");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+    }
+
+    @PutMapping("/acceptAntiquity")
+    public ResponseEntity<Map<String,String>> acceptAntiquity(@RequestBody Map<String, String> otherInformation) {
+        Listing acceptAntiquity= this.listingService.acceptAntiquity(otherInformation);
+        Map<String, String> responseMessage = new HashMap<>();
+        if(acceptAntiquity != null){
+            responseMessage.put("message", "Antiquity has been accepted");
+            return ResponseEntity.ok(responseMessage);
+        }
+        responseMessage.put("message", "Error while rejecting antiquity");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+    }
+
 }
