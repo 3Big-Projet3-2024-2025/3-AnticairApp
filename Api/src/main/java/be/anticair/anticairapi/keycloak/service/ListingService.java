@@ -129,11 +129,9 @@ public class ListingService {
         otherInformation.put("note_photo",otherInformation.get("note_photo"));
         antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
         try {
-            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"",TypeOfMail.REJECTIONOFANTIQUITY,otherInformation);
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.REJECTIONOFANTIQUITY,otherInformation);
             return antiquity.get();
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (MessagingException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -149,7 +147,7 @@ public class ListingService {
 
         antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
         try {
-            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
 
             return this.applyCommission(Integer.valueOf(otherInformation.get("id")));
         } catch (MessagingException e) {
