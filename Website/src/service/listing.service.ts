@@ -66,4 +66,8 @@ export class ListingService {
     
     return this.http.put<any>(`${this.privateUrl}/${id}`, formData);
   }
+
+  getAllAntiquitiesChecked() : Observable<Antiquity[]>{
+    return this.http.get<Antiquity[]>(this.privateUrl + '/checked');
+  }
 }

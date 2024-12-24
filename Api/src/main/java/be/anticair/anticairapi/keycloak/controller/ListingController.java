@@ -128,4 +128,20 @@ public class ListingController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+    /**
+     * Get all listings in the database.
+     *
+     * @return ResponseEntity containing a list of all listings.
+     * @Author Blommaert Youry
+     */
+    @GetMapping("/checked")
+    public ResponseEntity<List<Listing>> getAllListingsChecked() {
+        try {
+            List<Listing> response = listingService.getAllListingsAccepted();
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 }

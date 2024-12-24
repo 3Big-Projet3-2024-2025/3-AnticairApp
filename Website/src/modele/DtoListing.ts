@@ -7,6 +7,5 @@ export interface Antiquity {
     state: number; // État (1 = Neuf, 2 = Usagé)
     isDisplay: boolean | null; // Statut d'affichage (peut être null)
     mailAntiquarian: string | null; // Email de l'antiquaire (peut être null)
-    photos: string[];
-
+    photos: String[];
 }
