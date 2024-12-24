@@ -150,4 +150,9 @@ public class PhotoAntiquityService {
         return photoAntiquityRepository.findByIdAntiquity(id);
     }
 
+    public List<String> findPathByIdAntiquity(Integer id) {
+        // Récupérer les photos associées
+        return photoAntiquityRepository.findPathByIdAntiquity(id);
+    }
+
 }

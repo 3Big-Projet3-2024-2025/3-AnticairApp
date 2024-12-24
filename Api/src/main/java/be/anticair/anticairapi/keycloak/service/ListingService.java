@@ -113,6 +113,22 @@ public class ListingService {
         return savedListing;
     }
 
+    /**
+     * Get all the listing in the database.
+     * @return The list of all the listings.
+     * @Author Blommaert Youry
+     */
+    public List<Listing> getAllListingsAccepted() {
+        List<Listing> listings = new ArrayList<>();
+        listings = ListingRepository.getAllAntiquityChecked();
+
+        if(listings.isEmpty()) {
+            throw new RuntimeException("No listings found");
+        }
+
+        return listings;
+    }
+
 
     public Listing rejectAntiquity(Map<String,String> otherInformation){
         Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));

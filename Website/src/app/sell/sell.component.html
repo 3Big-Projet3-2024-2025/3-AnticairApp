@@ -5,44 +5,72 @@
         <!-- Sales Section -->
         <section class="container mx-auto px-6 py-16">
             <h2 class="text-3xl font-bold text-gray-200 text-center mb-12">Items for Sale</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                <!-- Item 1 -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-lg">
-                    <img src="https://placehold.co/300x200" alt="Antique photo" class="w-full h-48 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-bold text-gray-200 mb-2">Antique 1</h3>
-                    <p class="text-gray-400 mb-4">Description of antique 1.</p>
-                    <p class="price-dark mb-4">Price: 100€</p>
+            
+            <div class="flex justify-center mb-6">
+                <!-- Search Bar -->
+                <input 
+                  type="text" 
+                  [(ngModel)]="searchText" 
+                  (input)="onSearchChange()" 
+                  placeholder="Search by title or description..." 
+                  class="p-3 w-full max-w-3xl bg-gray-700 text-gray-200 border border-gray-600 rounded-lg focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 text-lg mr-4"
+                />
+              
+                <!-- Sort Dropdown -->
+                <select 
+                  [(ngModel)]="sortCriteria" 
+                  (change)="onSortChange()" 
+                  class="p-3 w-full max-w-xs bg-gray-700 text-gray-200 border border-gray-600 rounded-lg focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 text-lg"
+                >
+                  <option value="id">Sort by date</option>
+                  <option value="price">Sort by price</option>
+                </select>
+              </div>
+                         
+
+            <div *ngIf="antiquities.length > 0; else noData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <!-- Loop through antiquities -->
+                <div *ngFor="let antiquity of filteredAntiquities" class="bg-gray-700 p-6 rounded-lg shadow-lg">
+                    <!-- Display only the first photo or a placeholder -->
+                    <img *ngIf="antiquity.photos && antiquity.photos.length > 0; else placeholder"
+                        [src]="antiquity.photos[0]" 
+                        [alt]="antiquity.titleAntiquity" 
+                        class="object-contain rounded-md mb-4"
+                        style="width: 100%; height: 280px; object-fit: cover;">
+    
+                    <!-- Placeholder if no photos exist -->
+                    <ng-template #placeholder>
+                        <div class="w-full h-48 bg-gray-500 rounded-md mb-4 flex items-center justify-center">
+                            <span class="text-gray-300">No Image Available</span>
+                        </div>
+                    </ng-template>
+                    
+                    <!-- Title -->
+                    <h3 class="text-xl font-bold text-gray-200 mb-2">{{ antiquity.titleAntiquity }}</h3>
+        
+                    <!-- Description -->
+                    <p class="text-gray-400 mb-4">{{ antiquity.descriptionAntiquity }}</p>
+        
+                    <!-- Price -->
+                    <p class="price-dark mb-4 text-yellow-400 font-bold">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
+        
+                    <!-- Buy Button -->
                     <div class="center-button">
                         <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
                     </div>
                 </div>
-
-                <!-- Item 2 -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-lg">
-                    <img src="https://placehold.co/300x200" alt="Antique photo" class="w-full h-48 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-bold text-gray-200 mb-2">Antique 2</h3>
-                    <p class="text-gray-400 mb-4">Description of antique 2.</p>
-                    <p class="price-dark mb-4">Price: 200€</p>
-                    <div class="center-button">
-                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
-                    </div>
-                </div>
-
-                <!-- Item 3 -->
-                <div class="bg-gray-700 p-6 rounded-lg shadow-lg">
-                    <img src="https://placehold.co/300x200" alt="Antique photo" class="w-full h-48 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-bold text-gray-200 mb-2">Antique 3</h3>
-                    <p class="text-gray-400 mb-4">Description of antique 3.</p>
-                    <p class="price-dark mb-4">Price: 300€</p>
-                    <div class="center-button">
-                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
-                    </div>
-                </div>
-
-                <!-- Repeat for more items as needed -->
             </div>
+        
+            <!-- No Data Fallback -->
+            <ng-template #noData>
+                <p class="text-gray-300 text-center">No verified antiquities are available at the moment.</p>
+            </ng-template>
         </section>
     </div>
+    
+    
+    
+    
 </span>
 
 <ng-template #showDefault>
@@ -51,41 +79,66 @@
         <!-- Sales Section -->
         <section class="container mx-auto px-6 py-16">
             <h2 class="text-3xl font-bold text-gray-800 text-center mb-12">Items for Sale</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                <!-- Item 1 -->
-                <div class="bg-white p-6 rounded-lg shadow-lg">
-                    <img src="https://placehold.co/300x200" alt="Antique photo" class="w-full h-48 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Antique 1</h3>
-                    <p class="text-gray-600 mb-4">Description of antique 1.</p>
-                    <p class="price mb-4">Price: 1000€</p>
-                    <div class="center-button">
-                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
-                    </div>
-                </div>
+            
+            <!-- Search and Sort Section -->
+            <div class="flex justify-center mb-6 space-x-4"> <!-- Added space between the two elements -->
+                <!-- Search Bar -->
+                <input 
+                  type="text" 
+                  [(ngModel)]="searchText" 
+                  (input)="onSearchChange()" 
+                  placeholder="Search by title or description..." 
+                  class="p-3 w-full max-w-3xl text-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 text-lg"
+                />
 
-                <!-- Item 2 -->
-                <div class="bg-white p-6 rounded-lg shadow-lg">
-                    <img src="https://placehold.co/300x200" alt="Antique photo" class="w-full h-48 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Antique 2</h3>
-                    <p class="text-gray-600 mb-4">Description of antique 2.</p>
-                    <p class="price mb-4">Price: 200€</p>
-                    <div class="center-button">
-                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
-                    </div>
-                </div>
-
-                <!-- Item 3 -->
-                <div class="bg-white p-6 rounded-lg shadow-lg">
-                    <img src="https://placehold.co/300x200" alt="Antique photo" class="w-full h-48 object-cover rounded-md mb-4">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">Antique 3</h3>
-                    <p class="text-gray-600 mb-4">Description of antique 3.</p>
-                    <p class="price mb-4">Price: 300€</p>
-                    <div class="center-button">
-                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
-                    </div>
-                </div>
-                <!-- Repeat for more items as needed -->
+                <!-- Sort Dropdown -->
+                <select 
+                  [(ngModel)]="sortCriteria" 
+                  (change)="onSortChange()" 
+                  class="p-3 w-full max-w-xs text-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 text-lg"
+                >
+                  <option value="id">Sort by date</option>
+                  <option value="price">Sort by price</option>
+                </select>
             </div>
+
+            <div *ngIf="antiquities.length > 0; else noData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <!-- Loop through antiquities -->
+                <div *ngFor="let antiquity of filteredAntiquities" class="bg-white p-6 rounded-lg shadow-lg">
+                    <!-- Display the first photo of the antiquity or a placeholder -->
+                    <img *ngIf="antiquity.photos && antiquity.photos.length > 0; else placeholder"
+                         [src]="antiquity.photos[0]" 
+                         [alt]="antiquity.titleAntiquity" 
+                         class="w-full h-48 object-cover rounded-md mb-4"
+                         style="width: 100%; height: 280px; object-fit: cover;">
+    
+                    <!-- Placeholder if no photos exist -->
+                    <ng-template #placeholder>
+                        <div class="w-full h-48 bg-gray-500 rounded-md mb-4 flex items-center justify-center">
+                            <span class="text-gray-300">No Image Available</span>
+                        </div>
+                    </ng-template>
+    
+                    <!-- Title -->
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">{{ antiquity.titleAntiquity }}</h3>
+    
+                    <!-- Description -->
+                    <p class="text-gray-600 mb-4">{{ antiquity.descriptionAntiquity }}</p>
+    
+                    <!-- Price -->
+                    <p class="price mb-4 text-yellow-400 font-bold">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
+    
+                    <!-- Buy Button -->
+                    <div class="center-button">
+                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- No Data Fallback -->
+            <ng-template #noData>
+                <p class="text-gray-300 text-center">No verified antiquities are available at the moment.</p>
+            </ng-template>
         </section>
     </div>
 </ng-template>
