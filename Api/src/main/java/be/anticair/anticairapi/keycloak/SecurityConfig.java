@@ -40,6 +40,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/uploads/**").authenticated()
+                        .requestMatchers("/api/listing/payment/success").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

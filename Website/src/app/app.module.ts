@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthService } from './auth.service';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +21,7 @@ import { CreateListingComponent } from './create-listing/create-listing.componen
 import { EditListingComponent } from './edit-listing/edit-listing.component';
 import { CheckListingComponent } from './check-listing/check-listing.component';
 import { OneAntiquityComponent } from './one-antiquity/one-antiquity.component';
+import { AuthService } from '../service/auth.service';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
