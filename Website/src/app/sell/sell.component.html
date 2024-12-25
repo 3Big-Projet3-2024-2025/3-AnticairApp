@@ -54,9 +54,9 @@
                     <!-- Price -->
                     <p class="price-dark mb-4 text-yellow-400 font-bold">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
         
-                    <!-- Buy Button -->
+                    <!-- View Details Button -->
                     <div class="center-button">
-                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
+                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600" (click)="viewDetails(antiquity.idAntiquity)">View Details</button>
                     </div>
                 </div>
             </div>
@@ -128,9 +128,9 @@
                     <!-- Price -->
                     <p class="price mb-4 text-yellow-400 font-bold">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
     
-                    <!-- Buy Button -->
+                    <!-- View Details Button -->
                     <div class="center-button">
-                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
+                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600" (click)="viewDetails(antiquity.idAntiquity)">View Details</button>
                     </div>
                 </div>
             </div>

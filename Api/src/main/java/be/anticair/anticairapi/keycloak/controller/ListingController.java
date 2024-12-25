@@ -59,12 +59,6 @@ public class ListingController {
                 photoAntiquityService.updatePhotos(id, images);
             }
 
-
-
-
-
-
-
             Map<String, String> responseMessage = new HashMap<>();
             responseMessage.put("message", "Antiquity updated successfully");
             return ResponseEntity.ok(responseMessage);
