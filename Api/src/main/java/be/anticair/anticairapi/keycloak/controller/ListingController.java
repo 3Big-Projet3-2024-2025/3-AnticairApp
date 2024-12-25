@@ -3,13 +3,15 @@ package be.anticair.anticairapi.keycloak.controller;
 
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
-import be.anticair.anticairapi.Class.PhotoAntiquity;
+import be.anticair.anticairapi.PaypalConfig;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import be.anticair.anticairapi.keycloak.service.PhotoAntiquityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.Transaction;
+import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +23,7 @@ import java.util.Map;
 
 /**
  * REST Controller for managing listing in the database.
- * @Author Blommaert Youry, Neve Thierry
+ * @Author Blommaert Youry, Neve Thierry, Zarzycki Alexis
  */
 
 @RestController
@@ -31,6 +33,8 @@ public class ListingController {
     private ListingService listingService;
     @Autowired
     private PhotoAntiquityService photoAntiquityService;
+    @Autowired
+    private PaypalConfig paypalConfig;
 
 
     /**
@@ -54,12 +58,6 @@ public class ListingController {
             if(images!=null){
                 photoAntiquityService.updatePhotos(id, images);
             }
-
-
-
-
-
-
 
             Map<String, String> responseMessage = new HashMap<>();
             responseMessage.put("message", "Antiquity updated successfully");
@@ -170,5 +168,92 @@ public class ListingController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
     }
 
+
+    /**
+     * Handles the purchase process for a specific listing by its ID.
+     * This method creates a payment authorization request using PayPal
+     * and returns a payment approval URL for the user.
+     *
+     * @param id The unique identifier of the listing to be purchased.
+     * @return A ResponseEntity containing the payment approval URL if successful,
+     *         or an error message and HTTP status code if the operation fails.
+     * @Author Zarzycki Alexis
+     */
+    @PostMapping("/{id}/buy")
+    public ResponseEntity<?> buyListing(@PathVariable Integer id) {
+        Map<String, String> responseMessage = new HashMap<>();
+        try {
+            ListingWithPhotosDto listing = listingService.getListingById(id);
+            if (listing == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Listing not found");
+            }
+
+            Payment payment = paypalConfig.createPayment(
+                    listing.getPriceAntiquity(),
+                    "EUR",
+                    "paypal",
+                    "Sale",
+                    "Buying an antiquity : " + listing.getTitleAntiquity(),
+                    "http://localhost:8080/api/listing/payment/success",
+                    "http://localhost:8080/api/listing/payment/cancel",
+                    listing.getIdAntiquity()
+            );
+            Transaction transaction = new Transaction();
+            transaction.setInvoiceNumber("INVOICE-" + listing.getIdAntiquity()); // Add a unique number for the invoice
+            return ResponseEntity.ok(payment.getLinks().stream()
+                    .filter(link -> "approval_url".equals(link.getRel()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No approval URL generated"))
+                    .getHref());
+        } catch (Exception e) {
+            responseMessage.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+        }
+    }
+
+    /**
+     * Executes a payment transaction using PayPal API. This method verifies the payment status,
+     * retrieves custom metadata related to the transaction, and updates the associated listing state
+     * to "sold" if the payment is approved.
+     *
+     * @param paymentId the unique identifier of the PayPal payment
+     * @param payerId the unique identifier of the payer provided by PayPal
+     * @return a ResponseEntity containing a success message with the listingId if the payment is
+     *         successfully processed, or an error message if the payment fails or encounters an exception
+     * @Author Zarzycki Alexis
+     */
+    @GetMapping("/payment/success")
+    public ResponseEntity<?> executePayment(@RequestParam("paymentId") String paymentId,
+                                            @RequestParam("PayerID") String payerId) {
+        Map<String, String> responseMessage = new HashMap<>();
+        try {
+            Payment payment = paypalConfig.executePayment(paymentId, payerId);
+
+            // Check the payment state
+            if ("approved".equals(payment.getState())) {
+                String listingIdCustomField = payment.getTransactions()
+                        .get(0)
+                        .getCustom();
+
+                if (listingIdCustomField == null || listingIdCustomField.isEmpty()) {
+                    throw new IllegalArgumentException("Listing ID missing in payment metadata.");
+                }
+
+                Long listingId = Long.valueOf(listingIdCustomField);
+                listingService.markAsSold(listingId);
+                responseMessage.put("message", "Payment successful and listing marked as sold");
+                responseMessage.put("listingId", listingId.toString());
+                return ResponseEntity.ok(responseMessage);
+            }
+            responseMessage.put("message", "Payment not approved");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMessage);
+        } catch (PayPalRESTException e) {
+            responseMessage.put("message", "PayPal error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+        } catch (Exception e) {
+            responseMessage.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+        }
+    }
 
 }

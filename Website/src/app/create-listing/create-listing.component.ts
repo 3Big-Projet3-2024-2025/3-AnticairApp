@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ThemeService } from '../theme.service';
+import { ThemeService } from '../../service/theme.service';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
 import { ListingService } from '../../service/listing.service';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-create-listing',

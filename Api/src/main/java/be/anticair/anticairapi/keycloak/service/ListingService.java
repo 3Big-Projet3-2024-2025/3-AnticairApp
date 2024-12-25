@@ -27,6 +27,9 @@ import static be.anticair.anticairapi.enumeration.AntiquityState.*;
 @Service
 public class ListingService {
 
+    @Autowired
+    private ListingRepository listingRepository;
+
     public ListingService() {
     }
 
@@ -237,6 +240,18 @@ public class ListingService {
         otherInformation.put("price", antiquity.getPriceAntiquity().toString());
         this.emailService.sendHtmlEmail(emailNewAntiquarian, "info@anticairapp.sixela.be", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
         return true;
+    }
+
+    /**
+     * Allow to change an antiquity to sold
+     * @param listingId the id of the Antiquity
+     * @Author Zarzycki Alexis
+     */
+    public void markAsSold(Long listingId) {
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
+        listing.setState(AntiquityState.SOLD.getState());
+        listingRepository.save(listing);
     }
 }
 

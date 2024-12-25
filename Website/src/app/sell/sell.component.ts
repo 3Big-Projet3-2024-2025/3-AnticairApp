@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { ThemeService } from '../theme.service';
+import { ThemeService } from '../../service/theme.service';
 import { ListingService } from '../../service/listing.service';
 import { Antiquity } from '../../modele/DtoListing';
 import { ImageServiceService } from '../../service/image-service.service';
 import { forkJoin, mergeMap } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sell',
@@ -20,7 +21,7 @@ export class SellComponent {
   sortCriteria: string = 'id'; // Default sort by ID
 
   constructor(private themeService: ThemeService, 
-    private listingService: ListingService, private imageService: ImageServiceService) {}
+    private listingService: ListingService, private imageService: ImageServiceService, private router: Router) {}
 
     ngOnInit(): void {
       // Subscribe to Theme event
@@ -32,7 +33,6 @@ export class SellComponent {
       this.listingService.getAllAntiquitiesChecked().subscribe(antiquities => {
         this.antiquities = antiquities;
         this.filteredAntiquities = antiquities; 
-    
         // Iterate over all antiquities
         this.antiquities.forEach(antiquity => {
           this.imageService.getImageFromAntiquity(antiquity.idAntiquity).pipe(
@@ -70,5 +70,10 @@ export class SellComponent {
       } else if (this.sortCriteria === 'price') {
         this.filteredAntiquities.sort((a, b) => a.priceAntiquity - b.priceAntiquity);
       }
+    }
+
+    viewDetails(id: number): void {
+      // Redirect to the details page
+      this.router.navigate(['/see', id]);
     }
 }
