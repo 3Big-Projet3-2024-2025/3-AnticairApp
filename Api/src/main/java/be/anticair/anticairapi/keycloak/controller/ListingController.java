@@ -133,6 +133,23 @@ public class ListingController {
         }
     }
 
+
+    /**
+     * Get all listings in the database.
+     *
+     * @return ResponseEntity containing a list of all listings.
+     * @Author Blommaert Youry
+     */
+    @GetMapping("/checked")
+    public ResponseEntity<List<Listing>> getAllListingsChecked() {
+        try {
+            List<Listing> response = listingService.getAllListingsAccepted();
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @PutMapping("/rejectAntiquity")
     public ResponseEntity<Map<String,String>> rejectAntiquity(@RequestBody Map<String, String> otherInformation) {
         Listing rejectedAntiquity= this.listingService.rejectAntiquity(otherInformation);
@@ -156,6 +173,7 @@ public class ListingController {
         responseMessage.put("message", "Error while rejecting antiquity");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
     }
+
 
     /**
      * Handles the purchase process for a specific listing by its ID.
