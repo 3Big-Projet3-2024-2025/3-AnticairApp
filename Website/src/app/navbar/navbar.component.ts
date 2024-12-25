@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { ThemeService } from '../theme.service';
+import { ThemeService } from '../../service/theme.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-navbar',
