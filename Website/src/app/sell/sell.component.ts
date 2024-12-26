@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
   styleUrl: './sell.component.css'
 })
 export class SellComponent {
+
   currentTheme: 'dark' | 'light' = 'light';
   antiquities: Antiquity[] = [];
   filteredAntiquities: Antiquity[] = [];
@@ -35,7 +36,8 @@ export class SellComponent {
   constructor(
     private themeService: ThemeService, 
     private listingService: ListingService, 
-    private imageService: ImageServiceService
+    private imageService: ImageServiceService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -95,10 +97,9 @@ export class SellComponent {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-
-    viewDetails(id: number): void {
-      // Redirect to the details page
-      this.router.navigate(['/sell', id]);
-    }
+  viewDetails(id: number): void {
+    // Redirect to the details page
+    this.router.navigate(['/sell', id]);
+  }
 
 }
