@@ -11,64 +11,83 @@ import { forkJoin, mergeMap } from 'rxjs';
   styleUrl: './sell.component.css'
 })
 export class SellComponent {
-
-  currentTheme: 'dark' | 'light' = 'light'; // Actual theme, by default light
+  currentTheme: 'dark' | 'light' = 'light';
   antiquities: Antiquity[] = [];
+  filteredAntiquities: Antiquity[] = [];
   pictures: String[] = [];
-  filteredAntiquities: Antiquity[] = []; 
-  searchText: string = ''; 
-  sortCriteria: string = 'id'; // Default sort by ID
+  searchText: string = '';
+  sortCriteria: string = 'id';
+  
+  currentPage: number = 1;
+  itemsPerPage: number = 12;
+  
+  get paginatedAntiquities(): Antiquity[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredAntiquities.slice(startIndex, startIndex + this.itemsPerPage);
+  }
 
-  constructor(private themeService: ThemeService, 
-    private listingService: ListingService, private imageService: ImageServiceService) {}
+  get totalPages(): number {
+    return Math.ceil(this.filteredAntiquities.length / this.itemsPerPage);
+  }
 
-    ngOnInit(): void {
-      // Subscribe to Theme event
-      this.themeService.theme$.subscribe(theme => {
-        this.currentTheme = theme;
-      });
-    
-      // Get all antiquities
-      this.listingService.getAllAntiquitiesChecked().subscribe(antiquities => {
-        this.antiquities = antiquities;
-        this.filteredAntiquities = antiquities; 
-    
-        // Iterate over all antiquities
-        this.antiquities.forEach(antiquity => {
-          this.imageService.getImageFromAntiquity(antiquity.idAntiquity).pipe(
-            mergeMap(photoPaths => {
-              const urlRequests = photoPaths.map(photoPath =>
-                this.imageService.getImageUrl(photoPath)
-              );
-              return forkJoin(urlRequests);  // Wait for all requests to finish
-            })
-          ).subscribe(pictures => {
-            antiquity.photos = pictures;  // Assign pictures to antiquity
-          });
+  constructor(
+    private themeService: ThemeService, 
+    private listingService: ListingService, 
+    private imageService: ImageServiceService
+  ) {}
+
+  ngOnInit(): void {
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
+
+    this.listingService.getAllAntiquitiesChecked().subscribe(antiquities => {
+      this.antiquities = antiquities;
+      this.filteredAntiquities = antiquities;
+
+      this.antiquities.forEach(antiquity => {
+        this.imageService.getImageFromAntiquity(antiquity.idAntiquity).pipe(
+          mergeMap(photoPaths => {
+            const urlRequests = photoPaths.map(photoPath =>
+              this.imageService.getImageUrl(photoPath)
+            );
+            return forkJoin(urlRequests);
+          })
+        ).subscribe(pictures => {
+          antiquity.photos = pictures;
         });
       });
+    });
+  }
 
+  onSearchChange(): void {
+    this.currentPage = 1;
+    if (this.searchText.trim() === '') {
+      this.filteredAntiquities = this.antiquities;
+    } else {
+      this.filteredAntiquities = this.antiquities.filter(antiquity =>
+        antiquity.titleAntiquity.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        antiquity.descriptionAntiquity.toLowerCase().includes(this.searchText.toLowerCase())
+      );
     }
-    
-    onSearchChange(): void {
-      if (this.searchText.trim() === '') {
-        this.filteredAntiquities = this.antiquities; // If search is empty, show all antiquities
-      } else {
-        this.filteredAntiquities = this.antiquities.filter(antiquity =>
-          antiquity.titleAntiquity.toLowerCase().includes(this.searchText.toLocaleLowerCase()) ||
-          antiquity.descriptionAntiquity.toLowerCase().includes(this.searchText.toLocaleLowerCase())
-        );
-      }
+    this.onSortChange();
+  }
 
-      // Sort after filtering
-      this.onSortChange();
+  onSortChange(): void {
+    if (this.sortCriteria === 'id') {
+      this.filteredAntiquities.sort((a, b) => a.idAntiquity - b.idAntiquity);
+    } else if (this.sortCriteria === 'price') {
+      this.filteredAntiquities.sort((a, b) => a.priceAntiquity - b.priceAntiquity);
     }
+  }
 
-    onSortChange(): void {
-      if (this.sortCriteria === 'id') {
-        this.filteredAntiquities.sort((a, b) => a.idAntiquity - b.idAntiquity);
-      } else if (this.sortCriteria === 'price') {
-        this.filteredAntiquities.sort((a, b) => a.priceAntiquity - b.priceAntiquity);
-      }
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
     }
+  }
+
+  getPages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
 }
