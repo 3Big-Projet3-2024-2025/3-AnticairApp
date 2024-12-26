@@ -82,4 +82,16 @@ export class ListingService {
 
     return this.http.post(`${this.privateUrl}/${id}/buy`, null, { headers, responseType: 'text' });
   }
+
+  executePayment(paymentId: string, payerId: string): Observable<any> {
+    // Get the token from the authentication service
+    const rawToken = this.authService.getToken();
+
+    // Configure the headers with the token
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${rawToken}`
+    });
+
+    return this.http.get<any>(`${this.privateUrl}/payment/execute`, { headers, params: { paymentId, PayerID: payerId } });
+  }
 }

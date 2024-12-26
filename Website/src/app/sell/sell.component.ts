@@ -98,7 +98,7 @@ export class SellComponent {
 
     viewDetails(id: number): void {
       // Redirect to the details page
-      this.router.navigate(['/see', id]);
+      this.router.navigate(['/sell', id]);
     }
 
 }

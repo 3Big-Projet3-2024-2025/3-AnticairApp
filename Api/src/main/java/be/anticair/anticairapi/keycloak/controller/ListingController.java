@@ -4,9 +4,12 @@ package be.anticair.anticairapi.keycloak.controller;
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.PaypalConfig;
+import be.anticair.anticairapi.enumeration.AntiquityState;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import be.anticair.anticairapi.keycloak.service.PhotoAntiquityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paypal.api.payments.Invoice;
+import com.paypal.api.payments.Payer;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.PayPalRESTException;
@@ -188,18 +191,20 @@ public class ListingController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Listing not found");
             }
 
+            if(listing.getState() == AntiquityState.SOLD.getState()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Listing already sold");
+            }
+
             Payment payment = paypalConfig.createPayment(
                     listing.getPriceAntiquity(),
                     "EUR",
                     "paypal",
                     "Sale",
                     "Buying an antiquity : " + listing.getTitleAntiquity(),
-                    "http://localhost:8080/api/listing/payment/success",
-                    "http://localhost:8080/api/listing/payment/cancel",
+                    "http://localhost:4200/payment/success",
+                    "http://localhost:4200/payment/error",
                     listing.getIdAntiquity()
             );
-            Transaction transaction = new Transaction();
-            transaction.setInvoiceNumber("INVOICE-" + listing.getIdAntiquity()); // Add a unique number for the invoice
             return ResponseEntity.ok(payment.getLinks().stream()
                     .filter(link -> "approval_url".equals(link.getRel()))
                     .findFirst()
@@ -222,7 +227,7 @@ public class ListingController {
      *         successfully processed, or an error message if the payment fails or encounters an exception
      * @Author Zarzycki Alexis
      */
-    @GetMapping("/payment/success")
+    @GetMapping("/payment/execute")
     public ResponseEntity<?> executePayment(@RequestParam("paymentId") String paymentId,
                                             @RequestParam("PayerID") String payerId) {
         Map<String, String> responseMessage = new HashMap<>();
@@ -239,10 +244,32 @@ public class ListingController {
                     throw new IllegalArgumentException("Listing ID missing in payment metadata.");
                 }
 
+                Transaction transaction = payment.getTransactions().get(0);
+                Payer payer = payment.getPayer();
+                String invoiceDescription = transaction.getDescription();
+                Double amount = Double.valueOf(transaction.getAmount().getTotal());
+                String currency = transaction.getAmount().getCurrency();
+                int quantity = 1;
                 Long listingId = Long.valueOf(listingIdCustomField);
+
+                Invoice invoice = paypalConfig.createAndSendInvoice(
+                        payer,
+                        invoiceDescription,
+                        amount,
+                        currency,
+                        quantity,
+                        listingId
+                );
+
+                if (invoice == null) {
+                    responseMessage.put("message", "Failed to create or send the invoice.");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+                }
+
                 listingService.markAsSold(listingId);
                 responseMessage.put("message", "Payment successful and listing marked as sold");
                 responseMessage.put("listingId", listingId.toString());
+                responseMessage.put("invoiceNumber", invoice.getId());
                 return ResponseEntity.ok(responseMessage);
             }
             responseMessage.put("message", "Payment not approved");
