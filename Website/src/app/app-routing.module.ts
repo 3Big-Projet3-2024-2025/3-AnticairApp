@@ -13,6 +13,7 @@ import { EditListingComponent } from './edit-listing/edit-listing.component';
 import {ProfileComponent} from './profile/profile.component';
 
 import { editAntiquityGuard } from './edit-antiquity.guard';
+import { OneAntiquityComponent } from './one-antiquity/one-antiquity.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'sell', component: SellComponent },
+  { path: 'see/:id', component: OneAntiquityComponent },
   { path: 'create-listing', component: CreateListingComponent },
   { path: 'admin', redirectTo: '/admin/dashboard', pathMatch: 'full'},
   { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AdminGuard] },

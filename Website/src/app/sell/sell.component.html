@@ -44,6 +44,22 @@
                         <div class="center-button">
                             <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
                         </div>
+
+                    </ng-template>
+                    
+                    <!-- Title -->
+                    <h3 class="text-xl font-bold text-gray-200 mb-2">{{ antiquity.titleAntiquity }}</h3>
+        
+                    <!-- Description -->
+                    <p class="text-gray-400 mb-4">{{ antiquity.descriptionAntiquity }}</p>
+        
+                    <!-- Price -->
+                    <p class="price-dark mb-4 text-yellow-400 font-bold">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
+        
+                    <!-- View Details Button -->
+                    <div class="center-button">
+                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600" (click)="viewDetails(antiquity.idAntiquity)">View Details</button>
+
                     </div>
                 </div>
 
@@ -122,6 +138,22 @@
                         <div class="center-button">
                             <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600">Buy</button>
                         </div>
+
+                    </ng-template>
+    
+                    <!-- Title -->
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">{{ antiquity.titleAntiquity }}</h3>
+    
+                    <!-- Description -->
+                    <p class="text-gray-600 mb-4">{{ antiquity.descriptionAntiquity }}</p>
+    
+                    <!-- Price -->
+                    <p class="price mb-4 text-yellow-400 font-bold">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
+    
+                    <!-- View Details Button -->
+                    <div class="center-button">
+                        <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600" (click)="viewDetails(antiquity.idAntiquity)">View Details</button>
+
                     </div>
                 </div>
 
