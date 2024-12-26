@@ -9,6 +9,7 @@ import be.anticair.anticairapi.keycloak.service.ListingService;
 import be.anticair.anticairapi.keycloak.service.PhotoAntiquityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paypal.api.payments.Invoice;
+import com.paypal.api.payments.Payer;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.PayPalRESTException;
@@ -244,7 +245,7 @@ public class ListingController {
                 }
 
                 Transaction transaction = payment.getTransactions().get(0);
-                String buyerEmail = payment.getPayer().getPayerInfo().getEmail();
+                Payer payer = payment.getPayer();
                 String invoiceDescription = transaction.getDescription();
                 Double amount = Double.valueOf(transaction.getAmount().getTotal());
                 String currency = transaction.getAmount().getCurrency();
@@ -252,7 +253,7 @@ public class ListingController {
                 Long listingId = Long.valueOf(listingIdCustomField);
 
                 Invoice invoice = paypalConfig.createAndSendInvoice(
-                        buyerEmail,
+                        payer,
                         invoiceDescription,
                         amount,
                         currency,

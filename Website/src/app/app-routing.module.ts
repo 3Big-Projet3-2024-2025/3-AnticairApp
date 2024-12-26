@@ -15,6 +15,7 @@ import {ProfileComponent} from './profile/profile.component';
 import { editAntiquityGuard } from './edit-antiquity.guard';
 import { OneAntiquityComponent } from './one-antiquity/one-antiquity.component';
 import { PaymentConfComponent } from './payment-conf/payment-conf.component';
+import { BuyListingComponent } from './buy-listing/buy-listing.component';
 
 
 const routes: Routes = [
@@ -22,7 +23,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'sell', component: SellComponent },
-  { path: 'sell/:id', component: OneAntiquityComponent },
+  { path: 'sell/:id', component: BuyListingComponent },
   { path: 'payment/success', component: PaymentConfComponent },
   { path: 'payment/error', component: PaymentConfComponent },
   { path: 'create-listing', component: CreateListingComponent },

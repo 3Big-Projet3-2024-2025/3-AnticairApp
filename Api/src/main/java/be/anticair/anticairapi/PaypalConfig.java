@@ -133,7 +133,7 @@ public class PaypalConfig {
     /**
      * Creates an invoice with the given details and sends it to the specified customer email address.
      *
-     * @param customerEmail The email address of the customer to whom the invoice is to be sent.
+     * @param payer The payer
      * @param itemName The name of the item being invoiced.
      * @param itemPrice The price of the item in the specified currency.
      * @param currency The currency code for the item price.
@@ -143,7 +143,8 @@ public class PaypalConfig {
      * @throws PayPalRESTException If an error occurs while creating or sending the invoice.
      * @Author Zarzycki Alexis
      */
-    public Invoice createAndSendInvoice(String customerEmail, String itemName, Double itemPrice, String currency, int quantity, Long listingId) throws PayPalRESTException {
+    public Invoice createAndSendInvoice(Payer payer, String itemName, Double itemPrice, String currency, int quantity, Long listingId) throws PayPalRESTException {
+
         String customId = generateCustomId(listingId);
         Invoice existingInvoice = checkExistingInvoice(customId);
         if (existingInvoice != null) {
@@ -211,6 +212,15 @@ public class PaypalConfig {
                 .setValue(formattedTotalAmount));
 
         invoice.setNote(customId);
+
+        BillingInfo billing = new BillingInfo()
+                .setEmail(payer.getPayerInfo().getEmail())
+                .setFirstName(payer.getPayerInfo().getFirstName())
+                .setLastName(payer.getPayerInfo().getLastName());
+
+        List<BillingInfo> billingInfoList = new ArrayList<>();
+        billingInfoList.add(billing);
+        invoice.setBillingInfo(billingInfoList);
 
         // Create the invoice on PayPal
         Invoice createdInvoice = invoice.create(getApiContext());

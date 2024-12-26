@@ -16,11 +16,12 @@ import { ImageServiceService } from '../../service/image-service.service';
 export class PaymentConfComponent implements OnInit {
 
   currentTheme: 'dark' | 'light' = 'light';
-  paymentStatus: 'success' | 'error' = 'error';
+  paymentStatus: 'success' | 'error' | null = null;
   invoiceNumber: string | null = null;
   paymentId: string | null = null;
   payerId: string | null = null;
   antiquity: Antiquity | null = null;
+  loading: boolean = true;
 
   constructor(
     private router: Router,
@@ -45,6 +46,7 @@ export class PaymentConfComponent implements OnInit {
       this.executePayment(this.paymentId, this.payerId);
     } else {
       this.paymentStatus = 'error';
+      this.loading = false;
     }
   }
 
@@ -54,25 +56,19 @@ export class PaymentConfComponent implements OnInit {
         this.paymentStatus = 'success';
         console.log('Payment executed successfully', response);
         this.invoiceNumber = response.invoiceNumber;
-        const listingId = response.listingId;
+        this.loading = false;
       },
       error => {
-        if (error.message && error.error.message.includes("PAYMENT_ALREADY_DONE")) {
+        console.log('Payment execution failed', error.error.message);
+        if (error.error.message && error.error.message.includes("PAYMENT_ALREADY_DONE")) {
           this.paymentStatus = 'success';
         } else {
           this.paymentStatus = 'error';
           console.error('Payment execution failed', error);
         }
+        this.loading = false;
       }
     );
-  }
-
-  buyAntiquity(): void {
-    // Call the service to buy the antiquity
-    this.listingService.buyAntiquity(this.antiquity!.idAntiquity).subscribe(response => {
-      // Open the paypal link in the current tab
-      window.open(response, '_self');
-    });
   }
 
   retryPayment(): void {

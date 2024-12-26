@@ -52,16 +52,4 @@ export class OneAntiquityComponent {
     });
   }
 
-  buyAntiquity(): void {
-    // Call the service to buy the antiquity
-    this.listingService.buyAntiquity(this.antiquity.idAntiquity).subscribe(response => {
-      // Open the paypal link in the current tab
-      window.open(response, '_self');
-    });
-  }
-
-  goBack(): void {
-    this.router.navigate(['/sell']);
-  }
-
 }
