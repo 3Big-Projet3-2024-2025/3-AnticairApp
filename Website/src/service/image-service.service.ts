@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../app/auth.service';
 import { map, Observable } from 'rxjs';
+import { DtoImage } from '../modele/DtoImage';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,13 @@ export class ImageServiceService {
     const token = this.authService.getToken();
     return this.http.get<Blob>(`http://localhost:8080${filePath}`, {
       headers: { Authorization: `Bearer ${token}` }, responseType: 'blob' as 'json'
+    })
+  }
+
+  getImageFromAntiquity(antiquityId: number): Observable<string[]>{
+    const token = this.authService.getToken();
+    return this.http.get<string[]>(`http://localhost:8080/api/photoAntiquity/images/${antiquityId}`, {
+      headers: { Authorization: `Bearer ${token}` }
     })
   }
 }

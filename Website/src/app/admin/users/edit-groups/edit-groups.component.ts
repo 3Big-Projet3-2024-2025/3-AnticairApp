@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GroupService } from '../../../group.service';
-import { AuthService } from '../../../auth.service';
-import { ThemeService } from '../../../theme.service';
+import { ThemeService } from '../../../../service/theme.service';
+import { GroupService } from '../../../../service/group.service';
+import { AuthService } from '../../../../service/auth.service';
 
 @Component({
   selector: 'app-edit-groups',

@@ -15,4 +15,7 @@ public interface PhotoAntiquityRepository extends JpaRepository<PhotoAntiquity, 
     @Query("DELETE FROM PhotoAntiquity p WHERE p.idAntiquity = ?1")
     void deleteByIdAntiquity(Integer idAntiquity);
     List<PhotoAntiquity> findByIdAntiquity(Integer idAntiquity);
+
+    @Query("SELECT p.pathPhoto FROM PhotoAntiquity p WHERE p.idAntiquity = ?1")
+    List<String> findPathByIdAntiquity(Integer idAntiquity);
 }

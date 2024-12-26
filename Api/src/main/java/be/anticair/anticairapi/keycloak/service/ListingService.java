@@ -27,6 +27,9 @@ import static be.anticair.anticairapi.enumeration.AntiquityState.*;
 @Service
 public class ListingService {
 
+    @Autowired
+    private ListingRepository listingRepository;
+
     public ListingService() {
     }
 
@@ -57,6 +60,10 @@ public class ListingService {
      * @Author Blommaert Youry
      */
     public Listing createListing(String email, Listing newListing, List<MultipartFile> photos) {
+        if(newListing.getPriceAntiquity() < 0) {
+            throw new IllegalArgumentException("Price is negative");
+        }
+
         List<UserRepresentation> users = userService.getUsersByEmail(email);
 
 
@@ -67,10 +74,10 @@ public class ListingService {
         UserRepresentation user = userService.getUsersByEmail(email).get(0);
 
         // Verify that the listing has a price, description, and title
-        if (newListing.getPriceAntiquity() == null ||
+        if (newListing.getPriceAntiquity() == 0 ||
                 newListing.getDescriptionAntiquity() == null ||
                 newListing.getTitleAntiquity() == null) {
-            throw new IllegalArgumentException("Price, description, and title are required");
+            throw new NullPointerException("Price, description, and title are required");
         }
 
         List<UserRepresentation> usersAntiquarians = userService.getUsersByGroupName("Antiquarian");
@@ -109,6 +116,22 @@ public class ListingService {
         return savedListing;
     }
 
+    /**
+     * Get all the listing in the database.
+     * @return The list of all the listings.
+     * @Author Blommaert Youry
+     */
+    public List<Listing> getAllListingsAccepted() {
+        List<Listing> listings = new ArrayList<>();
+        listings = ListingRepository.getAllAntiquityChecked();
+
+        if(listings.isEmpty()) {
+            throw new RuntimeException("No listings found");
+        }
+
+        return listings;
+    }
+
 
     public Listing rejectAntiquity(Map<String,String> otherInformation){
         Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
@@ -125,11 +148,9 @@ public class ListingService {
         otherInformation.put("note_photo",otherInformation.get("note_photo"));
         antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
         try {
-            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"",TypeOfMail.REJECTIONOFANTIQUITY,otherInformation);
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.REJECTIONOFANTIQUITY,otherInformation);
             return antiquity.get();
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (MessagingException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -145,7 +166,7 @@ public class ListingService {
 
         antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
         try {
-            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
 
             return this.applyCommission(Integer.valueOf(otherInformation.get("id")));
         } catch (MessagingException e) {
@@ -219,6 +240,18 @@ public class ListingService {
         otherInformation.put("price", antiquity.getPriceAntiquity().toString());
         this.emailService.sendHtmlEmail(emailNewAntiquarian, "info@anticairapp.sixela.be", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
         return true;
+    }
+
+    /**
+     * Allow to change an antiquity to sold
+     * @param listingId the id of the Antiquity
+     * @Author Zarzycki Alexis
+     */
+    public void markAsSold(Long listingId) {
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
+        listing.setState(AntiquityState.SOLD.getState());
+        listingRepository.save(listing);
     }
 }
 

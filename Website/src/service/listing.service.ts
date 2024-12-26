@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthService } from '../app/auth.service';
 import { Observable } from 'rxjs';
 import { Antiquity } from '../modele/DtoListing';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -65,5 +65,33 @@ export class ListingService {
     }
     
     return this.http.put<any>(`${this.privateUrl}/${id}`, formData);
+  }
+
+  getAllAntiquitiesChecked() : Observable<Antiquity[]>{
+    return this.http.get<Antiquity[]>(this.privateUrl + '/checked');
+  }
+
+  buyAntiquity(id: number): Observable<string> {
+    // Get the token from the authentication service
+    const rawToken = this.authService.getToken();
+
+    // Configure the headers with the token
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${rawToken}`
+    });
+
+    return this.http.post(`${this.privateUrl}/${id}/buy`, null, { headers, responseType: 'text' });
+  }
+
+  executePayment(paymentId: string, payerId: string): Observable<any> {
+    // Get the token from the authentication service
+    const rawToken = this.authService.getToken();
+
+    // Configure the headers with the token
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${rawToken}`
+    });
+
+    return this.http.get<any>(`${this.privateUrl}/payment/execute`, { headers, params: { paymentId, PayerID: payerId } });
   }
 }

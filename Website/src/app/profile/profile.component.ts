@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { UserService } from '../user.service';
 import { FormsModule } from '@angular/forms';
 import {NgClass, NgIf} from "@angular/common";
-import { ThemeService } from '../theme.service';
+import { ThemeService } from '../../service/theme.service';
+import { AuthService } from '../../service/auth.service';
+import { UserService } from '../../service/user.service';
 
 @Component({
   selector: 'app-profile',

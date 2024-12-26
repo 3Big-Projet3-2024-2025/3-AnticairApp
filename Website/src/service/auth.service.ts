@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -14,9 +14,24 @@ export class AuthService {
   private keycloakInitialized = false; // Is Keycloak Initialized ?
   public userDetails: any = null; // To store the user's info
   private loggedInSubject = new BehaviorSubject<boolean>(false); // BehaviorSubject for login status
+  private _userService!: UserService;
+  private _groupService!: GroupService;
 
+  constructor(private keycloakService: KeycloakService, private http: HttpClient, private router: Router, private injector: Injector) {} // Inject Router
 
-  constructor(private keycloakService: KeycloakService, private http: HttpClient, private router: Router, private userService : UserService, private groupService : GroupService) {} // Inject Router
+  private get userService(): UserService {
+    if (!this._userService) {
+      this._userService = this.injector.get(UserService);
+    }
+    return this._userService;
+  }
+
+  private get groupService(): GroupService {
+    if (!this._groupService) {
+      this._groupService = this.injector.get(GroupService);
+    }
+    return this._groupService;
+  }
 
   // Method to initialize Keycloak
   async initKeycloak(): Promise<boolean> {
@@ -132,7 +147,7 @@ export class AuthService {
     // If the number of users in the database is 1, the user will be add to the group Admin
     if (1 == nbrUser) {
       // Add the user in the group Admin
-      await this.groupService.addGroupByEmail(this.userDetails.email, "Admin", rawToken);
+      await this.groupService.addGroupToUser(this.userDetails.email, "Admin");
     }
 
   }

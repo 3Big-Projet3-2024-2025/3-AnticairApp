@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ThemeService } from './theme.service';
+import { ThemeService } from '../service/theme.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 

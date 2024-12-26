@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthService } from './auth.service';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +19,11 @@ import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.compo
 import { PhonenumberPipe } from './pipe/phonenumber.pipe';
 import { CreateListingComponent } from './create-listing/create-listing.component';
 import { EditListingComponent } from './edit-listing/edit-listing.component';
+import { CheckListingComponent } from './check-listing/check-listing.component';
+import { OneAntiquityComponent } from './one-antiquity/one-antiquity.component';
+import { AuthService } from '../service/auth.service';
+import { PaymentConfComponent } from './payment-conf/payment-conf.component';
+import { BuyListingComponent } from './buy-listing/buy-listing.component';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
@@ -42,6 +46,10 @@ export function initializeKeycloak(authService: AuthService) {
     PhonenumberPipe,
     CreateListingComponent,
     EditListingComponent,
+    CheckListingComponent,
+    OneAntiquityComponent,
+    PaymentConfComponent,
+    BuyListingComponent,
   ],
   imports: [
     BrowserModule,
