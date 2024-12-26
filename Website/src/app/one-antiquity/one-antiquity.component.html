@@ -1,1 +1,51 @@
-<p>one-antiquity works!</p>
+<span *ngIf="currentTheme === 'dark'; else showDefault">
+    <div *ngIf="antiquity" class="bg-gray-700 text-gray-200 p-6 rounded-lg shadow-lg">
+        <h2 class="text-3xl font-bold text-center mb-4">{{ antiquity.titleAntiquity }}</h2>
+
+        <div class="mb-6">
+            <img *ngIf="antiquity.photos && antiquity.photos.length > 0; else placeholder" [src]="antiquity.photos[0]"
+                [alt]="antiquity.titleAntiquity" class="w-full h-48 object-cover rounded-md mb-4">
+
+            <ng-template #placeholder>
+                <div class="w-full h-48 bg-gray-500 rounded-md mb-4 flex items-center justify-center">
+                    <span class="text-gray-300">No Image Available</span>
+                </div>
+            </ng-template>
+        </div>
+
+        <p class="text-gray-400 mb-4">{{ antiquity.descriptionAntiquity }}</p>
+
+        <p class="text-yellow-400 font-bold text-lg mb-4">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
+
+        <div class="flex justify-between">
+            <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600" (click)="goBack()">Go Back</button>
+            <button class="bg-green-500 text-gray-900 px-6 py-3 rounded-md hover:bg-green-600" (click)="buyAntiquity()">Buy</button>
+        </div>
+    </div>
+</span>
+
+<ng-template #showDefault>
+    <div *ngIf="antiquity" class="bg-white text-gray-800 p-6 rounded-lg shadow-lg">
+        <h2 class="text-3xl font-bold text-center mb-4">{{ antiquity.titleAntiquity }}</h2>
+
+        <div class="mb-6">
+            <img *ngIf="antiquity.photos && antiquity.photos.length > 0; else placeholder" [src]="antiquity.photos[0]"
+                [alt]="antiquity.titleAntiquity" class="w-full h-48 object-cover rounded-md mb-4">
+
+            <ng-template #placeholder>
+                <div class="w-full h-48 bg-gray-500 rounded-md mb-4 flex items-center justify-center">
+                    <span class="text-gray-300">No Image Available</span>
+                </div>
+            </ng-template>
+        </div>
+
+        <p class="text-gray-600 mb-4">{{ antiquity.descriptionAntiquity }}</p>
+
+        <p class="text-yellow-400 font-bold text-lg mb-4">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
+
+        <div class="flex justify-between">
+            <button class="bg-yellow-500 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-600" (click)="goBack()">Go Back</button>
+            <button class="bg-green-500 text-gray-900 px-6 py-3 rounded-md hover:bg-green-600" (click)="buyAntiquity()">Buy</button>
+        </div>
+    </div>
+</ng-template>

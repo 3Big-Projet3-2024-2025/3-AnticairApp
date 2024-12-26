@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ThemeService } from '../../theme.service';
+import { ThemeService } from '../../../service/theme.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../service/user.service';
-import { AuthService } from '../../auth.service';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-users',

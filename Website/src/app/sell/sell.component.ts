@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { ThemeService } from '../theme.service';
+import { ThemeService } from '../../service/theme.service';
 import { ListingService } from '../../service/listing.service';
 import { Antiquity } from '../../modele/DtoListing';
 import { ImageServiceService } from '../../service/image-service.service';
 import { forkJoin, mergeMap } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sell',
@@ -25,6 +26,7 @@ export class SellComponent {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.filteredAntiquities.slice(startIndex, startIndex + this.itemsPerPage);
   }
+
 
   get totalPages(): number {
     return Math.ceil(this.filteredAntiquities.length / this.itemsPerPage);
@@ -55,6 +57,7 @@ export class SellComponent {
           })
         ).subscribe(pictures => {
           antiquity.photos = pictures;
+
         });
       });
     });
@@ -85,9 +88,17 @@ export class SellComponent {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
     }
+
   }
 
   getPages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
+
+
+    viewDetails(id: number): void {
+      // Redirect to the details page
+      this.router.navigate(['/see', id]);
+    }
+
 }
