@@ -30,8 +30,21 @@ export class OneAntiquityComponent {
       const id = +params.get('id')!;
       if (id) {
         this.listingService.getAntiquityById(id.toString()).subscribe(antiquity => {
-          this.antiquity = antiquity;
-          this.loadAntiquityImages(antiquity);
+          if (antiquity.state !== 1) {
+            this.router.navigate(['/sell']);
+          } else {
+            this.antiquity = antiquity;
+            this.imageService.getImageFromAntiquity(antiquity.idAntiquity).pipe(
+              mergeMap(photoPaths => {
+                const urlRequests = photoPaths.map(photoPath =>
+                  this.imageService.getImageUrl(photoPath)
+                );
+                return forkJoin(urlRequests);  // Wait for all requests to finish
+              })
+            ).subscribe(pictures => {
+              antiquity.photos = pictures;  // Assign pictures to antiquity
+            });
+          }
         });
       } else {
         this.router.navigate(['/sell']);
@@ -42,27 +55,13 @@ export class OneAntiquityComponent {
   buyAntiquity(): void {
     // Call the service to buy the antiquity
     this.listingService.buyAntiquity(this.antiquity.idAntiquity).subscribe(response => {
-      // Open the paypal link in a new tab
-      window.open(response, '_blank');
-      this.router.navigate(['/sell']);
+      // Open the paypal link in the current tab
+      window.open(response, '_self');
     });
   }
 
   goBack(): void {
     this.router.navigate(['/sell']);
-  }
-
-  private loadAntiquityImages(antiquity: Antiquity): void {
-    this.imageService.getImageFromAntiquity(antiquity.idAntiquity).pipe(
-      mergeMap(photoPaths => {
-        const urlRequests = photoPaths.map(photoPath =>
-          this.imageService.getImageUrl(photoPath)
-        );
-        return forkJoin(urlRequests);  // Wait for all requests to finish
-      })
-    ).subscribe(pictures => {
-      antiquity.photos = pictures;  // Assign pictures to antiquity
-    });
   }
 
 }
