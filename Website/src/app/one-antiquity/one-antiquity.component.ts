@@ -31,7 +31,7 @@ export class OneAntiquityComponent {
       if (id) {
         this.listingService.getAntiquityById(id.toString()).subscribe(antiquity => {
           if (antiquity.state !== 1) {
-            this.router.navigate(['/sell']);
+            this.router.navigate(['/home']);
           } else {
             this.antiquity = antiquity;
             this.imageService.getImageFromAntiquity(antiquity.idAntiquity).pipe(
@@ -47,7 +47,7 @@ export class OneAntiquityComponent {
           }
         });
       } else {
-        this.router.navigate(['/sell']);
+        this.router.navigate(['/home']);
       }
     });
   }
