@@ -13,7 +13,8 @@ public enum TypeOfMail {
     REJECTIONOFANTIQUITY (3, "RejectionOfAntiquity.html", "Refusal to validate your antique"),
     REDISTRIBUTEANTIQUITYINITANTIQUARIAN (4, "redistributeAntiquityInitAntiquarian.html", "Redistribution of your antiquity"),
     REDISTRIBUTEANTIQUITYNEWANTIQUARIAN (5, "redistributeAntiquityNewAntiquarian.html", "A new to antiquity to be checked"),
-    ENABLEORDISABLEUSER(6, "enableOrDisableUser.html", "Your account has been updated");
+    ENABLEORDISABLEUSER(6, "enableOrDisableUser.html", "Your account has been updated"),
+    DELETEUSERDATA(10, "ConfirmationRGPDUser.html","Your datas has been deleted");
     /**
      * The type of mail to the mailService
      */

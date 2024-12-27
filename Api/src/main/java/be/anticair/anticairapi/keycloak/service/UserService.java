@@ -358,4 +358,26 @@ public class UserService {
         // Mise à jour sur Keycloak
         keycloak.realm(realm).users().get(user.getId()).update(user);
     }
+
+    public void updateRGPDUserProfile(Map<String, Object> userDetails) {
+        String email = (String) userDetails.get("email");
+        try{List<UserRepresentation> users = keycloak.realm(realm).users().search(email);
+            if (users.isEmpty()) {
+                throw new RuntimeException("User not found with email: " + email);
+            }
+
+            UserRepresentation user = users.get(0);
+            user.setFirstName("FirstName_"+ user.getFirstName());
+            user.setLastName("LastName_"+ user.getFirstName());
+            user.singleAttribute("phoneNumber", "+32000000000");
+            user.setEmail("anonymized"+user.getId()+"@deleted.com");
+            user.setEnabled(false);
+
+            // Mise à jour sur Keycloak
+            keycloak.realm(realm).users().get(user.getId()).update(user);
+        } catch (Exception e) {
+    throw new RuntimeException(e);
+}
+
+    }
 }

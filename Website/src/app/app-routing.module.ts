@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { SellComponent } from './sell/sell.component';
-import { AdminGuard } from './admin.guard';
+import { AdminGuard } from './guards/admin.guard';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { UsersComponent } from './admin/users/users.component';
 import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
@@ -16,12 +16,14 @@ import { editAntiquityGuard } from './edit-antiquity.guard';
 import { OneAntiquityComponent } from './one-antiquity/one-antiquity.component';
 import { PaymentConfComponent } from './payment-conf/payment-conf.component';
 import { BuyListingComponent } from './buy-listing/buy-listing.component';
+import {isLoginGuard} from './guards/is-login.guard';
+
 
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'profile', component: ProfileComponent },
+  { path: 'profile', component: ProfileComponent, canActivate: [isLoginGuard] },
   { path: 'sell', component: SellComponent },
   { path: 'sell/:id', component: BuyListingComponent },
   { path: 'payment/success', component: PaymentConfComponent },
