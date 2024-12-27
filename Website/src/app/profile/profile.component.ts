@@ -4,6 +4,8 @@ import {NgClass, NgIf} from "@angular/common";
 import { ThemeService } from '../../service/theme.service';
 import { AuthService } from '../../service/auth.service';
 import { UserService } from '../../service/user.service';
+import {RgpdService} from '../../service/rgpd.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +23,9 @@ export class ProfileComponent implements OnInit {
   constructor(
       private authService: AuthService,
       private userService: UserService,
-      private themeService: ThemeService
+      private themeService: ThemeService,
+      private rgpdService: RgpdService,
+      private router : Router,
   ) {}
 
 
@@ -63,5 +67,24 @@ export class ProfileComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+
+  }
+
+  async deleteData() {
+    const bool = confirm("Deleting user data = account disabled");
+    if (bool) {
+      const token = await this.authService.getToken().then(res => {
+        this.rgpdService.updateUserProfile(this.userDetails, res).subscribe(res => {
+          console.log(res);
+
+          this.logout();
+
+
+        });
+      });
+
+
+
+    }
   }
 }

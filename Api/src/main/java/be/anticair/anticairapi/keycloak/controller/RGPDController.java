@@ -39,7 +39,7 @@ public class RGPDController {
             }
             Map<String,String> otherInformation = new HashMap<>();
             emailService.sendHtmlEmail(email,"info@anticairapp.sixela.be", TypeOfMail.DELETEUSERDATA, otherInformation);
-           // userService.updateRGPDUserProfile(userDetails);
+            userService.updateRGPDUserProfile(userDetails);
 
 
             response.put("message", "User profile updated successfully.");

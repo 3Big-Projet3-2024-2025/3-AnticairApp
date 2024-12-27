@@ -16,7 +16,7 @@ export class RgpdService {
     });
   }
   updateUserProfile(userData: any, token: string): Observable<any> {
-      const headers = this.getHeaders(token);
-      return this.http.put(`${this.baseUrl}/update`, userData, { headers });
+    console.log(userData);
+      return this.http.put(`${this.baseUrl}/update`, userData, { headers: {Authorization: `Bearer ${token}`} });
     }
 }
