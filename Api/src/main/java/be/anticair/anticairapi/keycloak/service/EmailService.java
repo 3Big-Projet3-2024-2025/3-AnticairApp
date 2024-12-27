@@ -52,6 +52,7 @@ public class EmailService {
     public void sendHtmlEmail(String receiver, String sender, TypeOfMail typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
         if(receiver.isEmpty() || sender.isEmpty() ) return;
        try {
+           System.out.println(sender +" "+ receiver);
            //Allow to create email
            MimeMessage message= this.setInformationMail(sender,receiver,typeOfMail.getSubject());
 
@@ -83,6 +84,8 @@ public class EmailService {
                    break;
                case 6: // Warning the user that is account status has been changed
                    htmlTemplate = htmlTemplate.replace("${account_newstatus}", otherInformation.get("account_newstatus"));
+                   break;
+               case 10:
                    break;
                default: // Just in case
                   return;

@@ -21,6 +21,16 @@ export class SellComponent {
   currentPage: number = 1;
   itemsPerPage: number = 12;
 
+  currentTheme: 'dark' | 'light' = 'light';
+  antiquities: Antiquity[] = [];
+  filteredAntiquities: Antiquity[] = [];
+  pictures: String[] = [];
+  searchText: string = '';
+  sortCriteria: string = 'id';
+  
+  currentPage: number = 1;
+  itemsPerPage: number = 12;
+  
   get paginatedAntiquities(): Antiquity[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.filteredAntiquities.slice(startIndex, startIndex + this.itemsPerPage);
@@ -32,10 +42,10 @@ export class SellComponent {
   }
 
   constructor(
-    private themeService: ThemeService,
-    private listingService: ListingService,
+    private themeService: ThemeService, 
+    private listingService: ListingService, 
     private imageService: ImageServiceService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -76,9 +86,12 @@ export class SellComponent {
     this.onSortChange();
   }
 
-  onSortChange(): void { //Change sort
-    const sortBy = this.sortCriteria === 'price' ? 'priceAntiquity' : 'idAntiquity';
-    this.filteredAntiquities.sort((a, b) => a[sortBy] - b[sortBy]);
+  onSortChange(): void {
+    if (this.sortCriteria === 'id') {
+      this.filteredAntiquities.sort((a, b) => a.idAntiquity - b.idAntiquity);
+    } else if (this.sortCriteria === 'price') {
+      this.filteredAntiquities.sort((a, b) => a.priceAntiquity - b.priceAntiquity);
+    }
   }
 
   changePage(page: number): void {
@@ -88,14 +101,13 @@ export class SellComponent {
 
   }
 
-  getPages(): number[] { //Get pages
+  getPages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-
-    viewDetails(id: number): void {
-      // Redirect to the details page
-      this.router.navigate(['/see', id]);
-    }
+  viewDetails(id: number): void {
+    // Redirect to the details page
+    this.router.navigate(['/sell', id]);
+  }
 
 }

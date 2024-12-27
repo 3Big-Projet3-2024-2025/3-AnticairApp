@@ -3,14 +3,23 @@ package be.anticair.anticairapi;
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
-
+import com.paypal.api.payments.Invoice;
+import com.paypal.api.payments.InvoiceItem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import org.keycloak.admin.client.Keycloak;
 
 @Service
 public class PaypalConfig {
+    private final Keycloak keycloak;
+
+    public PaypalConfig(Keycloak keycloak) {
+        this.keycloak = keycloak;
+    }
 
     // PayPal client ID, configured in application properties
     @Value("${paypal.client.id}")
@@ -117,5 +126,156 @@ public class PaypalConfig {
 
         // Execute the payment using the current API context
         return payment.execute(getApiContext(), paymentExecution);
+    }
+
+    /**
+     * Creates an invoice with the given details and sends it to the specified customer email address.
+     *
+     * @param payer The payer
+     * @param itemName The name of the item being invoiced.
+     * @param itemPrice The price of the item in the specified currency.
+     * @param currency The currency code for the item price.
+     * @param quantity The quantity of the item.
+     * @param listingId the id of the antiquity
+     * @return The created and sent Invoice object.
+     * @throws PayPalRESTException If an error occurs while creating or sending the invoice.
+     * @Author Zarzycki Alexis
+     */
+    public Invoice createAndSendInvoice(Payer payer, String itemName, Double itemPrice, String currency, int quantity, Long listingId) throws PayPalRESTException {
+
+        String customId = generateCustomId(listingId);
+        Invoice existingInvoice = checkExistingInvoice(customId);
+        if (existingInvoice != null) {
+
+            if ("PAID".equalsIgnoreCase(existingInvoice.getStatus())) {
+                return existingInvoice;
+            }
+
+            return existingInvoice;
+        }
+
+        Invoice invoice = new Invoice();
+
+        // Configure merchant details
+        MerchantInfo merchantInfo = new MerchantInfo()
+                .setEmail("seller@anticairapp.sixela.be")
+                .setFirstName("Alexis")
+                .setLastName("Zarzycki")
+                .setBusinessName("Anticair'App")
+                .setPhone(new Phone().setNationalNumber("472734415").setCountryCode("BE"));
+
+        // Configure the address
+        InvoiceAddress merchantAddress = new InvoiceAddress();
+        merchantAddress.setLine1("Rue Trieu Kaisin 136");
+        merchantAddress.setCity("Montignies-Sur-Sambre");
+        merchantAddress.setPostalCode("6061");
+        merchantAddress.setCountryCode("BE");
+        merchantInfo.setAddress(merchantAddress);
+
+        invoice.setMerchantInfo(merchantInfo);
+
+        // Validate and format item price
+        if (itemPrice < 0 || itemPrice > 999999.99) {
+            throw new IllegalArgumentException("Invalid item price: The value must be non-negative and up to six digits with two decimals.");
+        }
+
+        // Validate quantity
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Invalid quantity: The value must be greater than 0.");
+        }
+
+        // Format unit price and total amount to 2 decimals using Locale.US
+        String formattedUnitPrice = String.format(Locale.US, "%.2f", itemPrice);
+        String formattedTotalAmount = String.format(Locale.US, "%.2f", itemPrice * quantity);
+
+        // Ensure total amount is valid
+        if (Double.parseDouble(formattedTotalAmount) > 999999.99) {
+            throw new IllegalArgumentException("Invalid total amount: Total must not exceed 999999.99.");
+        }
+
+        // Configure invoice items
+        List<InvoiceItem> items = new ArrayList<>();
+        InvoiceItem item = new InvoiceItem()
+                .setName(itemName)
+                .setQuantity(quantity)
+                .setUnitPrice(new Currency()
+                        .setCurrency(currency)
+                        .setValue(formattedUnitPrice));
+        items.add(item);
+        invoice.setItems(items);
+
+        // Configure total amount
+        invoice.setTotalAmount(new Currency()
+                .setCurrency(currency)
+                .setValue(formattedTotalAmount));
+
+        invoice.setNote(customId);
+
+        BillingInfo billing = new BillingInfo()
+                .setEmail(payer.getPayerInfo().getEmail())
+                .setFirstName(payer.getPayerInfo().getFirstName())
+                .setLastName(payer.getPayerInfo().getLastName());
+
+        List<BillingInfo> billingInfoList = new ArrayList<>();
+        billingInfoList.add(billing);
+        invoice.setBillingInfo(billingInfoList);
+
+        // Create the invoice on PayPal
+        Invoice createdInvoice = invoice.create(getApiContext());
+
+        // Send the invoice to the customer
+        createdInvoice.send(getApiContext());
+
+        // Mark the invoice as paid
+        PaymentDetail paymentDetail = new PaymentDetail()
+                .setMethod("PAYPAL") // Payment method is PayPal
+                .setAmount(new Currency()
+                        .setCurrency(currency)
+                        .setValue(formattedTotalAmount)); // Total amount of the invoice
+
+        // Ensure invoice is marked as paid only after sending
+        createdInvoice.recordPayment(getApiContext(), paymentDetail);
+
+        return createdInvoice;
+    }
+
+    /**
+     * Checks for an existing invoice based on the provided custom ID.
+     *
+     * @param customId the custom identifier associated with the invoice to be searched
+     * @return the matching Invoice object if found, or null if no matching invoice exists
+     * @throws PayPalRESTException if an error occurs while retrieving the invoices
+     * @Author Zarzycki Alexis
+     */
+    private Invoice checkExistingInvoice(String customId) throws PayPalRESTException {
+        List<Invoice> invoices = Invoice.getAll(getApiContext()).getInvoices();
+
+        for (Invoice invoice : invoices) {
+            if (customId.equals(invoice.getNote())) {
+                return invoice;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Generates a custom identifier string for a given listing ID.
+     *
+     * @param listingId the ID of the listing for which the custom identifier is to be generated.
+     *                  Must be a non-null, positive number.
+     * @return a custom identifier string in the format "Antiquity-listingId".
+     * @throws IllegalArgumentException if the provided listingId is null or not a positive number.
+     * @Author Zarzycki Alexis
+     */
+    public String generateCustomId(Long listingId) {
+        if (listingId == null) {
+            throw new IllegalArgumentException("Listing ID cannot be null");
+        }
+
+        if (listingId <= 0) {
+            throw new IllegalArgumentException("Invalid listing ID: Must be a positive number.");
+        }
+
+        return String.format("Antiquity-%d", listingId);
     }
 }
