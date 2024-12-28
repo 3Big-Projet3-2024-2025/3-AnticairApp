@@ -24,6 +24,7 @@ import { OneAntiquityComponent } from './one-antiquity/one-antiquity.component';
 import { AuthService } from '../service/auth.service';
 import { PaymentConfComponent } from './payment-conf/payment-conf.component';
 import { BuyListingComponent } from './buy-listing/buy-listing.component';
+import { ListListingVerifyComponent } from './list-listing-verify/list-listing-verify.component';
 
 // Function to initialize Keycloak
 export function initializeKeycloak(authService: AuthService) {
@@ -50,6 +51,7 @@ export function initializeKeycloak(authService: AuthService) {
     OneAntiquityComponent,
     PaymentConfComponent,
     BuyListingComponent,
+    ListListingVerifyComponent,
   ],
   imports: [
     BrowserModule,

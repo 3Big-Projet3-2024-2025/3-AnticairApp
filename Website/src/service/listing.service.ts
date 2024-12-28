@@ -40,30 +40,30 @@ export class ListingService {
 
     // Configure the headers with the token
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${rawToken}` 
+      'Authorization': `Bearer ${rawToken}`
     });
-    
+
     // Send the request to API
     return this.http.post(this.privateUrl + '/create', formData, { headers });
   }
 
   getAntiquityById(id: string):Observable<Antiquity>{
-    return this.http.get<Antiquity>(this.privateUrl + '/' + id); 
+    return this.http.get<Antiquity>(this.privateUrl + '/' + id);
   }
 
   updateAntiquityWithPhotos(id: number, antiquity: Antiquity, images?: File[]): Observable<any> {
     const formData = new FormData();
-    
+
     // Convertir l'antiquité en JSON string
     formData.append('antiquity', JSON.stringify(antiquity));
-    
+
     // Ajouter les images si présentes
     if (images && images.length > 0) {
       images.forEach((file, index) => {
         formData.append('images', file, file.name);
       });
     }
-    
+
     return this.http.put<any>(`${this.privateUrl}/${id}`, formData);
   }
 
@@ -94,7 +94,7 @@ export class ListingService {
 
     return this.http.get<any>(`${this.privateUrl}/payment/execute`, { headers, params: { paymentId, PayerID: payerId } });
   }
-     
+
   acceptAntiquity(antiquity : Antiquity) : Observable<Map<String,String>>{
     const formData = new FormData();
     formData.append('id', JSON.stringify(antiquity.idAntiquity));
@@ -106,26 +106,34 @@ export class ListingService {
     });
     return this.http.put<any>(`${this.privateUrl}/acceptAntiquity`, formData, { headers});
   }
-  
+
 
   rejectAntiquity(antiquity: Antiquity, note_title: string, note_description: string, note_price: string, note_photo: string): Observable<Map<string, string>> {
     const formData = new FormData();
 
-    formData.append('note_title', JSON.stringify(note_title)); 
+    formData.append('note_title', JSON.stringify(note_title));
     formData.append('note_description', JSON.stringify(note_description));
     formData.append('note_price', JSON.stringify(note_price));
     formData.append('note_photo', JSON.stringify(note_photo));
     formData.append('id', JSON.stringify(antiquity.idAntiquity));
-  
+
     // Get the token from the authentication service
     const rawToken = this.authService.getToken();
-  
+
     // Configure the headers with the token
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${rawToken}`
     });
-  
+
     // Envoi de la requête PUT
     return this.http.put<Map<string, string>>(`${this.privateUrl}/rejectAntiquity`,formData,{headers});
+  }
+
+  getListingVerify(mailAntiquarian: string):Observable<Antiquity[]>{
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.get<Antiquity[]>(this.privateUrl + `/by-state?mailAntiquarian=${mailAntiquarian}`, {headers});
   }
 }

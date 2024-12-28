@@ -25,5 +25,14 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
     @Query("SELECT a FROM Listing a WHERE a.state = 1")
     List<Listing> getAllAntiquityChecked();
 
+    /**
+     * Find antiquities where the state is 0 or 2 and the mailSeller matches the given email
+     *
+     * @param states The list of states to filter (0, 2)
+     * @param mailAntiquarian The email of the seller to filter
+     * @return List of matching antiquities
+     */
+    List<Listing> findByStateInAndMailAntiquarian(List<Integer> states, String mailAntiquarian);
+
 
 }
