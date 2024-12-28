@@ -12,6 +12,14 @@ import { Router } from '@angular/router';
   styleUrl: './sell.component.css'
 })
 export class SellComponent {
+  currentTheme: 'dark' | 'light' = 'light';
+  antiquities: Antiquity[] = [];
+  filteredAntiquities: Antiquity[] = [];
+  pictures: String[] = [];
+  searchText: string = '';
+  sortCriteria: string = 'id';
+  currentPage: number = 1;
+  itemsPerPage: number = 12;
 
   currentTheme: 'dark' | 'light' = 'light';
   antiquities: Antiquity[] = [];

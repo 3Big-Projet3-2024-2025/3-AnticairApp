@@ -19,7 +19,6 @@ import { BuyListingComponent } from './buy-listing/buy-listing.component';
 import {isLoginGuard} from './guards/is-login.guard';
 
 
-
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
@@ -33,11 +32,8 @@ const routes: Routes = [
   { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AdminGuard] },
   { path: 'admin/users', component: UsersComponent, canActivate: [AdminGuard] },
   { path: 'admin/users/edit-groups/:email', component: EditGroupsComponent, canActivate: [AdminGuard] },
-
   { path: 'admin/manage-users', component: ManageUsersComponent,},
-
   { path: 'edit/:id', component: EditListingComponent, canActivate: [editAntiquityGuard]},
-
   { path: '**', redirectTo: '/home' }
 ];
 

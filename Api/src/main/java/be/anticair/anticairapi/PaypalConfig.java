@@ -5,10 +5,8 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import com.paypal.api.payments.Invoice;
 import com.paypal.api.payments.InvoiceItem;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -92,7 +90,7 @@ public class PaypalConfig {
 
         // Configure the payment object
         Payment payment = new Payment();
-        payment.setIntent(intent); // Defines the intent of the payment
+        payment.setIntent(intent); // Defines the intent of the payment (e.g., sale)
         payment.setPayer(new Payer().setPaymentMethod(method)); // Sets the payer and payment method
         payment.setTransactions(List.of(transaction)); // Assign transaction details to the payment
 
@@ -280,5 +278,4 @@ public class PaypalConfig {
 
         return String.format("Antiquity-%d", listingId);
     }
-
 }
