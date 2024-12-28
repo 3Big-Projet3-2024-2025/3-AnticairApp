@@ -21,16 +21,6 @@ export class SellComponent {
   currentPage: number = 1;
   itemsPerPage: number = 12;
 
-  currentTheme: 'dark' | 'light' = 'light';
-  antiquities: Antiquity[] = [];
-  filteredAntiquities: Antiquity[] = [];
-  pictures: String[] = [];
-  searchText: string = '';
-  sortCriteria: string = 'id';
-  
-  currentPage: number = 1;
-  itemsPerPage: number = 12;
-  
   get paginatedAntiquities(): Antiquity[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.filteredAntiquities.slice(startIndex, startIndex + this.itemsPerPage);
@@ -42,8 +32,8 @@ export class SellComponent {
   }
 
   constructor(
-    private themeService: ThemeService, 
-    private listingService: ListingService, 
+    private themeService: ThemeService,
+    private listingService: ListingService,
     private imageService: ImageServiceService,
     private router: Router,
   ) {}
