@@ -245,7 +245,6 @@ public class ListingController {
                 if (listingIdCustomField == null || listingIdCustomField.isEmpty()) {
                     throw new IllegalArgumentException("Listing ID missing in payment metadata.");
                 }
-
                 Transaction transaction = payment.getTransactions().get(0);
                 Payer payer = payment.getPayer();
                 String invoiceDescription = transaction.getDescription();
