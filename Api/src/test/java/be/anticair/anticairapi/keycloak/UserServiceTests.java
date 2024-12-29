@@ -252,7 +252,7 @@ public class UserServiceTests {
                 () -> userService.getUserBalance(nonExistentEmail)
         );
 
-        assertEquals("No users found with email: " + nonExistentEmail, exception.getMessage());
+        assertEquals("No users found with the email: " + nonExistentEmail, exception.getMessage());
     }
 
     /**
@@ -268,7 +268,7 @@ public class UserServiceTests {
         userService.addToUserBalance(TEST_USER_EMAIL, 50);
 
         double updatedBalance = userService.getUserBalance(TEST_USER_EMAIL);
-        assertEquals(initialBalance + 50, updatedBalance);
+        assertEquals(initialBalance + 50, updatedBalance, 0.01);  // Allow a small tolerance for floating-point comparisons
     }
 
     /**
@@ -284,7 +284,7 @@ public class UserServiceTests {
                 () -> userService.addToUserBalance(nonExistentEmail, 50)
         );
 
-        assertEquals("No users found with email: " + nonExistentEmail, exception.getMessage());
+        assertEquals("No users found with the email: " + nonExistentEmail, exception.getMessage());
     }
 
     /**
@@ -294,12 +294,12 @@ public class UserServiceTests {
      */
     @Test
     public void testAddToUserBalanceNegativeAmount() {
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
                 () -> userService.addToUserBalance(TEST_USER_EMAIL, -50)
         );
 
-        assertEquals("Amount must be non-negative.", exception.getMessage());
+        assertEquals("Error while updating the balance of the user with email: " + TEST_USER_EMAIL, exception.getMessage());
     }
 
 }

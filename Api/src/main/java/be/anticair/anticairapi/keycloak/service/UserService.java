@@ -445,6 +445,11 @@ public class UserService {
      */
     public void addToUserBalance(String userEmail, double amount) {
         try {
+            // Check the amount
+            if (amount < 0) {
+                throw new IllegalArgumentException("Amount must be non-negative.");
+            }
+
             // Get the users with the email
             List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
 
