@@ -26,11 +26,18 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
     List<Listing> getAllAntiquityChecked();
 
     /**
-     * Find antiquities where the state is 0 or 2 and the mailSeller matches the given email
+     * Finds antiquities where the state matches one of the provided states (0 or 2)
+     * and the seller's email matches the specified email.
      *
-     * @param states The list of states to filter (0, 2)
-     * @param mailAntiquarian The email of the seller to filter
-     * @return List of matching antiquities
+     * <p>This method queries the database for all antiquities that meet the
+     * filtering criteria: the state must be either 0 or 2, and the email of the
+     * seller must match the provided email address.</p>
+     *
+     * @param states a list of integers representing the states to filter (e.g., 0, 2)
+     * @param mailAntiquarian the email address of the antiquarian to filter by
+     * @return a list of {@link Listing} objects that match the specified criteria
+     *
+     * @author Neve Thierry
      */
     List<Listing> findByStateInAndMailAntiquarian(List<Integer> states, String mailAntiquarian);
 
