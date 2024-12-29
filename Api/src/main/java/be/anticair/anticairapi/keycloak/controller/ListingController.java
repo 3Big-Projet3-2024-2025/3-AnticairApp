@@ -3,6 +3,7 @@ package be.anticair.anticairapi.keycloak.controller;
 
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
+import be.anticair.anticairapi.Class.PhotoAntiquity;
 import be.anticair.anticairapi.PaypalConfig;
 import be.anticair.anticairapi.enumeration.AntiquityState;
 import be.anticair.anticairapi.keycloak.service.ListingService;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -243,7 +245,6 @@ public class ListingController {
                 if (listingIdCustomField == null || listingIdCustomField.isEmpty()) {
                     throw new IllegalArgumentException("Listing ID missing in payment metadata.");
                 }
-
                 Transaction transaction = payment.getTransactions().get(0);
                 Payer payer = payment.getPayer();
                 String invoiceDescription = transaction.getDescription();
@@ -281,6 +282,35 @@ public class ListingController {
             responseMessage.put("message", "Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
         }
+    }
+
+    /**
+     * Endpoint to retrieve all antiquities with a state of 0 or 1.
+     * @return List of filtered antiquities
+     */
+    @GetMapping("/by-state")
+    public ResponseEntity<List<ListingWithPhotosDto>> getAntiquitiesByState(@RequestParam String mailAntiquarian) {
+        List<ListingWithPhotosDto> antiquitiesWithPhoto = new ArrayList<>();
+        List<Listing> antiquities = listingService.getAntiquitiesByState(mailAntiquarian);
+        for(Listing antiquitie : antiquities) {
+            List<String> urlPhoto = new ArrayList<>();
+            List<PhotoAntiquity> photo = photoAntiquityService.findByIdAntiquity(antiquitie.getIdAntiquity());
+            ListingWithPhotosDto antiquityWithPhoto = new ListingWithPhotosDto();
+            for(PhotoAntiquity photoAntiquity : photo) {
+               urlPhoto.add(photoAntiquity.getPathPhoto()) ;
+            }
+            antiquityWithPhoto.setState(antiquitie.getState());
+            antiquityWithPhoto.setDescriptionAntiquity(antiquitie.getDescriptionAntiquity());
+            antiquityWithPhoto.setPriceAntiquity(antiquitie.getPriceAntiquity());
+            antiquityWithPhoto.setTitleAntiquity(antiquitie.getTitleAntiquity());
+            antiquityWithPhoto.setIdAntiquity(antiquitie.getIdAntiquity());
+            antiquityWithPhoto.setMailAntiquarian(antiquitie.getMailAntiquarian());
+            antiquityWithPhoto.setIsDisplay(antiquitie.getIsDisplay());
+            antiquityWithPhoto.setMailSeller(antiquitie.getMailSeller());
+            antiquityWithPhoto.setPhotos(urlPhoto);
+            antiquitiesWithPhoto.add(antiquityWithPhoto);
+        }
+        return ResponseEntity.ok(antiquitiesWithPhoto);
     }
 
 }

@@ -253,6 +253,14 @@ public class ListingService {
         listing.setState(AntiquityState.SOLD.getState());
         listingRepository.save(listing);
     }
+
+    /**
+     * Retrieve all antiquities with a state of 0 or 1.
+     * @return List of filtered antiquities
+     */
+    public List<Listing> getAntiquitiesByState(String mailAntiquarian) {
+        return listingRepository.findByStateInAndMailAntiquarian(Arrays.asList(0, 2), mailAntiquarian);
+    }
 }
 
 
