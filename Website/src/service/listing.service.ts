@@ -136,4 +136,20 @@ export class ListingService {
     });
     return this.http.get<Antiquity[]>(this.privateUrl + `/by-state?mailAntiquarian=${mailAntiquarian}`, {headers});
   }
+
+  getListingSeller(mailSeller: string):Observable<Antiquity[]>{
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.get<Antiquity[]>(this.privateUrl + `/byMailSeller?mailSeller=${mailSeller}`, {headers});
+  }
+
+  deleteById(id: number): Observable<Antiquity> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.put<Antiquity>(`${this.privateUrl}/isDisplay/${id}`, null, { headers});
+  }
 }

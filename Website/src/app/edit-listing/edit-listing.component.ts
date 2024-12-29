@@ -43,7 +43,7 @@ export class EditListingComponent implements OnInit {
         });
 
         // Prepare observables to load images
-        const imageObservables = data.photos.map(photoPath => 
+        const imageObservables = data.photos.map(photoPath =>
           this.imageService.getImageFile(photoPath)
         );
 
@@ -88,26 +88,26 @@ export class EditListingComponent implements OnInit {
         if (this.imagePreviews.length < 10) {
           // Convert the selected file to JPEG format
           const reader = new FileReader();
-  
+
           reader.onload = (e: ProgressEvent<FileReader>) => {
             if (e.target?.result) {
               const imgDataUrl = e.target.result as string;
-  
+
               // Convert the Data URL to a Blob
               fetch(imgDataUrl)
                 .then(res => res.blob())
                 .then(blob => {
                   // Create a new File with type JPEG
                   const newFile = new File([blob], `${file.name.replace(/\.[^/.]+$/, "")}.jpg`, { type: 'image/jpeg' });
-                  
+
                   this.selectedFiles.push(newFile);
-  
+
                   // Update the preview
                   this.imagePreviews.push(imgDataUrl);
                 });
             }
           };
-  
+
           reader.readAsDataURL(file);
         }
       });
@@ -138,8 +138,8 @@ export class EditListingComponent implements OnInit {
 
     // Send the updated antiquity with selected images
     this.antiquityService.updateAntiquityWithPhotos(
-      this.antiquity.idAntiquity, 
-      this.antiquity, 
+      this.antiquity.idAntiquity,
+      this.antiquity,
       this.selectedFiles
     ).subscribe({
       next: () => {
@@ -151,5 +151,12 @@ export class EditListingComponent implements OnInit {
         alert('Error updating the antiquity');
       }
     });
+  }
+
+  deleteById(index: number) {
+    const bool = confirm("Are you sure you want to delete this antiquity?");
+    if(bool) this.antiquityService.deleteById(index).subscribe(res => {
+      this.router.navigate(['/profile']);
+    })
   }
 }
