@@ -285,8 +285,19 @@ public class ListingController {
     }
 
     /**
-     * Endpoint to retrieve all antiquities with a state of 0 or 1.
-     * @return List of filtered antiquities
+     * Endpoint to retrieve all antiquities associated with a specific antiquarian that have a state of 0 or 1.
+     *
+     * <p>This method processes the antiquities linked to the provided antiquarian's email, retrieves the associated photos,
+     * and maps the data to a DTO that includes the antiquities' details along with their photo URLs.</p>
+     *
+     * @param mailAntiquarian the email of the antiquarian whose antiquities are to be retrieved
+     * @return a {@link ResponseEntity} containing a list of {@link ListingWithPhotosDto},
+     *         where each DTO includes antiquity details and a list of associated photo URLs
+     *
+     * @author Neve Thierry
+     * @see ListingWithPhotosDto
+     * @see PhotoAntiquity
+     * @see ListingService#getAntiquitiesByState(String)
      */
     @GetMapping("/by-state")
     public ResponseEntity<List<ListingWithPhotosDto>> getAntiquitiesByState(@RequestParam String mailAntiquarian) {
