@@ -27,6 +27,27 @@ public class RGPDController {
     @Value("${spring.mail.username}")
     private String sender;
 
+
+    /**
+     * Endpoint to update a user's profile to comply with GDPR regulations.
+     *
+     * <p>This method processes a request to anonymize and deactivate a user's profile.
+     * It first validates the provided email, sends a notification email to the user,
+     * and then updates the user's profile in Keycloak. If an error occurs,
+     * a descriptive error message is returned.</p>
+     *
+     * @param userDetails a map containing the user's details, where the key "email" is required
+     *                    to identify the user
+     * @return a {@link ResponseEntity} containing a JSON response with a success message
+     *         or an error description
+     *
+     * @throws RuntimeException if an error occurs during the profile update or email sending
+     *
+     * @author Neve Thierry
+     * @see UserService#updateRGPDUserProfile(Map)
+     * @see EmailService#sendHtmlEmail(String, String, TypeOfMail, Map)
+     * @see TypeOfMail
+     */
     @PutMapping("/update")
     public ResponseEntity<Map<String,String>> updateRGPD(@RequestBody Map<String, Object> userDetails) {
         Map<String, String> response = new HashMap<>();
