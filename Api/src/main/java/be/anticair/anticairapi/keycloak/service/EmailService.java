@@ -62,7 +62,6 @@ public class EmailService {
                   htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    break;
                case 2: //Application of the commission, so notify the antiquarian
-
                    htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    double priceWithCommission = Double.parseDouble(otherInformation.get("price"));
                    double commissionDouble = priceWithCommission/1.20;
@@ -84,6 +83,14 @@ public class EmailService {
                    break;
                case 6: // Warning the user that is account status has been changed
                    htmlTemplate = htmlTemplate.replace("${account_newstatus}", otherInformation.get("account_newstatus"));
+                   break;
+               case 7: // Warning the user that he received a payment
+                   htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
+                   double priceWithCommission2 = Double.parseDouble(otherInformation.get("price"));
+                   double commissionDouble2 = priceWithCommission2/1.20;
+                   priceWithCommission2 -= commissionDouble2;
+                   String commissionString2 = Double.toString(priceWithCommission2);
+                   htmlTemplate = htmlTemplate.replace("${commission}", commissionString2);
                    break;
                case 10:
                    break;

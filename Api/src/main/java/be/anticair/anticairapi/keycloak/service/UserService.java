@@ -13,10 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -393,8 +390,91 @@ public class UserService {
             // Mise à jour sur Keycloak
             keycloak.realm(realm).users().get(user.getId()).update(user);
         } catch (Exception e) {
-    throw new RuntimeException(e);
-}
-
+            throw new RuntimeException(e);
+        }
     }
+
+    /**
+     * Get the balance of a user
+     * @param userEmail the email of the user to get the balance
+     * @return int the amount of the balance
+     * @Author Zarzycki Alexis
+     */
+    public int getUserBalance(String userEmail) {
+        try {
+            // Get the users with the email
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // We get the first user in the list
+            UserRepresentation user = users.get(0);
+
+            // Retrieve the "balance" attribute from user attributes
+            Map<String, List<String>> attributes = user.getAttributes();
+
+            if (attributes != null && attributes.containsKey("balance")) {
+                List<String> balanceValues = attributes.get("balance");
+
+                if (balanceValues != null && !balanceValues.isEmpty()) {
+                    return Integer.parseInt(balanceValues.get(0));
+                }
+            }
+            // If no "balance" attribute is found, return a default value
+            return 0;
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with the email: " + userEmail, e);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid balance value for user with email: " + userEmail, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while getting the balance of the user with email: " + userEmail, e);
+        }
+    }
+
+    /**
+     * Add a specified amount to a user's balance.
+     * @param userEmail the email of the user to update the balance.
+     * @param amount the amount to add to the user's balance.
+     * @Author Zarzycki Alexis
+     */
+    public void addToUserBalance(String userEmail, int amount) {
+        try {
+            // Get the users with the email
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // Get the first user in the list
+            UserRepresentation user = users.get(0);
+
+            // Retrieve the current "balance" attribute
+            Map<String, List<String>> attributes = user.getAttributes();
+            int currentBalance = getUserBalance(userEmail);
+
+            // Calculate the new balance
+            int newBalance = currentBalance + amount;
+
+            // Update the user's attributes with the new balance
+            if (attributes == null) {
+                attributes = new HashMap<>();
+            }
+            attributes.put("balance", Collections.singletonList(String.valueOf(newBalance)));
+            user.setAttributes(attributes);
+            // Update the user in Keycloak
+            keycloak.realm(realm).users().get(user.getId()).update(user);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with the email: " + userEmail, e);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid balance value for user with email: " + userEmail, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while updating the balance of the user with email: " + userEmail, e);
+        }
+    }
+
 }
