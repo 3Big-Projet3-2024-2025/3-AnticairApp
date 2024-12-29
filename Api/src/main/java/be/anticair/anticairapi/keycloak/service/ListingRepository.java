@@ -42,4 +42,17 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
     List<Listing> findByStateInAndMailAntiquarian(List<Integer> states, String mailAntiquarian);
 
 
+    /**
+     * Finds a list of listings associated with a specific seller's email.
+     *
+     * This method retrieves all listings where the seller's email matches the provided `mailSeller` value.
+     *
+     * @param mailSeller The email address of the seller whose listings are being retrieved.
+     * @return A list of `Listing` objects associated with the specified seller's email.
+     *
+     * @author Neve Thierry
+     */
+    List<Listing> findByMailSeller(String mailSeller);
+
+
 }

@@ -359,6 +359,23 @@ public class UserService {
         keycloak.realm(realm).users().get(user.getId()).update(user);
     }
 
+
+    /**
+     * Updates a user's profile in Keycloak to comply with GDPR regulations.
+     *
+     * <p>This method anonymizes the user's personal data such as first name, last name,
+     * email address, and phone number, and disables the user account. The updates are
+     * performed directly in the Keycloak user management system based on the provided
+     * email address.</p>
+     *
+     * @param userDetails a map containing the user's details, including the key "email"
+     *                    which specifies the email of the user to be updated
+     * @throws RuntimeException if the user is not found in Keycloak or if an error occurs during the update
+     *
+     * @author Neve Thierry
+     * @see UserRepresentation
+     * @see org.keycloak.admin.client.Keycloak
+     */
     public void updateRGPDUserProfile(Map<String, Object> userDetails) {
         String email = (String) userDetails.get("email");
         try{List<UserRepresentation> users = keycloak.realm(realm).users().search(email);
@@ -367,8 +384,8 @@ public class UserService {
             }
 
             UserRepresentation user = users.get(0);
-            user.setFirstName("FirstName_"+ user.getFirstName());
-            user.setLastName("LastName_"+ user.getFirstName());
+            user.setFirstName("FirstName_"+ user.getId());
+            user.setLastName("LastName_"+ user.getId());
             user.singleAttribute("phoneNumber", "+32000000000");
             user.setEmail("anonymized"+user.getId()+"@deleted.com");
             user.setEnabled(false);

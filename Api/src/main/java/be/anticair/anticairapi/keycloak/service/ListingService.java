@@ -176,6 +176,21 @@ public class ListingService {
         }
     }
 
+
+    /**
+     * Updates the details of an existing listing based on the provided ID.
+     *
+     * <p>This method searches for a listing by its ID and updates its properties (such as price,
+     * description, title, etc.) with the values provided in the {@link Listing} object. If no listing
+     * is found with the given ID, a {@link RuntimeException} is thrown.</p>
+     *
+     * @param id the ID of the listing to be updated
+     * @param updatedListing the {@link Listing} object containing the new values to update the listing
+     * @return the updated {@link Listing} object after saving it to the database
+     * @throws RuntimeException if no listing is found with the given ID
+     *
+     * @author Neve Thierry
+     */
     public Listing updateListing(Long id, Listing updatedListing) {
         return ListingRepository.findById(id).map(antiquity -> {
             antiquity.setPriceAntiquity(updatedListing.getPriceAntiquity());
@@ -189,6 +204,24 @@ public class ListingService {
         }).orElseThrow(() -> new RuntimeException("Antiquity not found with id: " + id));
     }
 
+
+    /**
+     * Retrieves a listing by its ID along with its associated photos.
+     *
+     * <p>This method searches for a listing by its ID and retrieves all the photos
+     * associated with that listing. If no listing is found with the given ID,
+     * a {@link RuntimeException} is thrown. The method returns a {@link ListingWithPhotosDto}
+     * object containing the listing details and the associated photos.</p>
+     *
+     * @param id the ID of the listing to retrieve
+     * @return a {@link ListingWithPhotosDto} object containing the listing and its associated photos
+     * @throws RuntimeException if no listing is found with the given ID
+     *
+     *
+     * @author Neve Thierry
+     * @see PhotoAntiquityService#findByIdAntiquity(Integer)
+     * @see ListingWithPhotosDto
+     */
     public ListingWithPhotosDto getListingById(Integer id) {
         // Get the listing
         Listing listing = ListingRepository.findById(Long.valueOf(id))
@@ -269,6 +302,49 @@ public class ListingService {
 
     public List<Listing> getAntiquitiesByState(String mailAntiquarian) {
         return listingRepository.findByStateInAndMailAntiquarian(Arrays.asList(0, 2), mailAntiquarian);
+    }
+
+    /**
+     * Retrieves a list of visible antiquities (isDisplay = true) associated with a seller by their email.
+     *
+     * This method filters the antiquities retrieved by checking their `isDisplay` field and returns only those
+     * that are marked as visible (isDisplay = true).
+     *
+     * @param mailSeller The email address of the seller for whom the antiquities are retrieved.
+     * @return A list of `Listing` containing the visible antiquities associated with the seller's email.
+     *
+     * @author Neve Thierry
+     */
+    public List<Listing> getAntiquitiesByMailSeller(String mailSeller) {
+        List<Listing> trueList = new ArrayList<>();
+        List<Listing> list = listingRepository.findByMailSeller(mailSeller);
+        for(Listing listing : list) {
+            if(listing.getIsDisplay()) {
+                trueList.add(listing);
+            }
+        }
+        return trueList;
+    }
+
+    /**
+     * Updates the 'isDisplay' field of a listing to false based on the provided ID.
+     *
+     * This method finds the listing by its ID, and if the listing exists, it sets the `isDisplay`
+     * field to `false` and saves the updated listing.
+     *
+     * @param id The ID of the listing to update.
+     * @return The updated `Listing` object with `isDisplay` set to `false`.
+     * @throws RuntimeException If the listing with the provided ID is not found.
+     *
+     * @author Neve Thierry
+     */
+    public Listing updateIsDisplay(long id) {
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new RuntimeException("Entity not found"));
+
+            listing.setIsDisplay(false);
+            return ListingRepository.save(listing);
+
+
     }
 }
 

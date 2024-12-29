@@ -43,11 +43,23 @@ public class ListingController {
 
 
     /**
-     * Update an antiquity along with its associated images.
+     * Updates an existing antiquity and its associated photos.
      *
-     * @param antiquityJson JSON representation of the antiquity object.
-     * @param images Multipart files representing new images for the antiquity.
-     * @return ResponseEntity indicating the update status.
+     * <p>This endpoint allows updating an antiquity's details (such as price, description, title, etc.)
+     * and optionally uploading new photos. The antiquity details are provided as a JSON string,
+     * which is deserialized into a {@link Listing} object. The photos are provided as a list of
+     * {@link MultipartFile} objects. If photos are provided, they are updated alongside the antiquity details.</p>
+     *
+     * @param id the ID of the antiquity to update
+     * @param antiquityJson a JSON string representing the new details of the antiquity
+     * @param images a list of {@link MultipartFile} objects representing the new photos to associate with the antiquity (optional)
+     * @return a {@link ResponseEntity} containing a message indicating success or failure
+     *
+     * @author Neve Thierry
+     * @see ListingService#updateListing(Long, Listing)
+     * @see PhotoAntiquityService#updatePhotos(Integer, List)
+     * @see Listing
+     * @see MultipartFile
      */
     @PutMapping("/{id}")
     public ResponseEntity<Map<String,String>> updateAntiquityWithPhotos(@PathVariable Integer id, @RequestParam("antiquity") String antiquityJson, @RequestParam(value = "images", required = false) List<MultipartFile> images) {
@@ -122,6 +134,22 @@ public class ListingController {
         }
     }
 
+
+    /**
+     * Retrieves a listing by its ID along with its associated photos.
+     *
+     * <p>This endpoint retrieves a listing and its associated photos using the given ID.
+     * If the listing is found, it returns a {@link ListingWithPhotosDto} object in the response.
+     * If no listing is found with the provided ID, it returns a {@link HttpStatus#NOT_FOUND} response.</p>
+     *
+     * @param id the ID of the listing to retrieve
+     * @return a {@link ResponseEntity} containing a {@link ListingWithPhotosDto} object if found,
+     *         or a {@link HttpStatus#NOT_FOUND} status if the listing is not found
+     *
+     * @author Neve Thierry
+     * @see ListingService#getListingById(Integer)
+     * @see ListingWithPhotosDto
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ListingWithPhotosDto> getListingById(@PathVariable Integer id) {
         try {
@@ -322,6 +350,61 @@ public class ListingController {
             antiquitiesWithPhoto.add(antiquityWithPhoto);
         }
         return ResponseEntity.ok(antiquitiesWithPhoto);
+    }
+
+    /**
+     * Retrieves a list of antiquities with their associated photos for a specific seller's email.
+     *
+     * This method handles a GET request to fetch all antiquities related to a given seller's email.
+     * It includes the details of the antiquities along with the URLs of their associated photos.
+     *
+     * @param mailSeller The email address of the seller whose antiquities are being retrieved.
+     * @return A ResponseEntity containing a list of `ListingWithPhotosDto` objects, each representing an antiquity
+     *         with its details and associated photo URLs.
+     *
+     * @author Neve Thierry
+     */
+    @GetMapping("/byMailSeller")
+    public ResponseEntity<List<ListingWithPhotosDto>> getAntiquitiesByMailSeller(@RequestParam String mailSeller) {
+        List<ListingWithPhotosDto> antiquitiesWithPhoto = new ArrayList<>();
+        List<Listing> antiquities = listingService.getAntiquitiesByMailSeller(mailSeller);
+        for(Listing antiquitie : antiquities) {
+            List<String> urlPhoto = new ArrayList<>();
+            List<PhotoAntiquity> photo = photoAntiquityService.findByIdAntiquity(antiquitie.getIdAntiquity());
+            ListingWithPhotosDto antiquityWithPhoto = new ListingWithPhotosDto();
+            for(PhotoAntiquity photoAntiquity : photo) {
+                urlPhoto.add(photoAntiquity.getPathPhoto()) ;
+            }
+            antiquityWithPhoto.setState(antiquitie.getState());
+            antiquityWithPhoto.setDescriptionAntiquity(antiquitie.getDescriptionAntiquity());
+            antiquityWithPhoto.setPriceAntiquity(antiquitie.getPriceAntiquity());
+            antiquityWithPhoto.setTitleAntiquity(antiquitie.getTitleAntiquity());
+            antiquityWithPhoto.setIdAntiquity(antiquitie.getIdAntiquity());
+            antiquityWithPhoto.setMailAntiquarian(antiquitie.getMailAntiquarian());
+            antiquityWithPhoto.setIsDisplay(antiquitie.getIsDisplay());
+            antiquityWithPhoto.setMailSeller(antiquitie.getMailSeller());
+            antiquityWithPhoto.setPhotos(urlPhoto);
+            antiquitiesWithPhoto.add(antiquityWithPhoto);
+        }
+        return ResponseEntity.ok(antiquitiesWithPhoto);
+    }
+
+
+    /**
+     * Updates the 'isDisplay' field of a listing to false based on the provided ID.
+     *
+     * This method handles a PUT request to update the `isDisplay` field of a listing. It calls the service
+     * layer to perform the update and returns the updated listing in the response body.
+     *
+     * @param id The ID of the listing to update.
+     * @return A ResponseEntity containing the updated `Listing` object with the `isDisplay` field set to `false`.
+     *
+     * @author Neve Thierry
+     */
+    @PutMapping("/isDisplay/{id}")
+    public ResponseEntity<Listing> updateIsDisplay(@PathVariable Long id){
+        Listing listing = listingService.updateIsDisplay(id);
+        return ResponseEntity.ok(listing);
     }
 
 }
