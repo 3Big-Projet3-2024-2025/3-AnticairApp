@@ -26,11 +26,8 @@ export class OneAntiquityComponent {
     });
 
      // Get the ID from the route and fetch the antiquity details
-    this.route.paramMap.subscribe(params => {
-      const id = +params.get('id')!;
-      if (id) {
-        this.listingService.getAntiquityById(id.toString()).subscribe(antiquity => {
-          if (antiquity.state !== 1) {
+        this.listingService.getAntiquityById(this.id.toString()).subscribe(antiquity => {
+          if (!antiquity) {
             this.router.navigate(['/home']);
           } else {
             this.antiquity = antiquity;
@@ -46,9 +43,6 @@ export class OneAntiquityComponent {
             });
           }
         });
-      } else {
-        this.router.navigate(['/home']);
-      }
-    });
+      
   }
 }

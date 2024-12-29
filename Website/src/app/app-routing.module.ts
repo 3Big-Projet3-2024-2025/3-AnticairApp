@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { SellComponent } from './sell/sell.component';
-import { AdminGuard } from './guards/admin.guard';
+import { AdminGuard } from '../guards/admin.guard';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { UsersComponent } from './admin/users/users.component';
 import { EditGroupsComponent } from './admin/users/edit-groups/edit-groups.component';
@@ -12,13 +12,13 @@ import { EditListingComponent } from './edit-listing/edit-listing.component';
 
 import {ProfileComponent} from './profile/profile.component';
 
-import { editAntiquityGuard } from './edit-antiquity.guard';
-import { OneAntiquityComponent } from './one-antiquity/one-antiquity.component';
+import { editAntiquityGuard } from '../guards/edit-antiquity.guard';
 import { PaymentConfComponent } from './payment-conf/payment-conf.component';
 import { BuyListingComponent } from './buy-listing/buy-listing.component';
-import {isLoginGuard} from './guards/is-login.guard';
-import {ListListingVerifyComponent} from './list-listing-verify/list-listing-verify.component';
-import {isAntiquarianGuard} from './guards/is-antiquarian.guard';
+import { isLoginGuard } from '../guards/is-login.guard';
+import { ListListingVerifyComponent } from './list-listing-verify/list-listing-verify.component';
+import { isAntiquarianGuard } from '../guards/is-antiquarian.guard';
+import { CheckListingComponent } from './check-listing/check-listing.component';
 
 
 const routes: Routes = [
@@ -37,6 +37,7 @@ const routes: Routes = [
   { path: 'admin/manage-users', component: ManageUsersComponent,},
   { path: 'edit/:id', component: EditListingComponent, canActivate: [editAntiquityGuard]},
   { path:'list-antiquity-verify', component: ListListingVerifyComponent, canActivate: [isAntiquarianGuard]},
+  { path:'list-antiquity-verify/:id', component: CheckListingComponent, canActivate: [isAntiquarianGuard]},
   { path: '**', redirectTo: '/home' }
 ];
 

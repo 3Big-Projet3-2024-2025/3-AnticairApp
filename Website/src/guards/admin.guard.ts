@@ -6,7 +6,7 @@ import {
   Router, CanActivateFn
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { AuthService } from '../../service/auth.service';
+import { AuthService } from '../service/auth.service';
 
 
 export const AdminGuard: CanActivateFn = () => {

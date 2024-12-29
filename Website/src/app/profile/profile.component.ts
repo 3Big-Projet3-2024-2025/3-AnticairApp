@@ -11,7 +11,11 @@ import {Router} from '@angular/router';
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   standalone: true,
+<<<<<<< Updated upstream
   imports: [FormsModule, NgIf, NgClass],
+=======
+  imports: [FormsModule, NgIf, CurrencyPipe, NgForOf],
+>>>>>>> Stashed changes
 })
 export class ProfileComponent implements OnInit {
   showSuccessMessage: boolean = false;
