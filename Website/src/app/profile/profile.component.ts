@@ -14,7 +14,9 @@ import {ImageServiceService} from '../../service/image-service.service';
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   standalone: true,
+
   imports: [FormsModule, NgIf, NgClass, CurrencyPipe, NgForOf],
+
 })
 export class ProfileComponent implements OnInit {
   showSuccessMessage: boolean = false;
