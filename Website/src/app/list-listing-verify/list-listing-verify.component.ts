@@ -3,6 +3,7 @@ import {ListingService} from '../../service/listing.service';
 import {ImageServiceService} from '../../service/image-service.service';
 import {AuthService} from '../../service/auth.service';
 import {Antiquity} from '../../modele/DtoListing';
+import {ThemeService} from "../../service/theme.service";
 
 @Component({
   selector: 'app-list-listing-verify',
@@ -11,11 +12,15 @@ import {Antiquity} from '../../modele/DtoListing';
 })
 export class ListListingVerifyComponent implements OnInit {
   antiquities: Antiquity[] = []
+  currentTheme: 'dark' | 'light' = 'light';
 
 
-  constructor(private listingService: ListingService,private imageService:ImageServiceService,private authService: AuthService) { }
+  constructor(private listingService: ListingService,private themeService: ThemeService,private imageService:ImageServiceService,private authService: AuthService) { }
 
   ngOnInit(): void {
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
 
     let userinfo = this.authService.getUserDetails();
 
