@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -84,12 +87,21 @@ public class EmailService {
                case 6: // Warning the user that is account status has been changed
                    htmlTemplate = htmlTemplate.replace("${account_newstatus}", otherInformation.get("account_newstatus"));
                    break;
-               case 7: // Warning the user that he received a payment
-                   htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
+               case 7: // Warning the user that they received a payment
+                   htmlTemplate = this.replaceAntiquityInformation(htmlTemplate, otherInformation);
+
+                   // Get the price with commission
                    double priceWithCommission2 = Double.parseDouble(otherInformation.get("price"));
-                   double commissionDouble2 = priceWithCommission2/1.20;
-                   priceWithCommission2 -= commissionDouble2;
-                   String commissionString2 = Double.toString(priceWithCommission2);
+
+                   // Calculate the commission (20%)
+                   double commissionDouble2 = priceWithCommission2 * 0.20;
+
+                   // Format commission to two decimal places
+                   DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);  // Force dot separator
+                   DecimalFormat df = new DecimalFormat("#.00", symbols);  // Always two decimal places
+                   String commissionString2 = df.format(commissionDouble2);
+
+                   // Replace the commission placeholder in the HTML template
                    htmlTemplate = htmlTemplate.replace("${commission}", commissionString2);
                    break;
                case 10:

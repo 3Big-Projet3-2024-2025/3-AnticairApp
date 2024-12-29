@@ -35,7 +35,6 @@ export class ProfileComponent implements OnInit {
     });
     try {
       this.userDetails = this.authService.getUserDetails();
-      console.log('User details:', this.userDetails);
     } catch (error) {
       console.error('Error loading user details:', error);
     } finally {

@@ -235,7 +235,7 @@ public class UserServiceTests {
      */
     @Test
     public void testGetUserBalanceValidUser() {
-        int balance = userService.getUserBalance(TEST_USER_EMAIL);
+        double balance = userService.getUserBalance(TEST_USER_EMAIL);
         assertTrue(balance >= 0, "Balance should be a non-negative integer.");
     }
 
@@ -262,12 +262,12 @@ public class UserServiceTests {
      */
     @Test
     public void testAddToUserBalanceValidUser() {
-        int initialBalance = userService.getUserBalance(TEST_USER_EMAIL);
+        double initialBalance = userService.getUserBalance(TEST_USER_EMAIL);
 
         // Add 50 to the user's balance
         userService.addToUserBalance(TEST_USER_EMAIL, 50);
 
-        int updatedBalance = userService.getUserBalance(TEST_USER_EMAIL);
+        double updatedBalance = userService.getUserBalance(TEST_USER_EMAIL);
         assertEquals(initialBalance + 50, updatedBalance);
     }
 

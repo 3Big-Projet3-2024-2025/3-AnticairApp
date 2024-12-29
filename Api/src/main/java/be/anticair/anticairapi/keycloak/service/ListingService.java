@@ -285,14 +285,6 @@ public class ListingService {
                 .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
         listing.setState(AntiquityState.SOLD.getState());
         listingRepository.save(listing);
-        // When the antiquity has been sold, we pay the antiquarian for the commission
-        userService.addToUserBalance(listing.getMailAntiquarian(), (int) (listing.getPriceAntiquity() * 0.20));
-        // We send the email to inform the antiquarian
-        Map<String,String> otherInformation = new HashMap<>();
-        otherInformation.put("title", listing.getTitleAntiquity());
-        otherInformation.put("description", listing.getDescriptionAntiquity());
-        otherInformation.put("price", listing.getPriceAntiquity().toString());
-        emailService.sendHtmlEmail(listing.getMailSeller(), "info@anticairapp.sixela.be", TypeOfMail.PAYMENTOFCOMMISSION, otherInformation);
     }
 
     /**

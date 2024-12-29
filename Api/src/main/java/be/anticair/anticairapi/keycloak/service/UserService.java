@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -397,10 +399,10 @@ public class UserService {
     /**
      * Get the balance of a user
      * @param userEmail the email of the user to get the balance
-     * @return int the amount of the balance
+     * @return double the amount of the balance
      * @Author Zarzycki Alexis
      */
-    public int getUserBalance(String userEmail) {
+    public double getUserBalance(String userEmail) {
         try {
             // Get the users with the email
             List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
@@ -420,7 +422,8 @@ public class UserService {
                 List<String> balanceValues = attributes.get("balance");
 
                 if (balanceValues != null && !balanceValues.isEmpty()) {
-                    return Integer.parseInt(balanceValues.get(0));
+                    // Convert balance to double for proper calculation
+                    return Double.parseDouble(balanceValues.get(0));
                 }
             }
             // If no "balance" attribute is found, return a default value
@@ -440,7 +443,7 @@ public class UserService {
      * @param amount the amount to add to the user's balance.
      * @Author Zarzycki Alexis
      */
-    public void addToUserBalance(String userEmail, int amount) {
+    public void addToUserBalance(String userEmail, double amount) {
         try {
             // Get the users with the email
             List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
@@ -455,17 +458,23 @@ public class UserService {
 
             // Retrieve the current "balance" attribute
             Map<String, List<String>> attributes = user.getAttributes();
-            int currentBalance = getUserBalance(userEmail);
+            double currentBalance = getUserBalance(userEmail);
 
             // Calculate the new balance
-            int newBalance = currentBalance + amount;
+            double newBalance = currentBalance + amount;
+
+            // Format the new balance to ensure it's in the correct format (with two decimal places)
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);  // Force dot separator
+            DecimalFormat df = new DecimalFormat("#.00", symbols);  // Always two decimal places
+            String formattedBalance = df.format(newBalance);
 
             // Update the user's attributes with the new balance
             if (attributes == null) {
                 attributes = new HashMap<>();
             }
-            attributes.put("balance", Collections.singletonList(String.valueOf(newBalance)));
+            attributes.put("balance", Collections.singletonList(formattedBalance));
             user.setAttributes(attributes);
+
             // Update the user in Keycloak
             keycloak.realm(realm).users().get(user.getId()).update(user);
         } catch (NotFoundException e) {
@@ -473,6 +482,7 @@ public class UserService {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid balance value for user with email: " + userEmail, e);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException("Error while updating the balance of the user with email: " + userEmail, e);
         }
     }
