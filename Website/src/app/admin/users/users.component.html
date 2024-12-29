@@ -79,6 +79,11 @@
                             <button class="px-4 py-2 bg-blue-500 text-white rounded mt-4 ml-4"
                                 (click)="changeUserStatus(user.email, user.enabled ? 'Enabled' : 'Disabled')">
                                 {{ user.enabled ? 'Disable' : 'Enable' }}</button>
+
+                          <button class="px-4 py-2 bg-yellow-500 text-white rounded mt-4 ml-4"
+                                  (click)="forcePasswordReset(user.id)">
+                            Reset Password
+                          </button>
                         </td>
                     </tr>
                 </tbody>
@@ -96,28 +101,28 @@
             <!-- User type selection -->
             <div class="mb-4 flex space-x-4">
                 <label class="inline-flex items-center">
-                    <input type="radio" 
-                           name="userType" 
-                           value="admin" 
-                           [(ngModel)]="selectedUserType" 
+                    <input type="radio"
+                           name="userType"
+                           value="admin"
+                           [(ngModel)]="selectedUserType"
                            (change)="loadSelectedUsers()"
                            class="form-radio">
                     <span class="ml-2">Administrators</span>
                 </label>
                 <label class="inline-flex items-center">
-                    <input type="radio" 
-                           name="userType" 
-                           value="antiquarian" 
-                           [(ngModel)]="selectedUserType" 
+                    <input type="radio"
+                           name="userType"
+                           value="antiquarian"
+                           [(ngModel)]="selectedUserType"
                            (change)="loadSelectedUsers()"
                            class="form-radio">
                     <span class="ml-2">Antiquarians</span>
                 </label>
                 <label class="inline-flex items-center">
-                    <input type="radio" 
-                           name="userType" 
-                           value="basic" 
-                           [(ngModel)]="selectedUserType" 
+                    <input type="radio"
+                           name="userType"
+                           value="basic"
+                           [(ngModel)]="selectedUserType"
                            (change)="loadSelectedUsers()"
                            class="form-radio">
                     <span class="ml-2">Users</span>
@@ -184,6 +189,11 @@
                                     (click)="changeUserStatus(user.email, user.enabled ? 'Enabled' : 'Disabled')">
                                     {{ user.enabled ? 'Disable' : 'Enable' }}
                                 </button>
+
+                              <button class="px-4 py-2 bg-yellow-500 text-white rounded mt-4 ml-4"
+                                      (click)="forcePasswordReset(user.id)">
+                                Reset Password
+                              </button>
                             </td>
                         </tr>
                     </tbody>

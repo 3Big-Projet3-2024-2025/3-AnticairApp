@@ -7,6 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class AdminService {
   private apiUrl = '/api/admin';
+  private readonly KEYCLOAK_URL = 'http://localhost:8081/realms/anticairapp';
+
 
   constructor(private http: HttpClient) {}
 
@@ -14,7 +16,12 @@ export class AdminService {
     return this.http.get(`${this.apiUrl}/api/users/list`);
   }
 
-  forcePasswordReset(userId: string): Observable<any> {
+  /*forcePasswordReset(userId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/force-password-reset/${userId}`, {});
+  }*/
+  forcePasswordReset(userId: string): Observable<any> {
+    return this.http.put(`${this.KEYCLOAK_URL}/users/${userId}`, {
+      requiredActions: ['UPDATE_PASSWORD']
+    });
   }
 }
