@@ -276,11 +276,11 @@ public class ListingService {
     }
 
     /**
-     * Allow to change an antiquity to sold
+     * Allow to change an antiquity to sold and pay the antiquarian
      * @param listingId the id of the Antiquity
      * @Author Zarzycki Alexis
      */
-    public void markAsSold(Long listingId) {
+    public void markAsSold(Long listingId) throws MessagingException, IOException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
         listing.setState(AntiquityState.SOLD.getState());

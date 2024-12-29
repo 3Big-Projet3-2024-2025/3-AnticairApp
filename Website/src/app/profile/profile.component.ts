@@ -41,7 +41,7 @@ export class ProfileComponent implements OnInit {
     });
     try {
       this.userDetails = this.authService.getUserDetails();
-      console.log('User details:', this.userDetails);
+
 
       this.listingService.getListingSeller(this.userDetails['email']).subscribe(res => {
         this.antiquities = res;
@@ -55,6 +55,7 @@ export class ProfileComponent implements OnInit {
           antiquity.photos = photos;
         });
       })
+
 
     } catch (error) {
       console.error('Error loading user details:', error);
