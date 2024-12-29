@@ -43,11 +43,23 @@ public class ListingController {
 
 
     /**
-     * Update an antiquity along with its associated images.
+     * Updates an existing antiquity and its associated photos.
      *
-     * @param antiquityJson JSON representation of the antiquity object.
-     * @param images Multipart files representing new images for the antiquity.
-     * @return ResponseEntity indicating the update status.
+     * <p>This endpoint allows updating an antiquity's details (such as price, description, title, etc.)
+     * and optionally uploading new photos. The antiquity details are provided as a JSON string,
+     * which is deserialized into a {@link Listing} object. The photos are provided as a list of
+     * {@link MultipartFile} objects. If photos are provided, they are updated alongside the antiquity details.</p>
+     *
+     * @param id the ID of the antiquity to update
+     * @param antiquityJson a JSON string representing the new details of the antiquity
+     * @param images a list of {@link MultipartFile} objects representing the new photos to associate with the antiquity (optional)
+     * @return a {@link ResponseEntity} containing a message indicating success or failure
+     *
+     * @author Neve Thierry
+     * @see ListingService#updateListing(Long, Listing)
+     * @see PhotoAntiquityService#updatePhotos(Integer, List)
+     * @see Listing
+     * @see MultipartFile
      */
     @PutMapping("/{id}")
     public ResponseEntity<Map<String,String>> updateAntiquityWithPhotos(@PathVariable Integer id, @RequestParam("antiquity") String antiquityJson, @RequestParam(value = "images", required = false) List<MultipartFile> images) {
@@ -122,6 +134,22 @@ public class ListingController {
         }
     }
 
+
+    /**
+     * Retrieves a listing by its ID along with its associated photos.
+     *
+     * <p>This endpoint retrieves a listing and its associated photos using the given ID.
+     * If the listing is found, it returns a {@link ListingWithPhotosDto} object in the response.
+     * If no listing is found with the provided ID, it returns a {@link HttpStatus#NOT_FOUND} response.</p>
+     *
+     * @param id the ID of the listing to retrieve
+     * @return a {@link ResponseEntity} containing a {@link ListingWithPhotosDto} object if found,
+     *         or a {@link HttpStatus#NOT_FOUND} status if the listing is not found
+     *
+     * @author Neve Thierry
+     * @see ListingService#getListingById(Integer)
+     * @see ListingWithPhotosDto
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ListingWithPhotosDto> getListingById(@PathVariable Integer id) {
         try {

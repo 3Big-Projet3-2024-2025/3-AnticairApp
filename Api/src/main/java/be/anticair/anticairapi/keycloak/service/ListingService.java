@@ -176,6 +176,21 @@ public class ListingService {
         }
     }
 
+
+    /**
+     * Updates the details of an existing listing based on the provided ID.
+     *
+     * <p>This method searches for a listing by its ID and updates its properties (such as price,
+     * description, title, etc.) with the values provided in the {@link Listing} object. If no listing
+     * is found with the given ID, a {@link RuntimeException} is thrown.</p>
+     *
+     * @param id the ID of the listing to be updated
+     * @param updatedListing the {@link Listing} object containing the new values to update the listing
+     * @return the updated {@link Listing} object after saving it to the database
+     * @throws RuntimeException if no listing is found with the given ID
+     *
+     * @author Neve Thierry
+     */
     public Listing updateListing(Long id, Listing updatedListing) {
         return ListingRepository.findById(id).map(antiquity -> {
             antiquity.setPriceAntiquity(updatedListing.getPriceAntiquity());
@@ -189,6 +204,24 @@ public class ListingService {
         }).orElseThrow(() -> new RuntimeException("Antiquity not found with id: " + id));
     }
 
+
+    /**
+     * Retrieves a listing by its ID along with its associated photos.
+     *
+     * <p>This method searches for a listing by its ID and retrieves all the photos
+     * associated with that listing. If no listing is found with the given ID,
+     * a {@link RuntimeException} is thrown. The method returns a {@link ListingWithPhotosDto}
+     * object containing the listing details and the associated photos.</p>
+     *
+     * @param id the ID of the listing to retrieve
+     * @return a {@link ListingWithPhotosDto} object containing the listing and its associated photos
+     * @throws RuntimeException if no listing is found with the given ID
+     *
+     *
+     * @author Neve Thierry
+     * @see PhotoAntiquityService#findByIdAntiquity(Integer)
+     * @see ListingWithPhotosDto
+     */
     public ListingWithPhotosDto getListingById(Integer id) {
         // Get the listing
         Listing listing = ListingRepository.findById(Long.valueOf(id))
