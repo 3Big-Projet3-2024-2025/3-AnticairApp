@@ -4,6 +4,8 @@ import {ImageServiceService} from '../../service/image-service.service';
 import {AuthService} from '../../service/auth.service';
 import {Antiquity} from '../../modele/DtoListing';
 import { Router } from '@angular/router';
+import {ThemeService} from "../../service/theme.service";
+
 
 @Component({
   selector: 'app-list-listing-verify',
@@ -12,11 +14,19 @@ import { Router } from '@angular/router';
 })
 export class ListListingVerifyComponent implements OnInit {
   antiquities: Antiquity[] = []
+  currentTheme: 'dark' | 'light' = 'light';
+
 
 
   constructor(private listingService: ListingService,private imageService:ImageServiceService,private authService: AuthService, private router : Router) { }
 
+  constructor(private listingService: ListingService,private themeService: ThemeService,private imageService:ImageServiceService,private authService: AuthService, private router : Router) { }
+
+
   ngOnInit(): void {
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
 
     let userinfo = this.authService.getUserDetails();
 

@@ -80,7 +80,7 @@ public class UserServiceTests {
     }
 
     /**
-     * Testing the getUserByEmail with a non existent User
+     * Testing the getUserByEmail with a non-existent User
      * @Author Zarzycki Alexis
      */
     @Test
@@ -126,7 +126,7 @@ public class UserServiceTests {
     }
 
     /**
-     * Testing the desactivate a non existent user
+     * Testing the desactivate a non-existent user
      * @Author Zarzycki Alexis
      */
     @Test
@@ -146,7 +146,7 @@ public class UserServiceTests {
     }
 
     /**
-     * Testing the enable on an non existent user
+     * Testing the enable on an non-existent user
      * @Author Zarzycki Alexis
      */
     @Test
@@ -178,7 +178,7 @@ public class UserServiceTests {
     }
 
     /**
-     * Testing the get User Status on a non existent user
+     * Testing the get User Status on a non-existent user
      * @Author Zarzycki Alexis
      */
     @Test
@@ -190,7 +190,7 @@ public class UserServiceTests {
 
 
     /**
-     * Testing the get User Status on a non existent user
+     * Testing the get User Status on a non-existent user
      * @Author Zarzycki Alexis
      */
     @Test
@@ -225,6 +225,81 @@ public class UserServiceTests {
     @Test
     public void testChangeAntiquarianFromAntiquityNull() throws MessagingException, IOException {
         assertEquals("No email address provided",this.userService.redistributeAntiquity(null));
+    }
+
+    /**
+     * Test for getUserBalance with a valid user.
+     * Assumes a user with email 'testuser@gmail.com' exists in Keycloak
+     * and has a 'balance' attribute set.
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testGetUserBalanceValidUser() {
+        double balance = userService.getUserBalance(TEST_USER_EMAIL);
+        assertTrue(balance >= 0, "Balance should be a non-negative integer.");
+    }
+
+    /**
+     * Test for getUserBalance with a non-existent user.
+     * Assumes no user exists with email 'nonexistent_user_987654@anticairapp.be'.
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testGetUserBalanceNonExistentUser() {
+        String nonExistentEmail = "nonexistent_user_987654@anticairapp.be";
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> userService.getUserBalance(nonExistentEmail)
+        );
+
+        assertEquals("No users found with the email: " + nonExistentEmail, exception.getMessage());
+    }
+
+    /**
+     * Test for addToUserBalance with a valid user.
+     * Assumes a user with email 'testuser@gmail.com' exists in Keycloak.
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testAddToUserBalanceValidUser() {
+        double initialBalance = userService.getUserBalance(TEST_USER_EMAIL);
+
+        // Add 50 to the user's balance
+        userService.addToUserBalance(TEST_USER_EMAIL, 50);
+
+        double updatedBalance = userService.getUserBalance(TEST_USER_EMAIL);
+        assertEquals(initialBalance + 50, updatedBalance, 0.01);  // Allow a small tolerance for floating-point comparisons
+    }
+
+    /**
+     * Test for addToUserBalance with a non-existent user.
+     * Assumes no user exists with email 'nonexistent_user_987654@anticairapp.be'.
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testAddToUserBalanceNonExistentUser() {
+        String nonExistentEmail = "nonexistent_user_987654@anticairapp.be";
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> userService.addToUserBalance(nonExistentEmail, 50)
+        );
+
+        assertEquals("No users found with the email: " + nonExistentEmail, exception.getMessage());
+    }
+
+    /**
+     * Test for addToUserBalance ensuring the balance cannot be negative.
+     * Assumes a user with email 'testuser@gmail.com' exists in Keycloak.
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testAddToUserBalanceNegativeAmount() {
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> userService.addToUserBalance(TEST_USER_EMAIL, -50)
+        );
+
+        assertEquals("Error while updating the balance of the user with email: " + TEST_USER_EMAIL, exception.getMessage());
     }
 
 }

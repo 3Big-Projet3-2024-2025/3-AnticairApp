@@ -276,11 +276,11 @@ public class ListingService {
     }
 
     /**
-     * Allow to change an antiquity to sold
+     * Allow to change an antiquity to sold and pay the antiquarian
      * @param listingId the id of the Antiquity
      * @Author Zarzycki Alexis
      */
-    public void markAsSold(Long listingId) {
+    public void markAsSold(Long listingId) throws MessagingException, IOException {
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(() -> new IllegalArgumentException("Listing not found"));
         listing.setState(AntiquityState.SOLD.getState());
@@ -302,6 +302,49 @@ public class ListingService {
 
     public List<Listing> getAntiquitiesByState(String mailAntiquarian) {
         return listingRepository.findByStateInAndMailAntiquarian(Arrays.asList(0, 2), mailAntiquarian);
+    }
+
+    /**
+     * Retrieves a list of visible antiquities (isDisplay = true) associated with a seller by their email.
+     *
+     * This method filters the antiquities retrieved by checking their `isDisplay` field and returns only those
+     * that are marked as visible (isDisplay = true).
+     *
+     * @param mailSeller The email address of the seller for whom the antiquities are retrieved.
+     * @return A list of `Listing` containing the visible antiquities associated with the seller's email.
+     *
+     * @author Neve Thierry
+     */
+    public List<Listing> getAntiquitiesByMailSeller(String mailSeller) {
+        List<Listing> trueList = new ArrayList<>();
+        List<Listing> list = listingRepository.findByMailSeller(mailSeller);
+        for(Listing listing : list) {
+            if(listing.getIsDisplay()) {
+                trueList.add(listing);
+            }
+        }
+        return trueList;
+    }
+
+    /**
+     * Updates the 'isDisplay' field of a listing to false based on the provided ID.
+     *
+     * This method finds the listing by its ID, and if the listing exists, it sets the `isDisplay`
+     * field to `false` and saves the updated listing.
+     *
+     * @param id The ID of the listing to update.
+     * @return The updated `Listing` object with `isDisplay` set to `false`.
+     * @throws RuntimeException If the listing with the provided ID is not found.
+     *
+     * @author Neve Thierry
+     */
+    public Listing updateIsDisplay(long id) {
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new RuntimeException("Entity not found"));
+
+            listing.setIsDisplay(false);
+            return ListingRepository.save(listing);
+
+
     }
 }
 

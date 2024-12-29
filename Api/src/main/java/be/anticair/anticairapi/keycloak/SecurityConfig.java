@@ -46,8 +46,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-
     /**
      * Creates a JWT decoder using Keycloak's JWKS endpoint
      * @return Configured JwtDecoder

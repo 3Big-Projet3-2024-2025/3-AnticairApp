@@ -352,4 +352,59 @@ public class ListingController {
         return ResponseEntity.ok(antiquitiesWithPhoto);
     }
 
+    /**
+     * Retrieves a list of antiquities with their associated photos for a specific seller's email.
+     *
+     * This method handles a GET request to fetch all antiquities related to a given seller's email.
+     * It includes the details of the antiquities along with the URLs of their associated photos.
+     *
+     * @param mailSeller The email address of the seller whose antiquities are being retrieved.
+     * @return A ResponseEntity containing a list of `ListingWithPhotosDto` objects, each representing an antiquity
+     *         with its details and associated photo URLs.
+     *
+     * @author Neve Thierry
+     */
+    @GetMapping("/byMailSeller")
+    public ResponseEntity<List<ListingWithPhotosDto>> getAntiquitiesByMailSeller(@RequestParam String mailSeller) {
+        List<ListingWithPhotosDto> antiquitiesWithPhoto = new ArrayList<>();
+        List<Listing> antiquities = listingService.getAntiquitiesByMailSeller(mailSeller);
+        for(Listing antiquitie : antiquities) {
+            List<String> urlPhoto = new ArrayList<>();
+            List<PhotoAntiquity> photo = photoAntiquityService.findByIdAntiquity(antiquitie.getIdAntiquity());
+            ListingWithPhotosDto antiquityWithPhoto = new ListingWithPhotosDto();
+            for(PhotoAntiquity photoAntiquity : photo) {
+                urlPhoto.add(photoAntiquity.getPathPhoto()) ;
+            }
+            antiquityWithPhoto.setState(antiquitie.getState());
+            antiquityWithPhoto.setDescriptionAntiquity(antiquitie.getDescriptionAntiquity());
+            antiquityWithPhoto.setPriceAntiquity(antiquitie.getPriceAntiquity());
+            antiquityWithPhoto.setTitleAntiquity(antiquitie.getTitleAntiquity());
+            antiquityWithPhoto.setIdAntiquity(antiquitie.getIdAntiquity());
+            antiquityWithPhoto.setMailAntiquarian(antiquitie.getMailAntiquarian());
+            antiquityWithPhoto.setIsDisplay(antiquitie.getIsDisplay());
+            antiquityWithPhoto.setMailSeller(antiquitie.getMailSeller());
+            antiquityWithPhoto.setPhotos(urlPhoto);
+            antiquitiesWithPhoto.add(antiquityWithPhoto);
+        }
+        return ResponseEntity.ok(antiquitiesWithPhoto);
+    }
+
+
+    /**
+     * Updates the 'isDisplay' field of a listing to false based on the provided ID.
+     *
+     * This method handles a PUT request to update the `isDisplay` field of a listing. It calls the service
+     * layer to perform the update and returns the updated listing in the response body.
+     *
+     * @param id The ID of the listing to update.
+     * @return A ResponseEntity containing the updated `Listing` object with the `isDisplay` field set to `false`.
+     *
+     * @author Neve Thierry
+     */
+    @PutMapping("/isDisplay/{id}")
+    public ResponseEntity<Listing> updateIsDisplay(@PathVariable Long id){
+        Listing listing = listingService.updateIsDisplay(id);
+        return ResponseEntity.ok(listing);
+    }
+
 }
