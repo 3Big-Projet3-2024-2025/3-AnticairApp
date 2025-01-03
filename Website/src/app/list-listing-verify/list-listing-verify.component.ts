@@ -43,6 +43,6 @@ export class ListListingVerifyComponent implements OnInit {
   }
 
   viewDetails(id: number): void {
-   this.router.navigate(['/list-antiquity-verify', id]);
+   this.router.navigate(['/list-antiquity-verify',id]);
   }
 }
