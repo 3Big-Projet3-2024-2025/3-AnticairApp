@@ -14,7 +14,7 @@ export class ImageServiceService {
   getImageUrl(filePath: String): Observable<String>{
     const token = this.authService.getToken();
     return this.http.get<Blob>(`http://localhost:8080${filePath}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { },
       responseType: 'blob' as 'json'  // Convert the image to blob.
     }).pipe(
       map((blob: Blob | MediaSource) => URL.createObjectURL(blob))  // Convert Blob to url.
@@ -24,14 +24,14 @@ export class ImageServiceService {
   getImageFile(filePath: String): Observable<Blob>{
     const token = this.authService.getToken();
     return this.http.get<Blob>(`http://localhost:8080${filePath}`, {
-      headers: { Authorization: `Bearer ${token}` }, responseType: 'blob' as 'json'
+      headers: { }, responseType: 'blob' as 'json'
     })
   }
 
   getImageFromAntiquity(antiquityId: number): Observable<string[]>{
     const token = this.authService.getToken();
     return this.http.get<string[]>(`http://localhost:8080/api/photoAntiquity/images/${antiquityId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { }
     })
   }
 }

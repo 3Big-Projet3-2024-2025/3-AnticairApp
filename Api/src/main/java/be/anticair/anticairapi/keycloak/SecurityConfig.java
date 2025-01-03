@@ -39,8 +39,11 @@ public class SecurityConfig {
                         .jwt(Customizer.withDefaults())
                 )
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/uploads/**").authenticated()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/api/listing/payment/success").permitAll()
+                        .requestMatchers("/api/listing/checked").permitAll()
+                        .requestMatchers("/api/photoAntiquity/images/**").permitAll()
+                        .requestMatchers("/api/listing/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

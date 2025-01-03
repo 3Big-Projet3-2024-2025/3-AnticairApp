@@ -29,15 +29,15 @@ const routes: Routes = [
   { path: 'sell/:id', component: BuyListingComponent },
   { path: 'payment/success', component: PaymentConfComponent },
   { path: 'payment/error', component: PaymentConfComponent },
-  { path: 'create-listing', component: CreateListingComponent },
+  { path: 'create-listing', component: CreateListingComponent, canActivate: [isLoginGuard]},
   { path: 'admin', redirectTo: '/admin/dashboard', pathMatch: 'full'},
   { path: 'admin/dashboard', component: DashboardComponent, canActivate: [AdminGuard] },
   { path: 'admin/users', component: UsersComponent, canActivate: [AdminGuard] },
   { path: 'admin/users/edit-groups/:email', component: EditGroupsComponent, canActivate: [AdminGuard] },
-  { path: 'admin/manage-users', component: ManageUsersComponent,},
+  { path: 'admin/manage-users', component: ManageUsersComponent, canActivate: [AdminGuard]},
   { path: 'edit/:id', component: EditListingComponent, canActivate: [editAntiquityGuard]},
-  { path:'list-antiquity-verify', component: ListListingVerifyComponent, canActivate: [isAntiquarianGuard]},
-  { path:'list-antiquity-verify/:id', component: CheckListingComponent, canActivate: [isAntiquarianGuard]},
+  { path: 'list-antiquity-verify', component: ListListingVerifyComponent, canActivate: [isAntiquarianGuard]},
+  { path: 'list-antiquity-verify/:id', component: CheckListingComponent, canActivate: [isAntiquarianGuard]},
   { path: '**', redirectTo: '/home' }
 ];
 

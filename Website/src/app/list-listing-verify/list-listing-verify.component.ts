@@ -16,10 +16,6 @@ export class ListListingVerifyComponent implements OnInit {
   antiquities: Antiquity[] = []
   currentTheme: 'dark' | 'light' = 'light';
 
-
-
-  constructor(private listingService: ListingService,private imageService:ImageServiceService,private authService: AuthService, private router : Router) { }
-
   constructor(private listingService: ListingService,private themeService: ThemeService,private imageService:ImageServiceService,private authService: AuthService, private router : Router) { }
 
 
@@ -47,6 +43,6 @@ export class ListListingVerifyComponent implements OnInit {
   }
 
   viewDetails(id: number): void {
-   this.router.navigate(['/list-antiquity-verify',id]);
+   this.router.navigate(['/list-antiquity-verify', id]);
   }
 }
