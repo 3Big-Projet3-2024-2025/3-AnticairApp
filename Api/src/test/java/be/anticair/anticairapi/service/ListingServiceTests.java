@@ -146,6 +146,28 @@ public class ListingServiceTests {
         assertEquals("Price, description, and title are required", exception.getMessage());
     }
 
+    /**
+     * Test to check if getAllAntiquities works if the database contains listings.
+     * @Author Blommaert Youry
+     */
+    @Test
+    public void testGetAllAntiquities() {
+        List<Listing> listings = listingRepository.findAll();
+
+        assertFalse(listings.isEmpty());
+    }
+
+    /**
+     * Test to check if getAllAntiquities works if the database is empty.
+     * @Author Blommaert Youry
+     */
+    @Test
+    public void testGetAllAntiquities_Empty() {
+        List<Listing> listings = new ArrayList<Listing>();
+
+        assertTrue(listings.isEmpty());
+    }
+
 
     /**
      * Test to check if the applyCommission service work with normal values
