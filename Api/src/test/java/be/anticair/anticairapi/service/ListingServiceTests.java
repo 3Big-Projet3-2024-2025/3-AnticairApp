@@ -3,9 +3,12 @@ package be.anticair.anticairapi.service;
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.enumeration.AntiquityState;
+import be.anticair.anticairapi.enumeration.TypeOfMail;
+import be.anticair.anticairapi.keycloak.service.EmailService;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,7 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 
+import static be.anticair.anticairapi.enumeration.AntiquityState.ACCEPTED_BUT_MODIFIED;
+import static be.anticair.anticairapi.enumeration.AntiquityState.NEED_TO_BE_CHECKED;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 
 /**
@@ -46,6 +53,8 @@ public class ListingServiceTests {
      * The antiquity that will be used for the tests
      */
     private Listing listing;
+    @Autowired
+    private EmailService emailService;
 
     /**
      * The mail that will be use for the owner of the antiquity
@@ -153,22 +162,15 @@ public class ListingServiceTests {
     @Test
     @DisplayName("Get all antiquities success")
     public void testGetAllAntiquities() {
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
+        Listing listingPost = listingRepository.save(this.listing);
+
         List<Listing> listings = listingRepository.findAll();
 
         assertFalse(listings.isEmpty());
+        this.cleanListing(listingPost);
     }
 
-    /**
-     * Test to check if getAllAntiquities works if the database is empty.
-     * @author Blommaert Youry
-     */
-    @Test
-    @DisplayName("Get all antiquities empty")
-    public void testGetAllAntiquities_Empty() {
-        List<Listing> listings = new ArrayList<Listing>();
-
-        assertTrue(listings.isEmpty());
-    }
 
     /**
      * Test to check if the applyCommission service work with normal values
@@ -260,7 +262,7 @@ public class ListingServiceTests {
     @Test
     @DisplayName("Accept antiquarian success")
     public void acceptAntiquarianTestFromListingService() throws MessagingException, IOException {
-        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,AntiquityState.NEED_TO_BE_CHECKED.getState(), false,TEST_SELLER_EMAIL);
+        this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL, NEED_TO_BE_CHECKED.getState(), false,TEST_SELLER_EMAIL);
         this.listing = this.listingRepository.save(this.listing);
         Map<String,String> otherInformation = new HashMap<>();
         otherInformation.put("title",listing.getTitleAntiquity());
@@ -351,6 +353,127 @@ public class ListingServiceTests {
         otherInformation.put("note_photo","");
         otherInformation.put("id","-1");
         assertNull(this.listingService.rejectAntiquity(otherInformation));
+    }
+
+    /**
+     * Test for successfully updating a listing with state -1.
+     * Verifies that the price, description, and state are updated correctly.
+     *
+     * @throws MessagingException if an email-related error occurs
+     * @throws IOException if an input/output error occurs
+     */
+    @Test
+    @Transactional
+    @DisplayName("Successfully update a listing with state -1")
+    void testUpdateListing_StateMinusOne() throws MessagingException, IOException {
+        // Arrange
+        Listing listing = new Listing(0, 100.0, "Old description", "Pandora's box", TEST_ANTIQUARIAN_EMAIL, -1, true, TEST_SELLER_EMAIL);
+        listing = this.listingRepository.save(listing);
+
+        Listing updatedListing = new Listing(0, 120.0, "Updated description", "Updated title", TEST_ANTIQUARIAN_EMAIL, -1, true, TEST_SELLER_EMAIL);
+
+        // Act
+        Listing result = listingService.updateListing(Long.valueOf(listing.getIdAntiquity()), updatedListing);
+
+        // Assert
+        assertNotNull(result, "The updated listing should not be null");
+        assertEquals(120.0, result.getPriceAntiquity(), "The price should be updated");
+        assertEquals("Updated description", result.getDescriptionAntiquity(), "The description should be updated");
+        assertEquals(NEED_TO_BE_CHECKED.getState(), result.getState(), "The state should be updated to NEED_TO_BE_CHECKED");
+
+        // Clean up
+        this.cleanListing(result);
+    }
+
+    /**
+     * Test for successfully updating a listing with state 1.
+     * Ensures that the price, description, and state are updated correctly.
+     *
+     * @throws MessagingException if an email-related error occurs
+     * @throws IOException if an input/output error occurs
+     */
+    @Test
+    @Transactional
+    @DisplayName("Successfully update a listing with state 1")
+    void testUpdateListing_StateOne() throws MessagingException, IOException {
+        // Arrange
+        Listing listing = new Listing(0, 150.0, "Old description", "Zeus Statue", TEST_ANTIQUARIAN_EMAIL, 1, true, TEST_SELLER_EMAIL);
+        listing = this.listingRepository.save(listing);
+
+        Listing updatedListing = new Listing(0, 180.0, "New description", "New title", TEST_ANTIQUARIAN_EMAIL, 1, true, TEST_SELLER_EMAIL);
+
+        // Act
+        Listing result = listingService.updateListing(Long.valueOf(listing.getIdAntiquity()), updatedListing);
+
+        // Assert
+        assertNotNull(result, "The updated listing should not be null");
+        assertEquals(180.0, result.getPriceAntiquity(), "The price should be updated");
+        assertEquals("New description", result.getDescriptionAntiquity(), "The description should be updated");
+        assertEquals(ACCEPTED_BUT_MODIFIED.getState(), result.getState(), "The state should be updated to ACCEPTED_BUT_MODIFIED");
+
+        // Clean up
+        this.cleanListing(result);
+    }
+
+    /**
+     * Test to ensure no changes are made when the listing's state is 3.
+     * Verifies that the listing remains unchanged.
+     *
+     * @throws MessagingException if an email-related error occurs
+     * @throws IOException if an input/output error occurs
+     */
+    @Test
+    @Transactional
+    @DisplayName("Return the same listing when state is 3")
+    void testUpdateListing_StateThree() throws MessagingException, IOException {
+        // Arrange
+        Listing listing = new Listing(0, 200.0, "Old description", "Athena Shield", TEST_ANTIQUARIAN_EMAIL, 3, true, TEST_SELLER_EMAIL);
+        listing = this.listingRepository.save(listing);
+
+        Listing updatedListing = new Listing(0, 220.0, "New description", "New title", TEST_ANTIQUARIAN_EMAIL, 3, true, TEST_SELLER_EMAIL);
+
+        // Act
+        Listing result = listingService.updateListing(Long.valueOf(listing.getIdAntiquity()), updatedListing);
+
+        // Assert
+        assertNotNull(result, "The updated listing should not be null");
+        assertEquals(200.0, result.getPriceAntiquity(), "The price should not be updated");
+        assertEquals("Old description", result.getDescriptionAntiquity(), "The description should not be updated");
+        assertEquals("Athena Shield", result.getTitleAntiquity(), "The title should not be updated");
+        assertEquals(3, result.getState(), "The state should remain the same");
+
+        // Clean up
+        this.cleanListing(result);
+    }
+
+    /**
+     * Test for successfully updating a listing with a default state (0).
+     * Ensures that the price, description, and title are updated correctly.
+     *
+     * @throws MessagingException if an email-related error occurs
+     * @throws IOException if an input/output error occurs
+     */
+    @Test
+    @Transactional
+    @DisplayName("Successfully update a listing with default state")
+    void testUpdateListing_DefaultState() throws MessagingException, IOException {
+        // Arrange
+        Listing listing = new Listing(0, 250.0, "Old description", "Hermes Helmet", TEST_ANTIQUARIAN_EMAIL, 0, true, TEST_SELLER_EMAIL);
+        listing = this.listingRepository.save(listing);
+
+        Listing updatedListing = new Listing(0, 280.0, "Updated description", "Updated title", TEST_ANTIQUARIAN_EMAIL, 0, true, TEST_SELLER_EMAIL);
+
+        // Act
+        Listing result = listingService.updateListing(Long.valueOf(listing.getIdAntiquity()), updatedListing);
+
+        // Assert
+        assertNotNull(result, "The updated listing should not be null");
+        assertEquals(280.0, result.getPriceAntiquity(), "The price should be updated");
+        assertEquals("Updated description", result.getDescriptionAntiquity(), "The description should be updated");
+        assertEquals("Updated title", result.getTitleAntiquity(), "The title should be updated");
+
+        // Clean up
+        this.cleanListing(result);
     }
 }
 
