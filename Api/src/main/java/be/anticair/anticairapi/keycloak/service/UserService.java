@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * Service that manage user's
- * @Author Zarzycki Alexis
+ * @author Zarzycki Alexis
  **/
 @Service
 public class UserService {
@@ -64,7 +64,7 @@ public class UserService {
      * Retrieves a user from his email
      * @param userEmail The Email of the user to find
      * @return List of the users finded
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public List<UserRepresentation> getUsersByEmail(String userEmail) {
         try {
@@ -87,7 +87,7 @@ public class UserService {
     /**
      * Retrieves all users from the realm
      * @return List of all users
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     public List<UserRepresentation> getAllUsers() {
         try{
@@ -107,7 +107,7 @@ public class UserService {
     /**
      * Retrieves all users without group assignments from the realm
      * @return List of users without group memberships
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     public List<UserRepresentation> getUsersWithoutGroups() {
         try {
@@ -140,7 +140,7 @@ public class UserService {
     /**
      * Retrieves the number of user from the realm
      * @return the number of user
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     public int getNumberOfUsers() {
        return this.getAllUsers().size();
@@ -151,7 +151,7 @@ public class UserService {
      *
      * @param groupName
      * @return List of all users in the group specified
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     public List<UserRepresentation> getUsersByGroupName(String groupName) {
         List<UserRepresentation> users = new ArrayList<>();
@@ -184,7 +184,7 @@ public class UserService {
      * Disable a user from their Email
      * @param userEmail The email of the user to disable
      * @return boolean True if it has been disabled
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public boolean disableUser(String userEmail) {
         try {
@@ -198,6 +198,11 @@ public class UserService {
 
             // We get the first user in the list
             UserRepresentation user = users.getFirst();
+
+            if(user.getGroups().contains("Antiquarian")){
+                String result = this.redistributeAntiquity(userEmail);
+                if(!result.equals("Antiquity's antiquarian changed")){return false;}
+            }
 
             // Get the user's ID
             String userId = user.getId();
@@ -233,7 +238,7 @@ public class UserService {
      * Enable a user from their Email
      * @param userEmail The email of the user to enable
      * @return boolean True if it has been enabled
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public boolean enableUser(String userEmail) {
         try {
@@ -273,7 +278,7 @@ public class UserService {
      * Get the status of a user
      * @param userEmail the email of the user to get the status
      * @return boolean true if it is enabled, false if not
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public boolean getUserStatus(String userEmail) {
         try {
@@ -301,6 +306,7 @@ public class UserService {
      * Fonction to redistribute Antiquity
      * @param userEmail the email of the user to get the status
      * @return string, to know what was happened
+     * @author Verly Noah
      */
     public String redistributeAntiquity(String userEmail) throws MessagingException, IOException {
     //Get the new antiquarian
@@ -340,15 +346,14 @@ public class UserService {
 
     /**
      * Lambda expression to get a random number between 1 and a max
-     * @Author Verly Noah
+     * @author Verly Noah
      */
    private Function<Integer,Integer> getRandom = max ->  (int) (Math.random() * max);
-
 
     /**
      * Fonction to update user profile
      * @param userDetails the details of user.
-     *  @Author Dewever David
+     *  @author Dewever David
      */
     public void updateUserProfile(Map<String, Object> userDetails) {
         String email = (String) userDetails.get("email");
@@ -409,7 +414,7 @@ public class UserService {
      * Get the balance of a user
      * @param userEmail the email of the user to get the balance
      * @return double the amount of the balance
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public double getUserBalance(String userEmail) {
         try {
@@ -450,7 +455,7 @@ public class UserService {
      * Add a specified amount to a user's balance.
      * @param userEmail the email of the user to update the balance.
      * @param amount the amount to add to the user's balance.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public void addToUserBalance(String userEmail, double amount) {
         try {

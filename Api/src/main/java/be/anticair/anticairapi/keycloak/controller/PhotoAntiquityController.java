@@ -22,7 +22,7 @@ public class PhotoAntiquityController {
      *
      * @param id The id of the antiquity to get the photos of.
      * @return The list of photos of the antiquity.
-     * @Author Blommmaert Youry
+     * @author Blommmaert Youry
      */
     @GetMapping("/{id}")
     public ResponseEntity<List<PhotoAntiquity>> getPhotosByAntiquityId(@PathVariable Long id) {

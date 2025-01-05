@@ -13,9 +13,9 @@ public enum AntiquityState {
      */
     REJECTED (-1),
     /**
-     * an antiquity have needed to be check
+     * an antiquity have needed to becheck
      */
-    NEED_TO_BE_CHECK(0),
+    NEED_TO_BE_CHECKED(0),
     /**
      * An antiquity has been accepted and the commission has been applied
      */

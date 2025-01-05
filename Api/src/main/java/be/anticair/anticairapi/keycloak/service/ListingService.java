@@ -21,7 +21,7 @@ import static be.anticair.anticairapi.enumeration.AntiquityState.*;
 /**
  * Service for performing listing-related operations.
  *
- * @Author Blommaert Youry, Neve Thierry
+ * @author Blommaert Youry, Neve Thierry
  */
 
 @Service
@@ -57,13 +57,12 @@ public class ListingService {
      * @param newListing The listing to create.
      * @param photos The photos to associate with the listing.
      * @return The created listing.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
-    public Listing createListing(String email, Listing newListing, List<MultipartFile> photos) {
+    public Listing createListing(String email, Listing newListing, List<MultipartFile> photos) throws MessagingException, IOException {
         if(newListing.getPriceAntiquity() < 0) {
             throw new IllegalArgumentException("Price is negative");
         }
-
         List<UserRepresentation> users = userService.getUsersByEmail(email);
 
 
@@ -93,13 +92,17 @@ public class ListingService {
         } while (email.equals(userAntiquarian.getEmail()));
 
         newListing.setMailSeller(email);
-        newListing.setState(0);  // Initialized to 0 (not yet verified)
+        newListing.setState(NEED_TO_BE_CHECKED.getState());  // Initialized to 0 (not yet verified)
         newListing.setIsDisplay(false);  // Initialized to false (not yet displayed)
         newListing.setMailAntiquarian(userAntiquarian.getEmail());
 
         // Save the listing if it has all the required fields
         Listing savedListing = ListingRepository.save(newListing);
-
+        try {
+            this.emailService.sendHtmlEmail(userAntiquarian.getEmail(),"info@anticairapp.sixela.be",TypeOfMail.NEWANTIQUITY,new HashMap<>());
+        }catch (Exception e) {
+            throw new RuntimeException("Error sending email");
+        }
         // Save the photos
         if (photos != null && !photos.isEmpty()) {
             for (MultipartFile photo : photos) {
@@ -193,6 +196,93 @@ public class ListingService {
         }
     }
 
+    /**
+     * Get all the listing in the database.
+     * @return The list of all the listings.
+     * @author Blommaert Youry
+     */
+    public List<Listing> getAllListingsAccepted() {
+        List<Listing> listings = new ArrayList<>();
+        listings = ListingRepository.getAllAntiquityChecked();
+
+        if(listings.isEmpty()) {
+            throw new RuntimeException("No listings found");
+        }
+
+        return listings;
+    }
+
+
+    /**
+     * Function to reject the antiquity, apply the commission and send the mail
+     *
+     * @param otherInformation Map that containt the id of the antiquity adn the review
+     * @return the rejected antiquity
+     * @author Verly Noah
+     */
+    public Listing rejectAntiquity(Map<String,String> otherInformation){
+        if(otherInformation==null || otherInformation.isEmpty() || otherInformation.get("id").isEmpty() || otherInformation.get("note_title").isEmpty() || otherInformation.get("note_description").isEmpty() || otherInformation.get("note_price").isEmpty() || otherInformation.get("note_photo").isEmpty()) return null;
+        //Get the antiquity
+        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
+        //If empty or the state of the antiquity is different of need to be checked and accepted bu modified, return null
+        //Because there are the two only state that could be rejected
+        if(antiquity.isEmpty() || (antiquity.get().getState()!= NEED_TO_BE_CHECKED.getState() && antiquity.get().getState()!= ACCEPTED_BUT_MODIFIED.getState())){return null;}
+        //If the antiquity state is not "NEED_TO_BE_CHECKED", don't change
+        if(antiquity.get().getState()== NEED_TO_BE_CHECKED.getState()) antiquity.get().setState(REJECTED.getState());
+
+        otherInformation.put("title",antiquity.get().getTitleAntiquity());
+        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
+
+        otherInformation.put("note_title",otherInformation.get("note_title"));
+        otherInformation.put("note_description",otherInformation.get("note_description"));
+        otherInformation.put("note_price",otherInformation.get("note_price"));
+        otherInformation.put("note_photo",otherInformation.get("note_photo"));
+        //Save the changes
+        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
+        try {
+            //Send the mail
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.REJECTIONOFANTIQUITY,otherInformation);
+            //return the antiquity
+            return antiquity.get();
+        } catch (MessagingException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Function to accept the antiquity, apply the commission and send the mail
+     *
+     * @param otherInformation Map that containt the id of the antiquity
+     * @return the accepted antiquity
+     * @author Verly Noah
+     */
+    public Listing acceptAntiquity(Map<String,String> otherInformation){
+        if(otherInformation==null || otherInformation.isEmpty() || otherInformation.get("id").isEmpty() ) return null;
+        //Get the antiquity
+        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
+        if(antiquity.isEmpty() || (antiquity.get().getState()!= NEED_TO_BE_CHECKED.getState() && antiquity.get().getState()!= ACCEPTED_BUT_MODIFIED.getState())){return null;}
+        int initialState = antiquity.get().getState();
+        antiquity.get().setState(ACCEPTED.getState());
+
+        otherInformation.put("title",antiquity.get().getTitleAntiquity());
+        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
+
+        //Save the changes
+        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
+        try {
+            //Send the mail
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
+            //If the antiquity has never been accepted, return the antiquity with the application the commission , else just return the antiquity
+            return initialState == NEED_TO_BE_CHECKED.getState() ?  this.applyCommission(Integer.valueOf(otherInformation.get("id"))) :  antiquity.get();
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * Updates the details of an existing listing based on the provided ID.
@@ -208,14 +298,32 @@ public class ListingService {
      *
      * @author Neve Thierry
      */
-    public Listing updateListing(Long id, Listing updatedListing) {
+    public Listing updateListing(Long id, Listing updatedListing) throws MessagingException, IOException {
+        Listing listing = ListingRepository.getReferenceById(id);
+        int newState;
+        switch (listing.getState()) {
+            case -1 :
+                newState = NEED_TO_BE_CHECKED.getState();
+                this.emailService.sendHtmlEmail(updatedListing.getMailAntiquarian(),"info@anticairapp.sixela.be",TypeOfMail.NEWANTIQUITY,new HashMap<>());
+                break;
+            case 1 :
+                newState = ACCEPTED_BUT_MODIFIED.getState();
+                this.emailService.sendHtmlEmail(updatedListing.getMailAntiquarian(),"info@anticairapp.sixela.be",TypeOfMail.NEWANTIQUITY,new HashMap<>());
+                break;
+            case 3 :
+               return listing;
+            default :
+                newState = updatedListing.getState();
+                break;
+        }
+        int finalNewState = newState;
         return ListingRepository.findById(id).map(antiquity -> {
             antiquity.setPriceAntiquity(updatedListing.getPriceAntiquity());
             antiquity.setDescriptionAntiquity(updatedListing.getDescriptionAntiquity());
             antiquity.setTitleAntiquity(updatedListing.getTitleAntiquity());
             antiquity.setMailSeller(updatedListing.getMailSeller());
             antiquity.setMailAntiquarian(updatedListing.getMailAntiquarian());
-            antiquity.setState(updatedListing.getState());
+            antiquity.setState(finalNewState);
             antiquity.setIsDisplay(updatedListing.getIsDisplay());
             return ListingRepository.save(antiquity);
         }).orElseThrow(() -> new RuntimeException("Antiquity not found with id: " + id));
@@ -256,7 +364,7 @@ public class ListingService {
      *
      * @param id the id of the antiquity
      * @return the antiquity with the commission
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     public Listing applyCommission(Integer id){
         //Check if the id is valid
@@ -277,17 +385,25 @@ public class ListingService {
      * @param antiquity the antiquity that we want to change the antiquarian
      * @param emailNewAntiquarian the email of the new antiquarian
      * @return a boolean, true if the change has been made, false, in case of a problem
+     * @author Verly Noah
      */
     public boolean changeListingAntiquarian(Listing antiquity, String emailNewAntiquarian) throws MessagingException, IOException {
+        //If th antiquity is null or the email is empty, return null
         if(antiquity==null || emailNewAntiquarian.isEmpty()) return false;
+        //Check if the user exist
         if(userService.getUsersByEmail(emailNewAntiquarian).getFirst() == null) {return false;}
+        //Check if his account is activated
         if(!this.userService.getUserStatus(emailNewAntiquarian)) return false;
+        //Change the antiquarian of the antiquity
         antiquity.setMailAntiquarian(emailNewAntiquarian);
+        //Save
         ListingRepository.save(antiquity);
+       //Prepare a mail with the inforamtion of the antiquity to warn the antiquarian
         Map<String,String> otherInformation = new HashMap<>();
         otherInformation.put("title", antiquity.getTitleAntiquity());
         otherInformation.put("description", antiquity.getDescriptionAntiquity());
         otherInformation.put("price", antiquity.getPriceAntiquity().toString());
+        //Send the mail
         this.emailService.sendHtmlEmail(emailNewAntiquarian, "info@anticairapp.sixela.be", TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN, otherInformation);
         return true;
     }
@@ -295,7 +411,7 @@ public class ListingService {
     /**
      * Allow to change an antiquity to sold and pay the antiquarian
      * @param listingId the id of the Antiquity
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public void markAsSold(Long listingId) throws MessagingException, IOException {
         Listing listing = listingRepository.findById(listingId)
@@ -333,14 +449,7 @@ public class ListingService {
      * @author Neve Thierry
      */
     public List<Listing> getAntiquitiesByMailSeller(String mailSeller) {
-        List<Listing> trueList = new ArrayList<>();
-        List<Listing> list = listingRepository.findByMailSeller(mailSeller);
-        for(Listing listing : list) {
-            if(listing.getIsDisplay()) {
-                trueList.add(listing);
-            }
-        }
-        return trueList;
+        return listingRepository.getAllAntiquityDisplayByMailSeller(mailSeller);
     }
 
     /**
