@@ -176,7 +176,7 @@ public class ListingServiceTests {
      */
     @Test
     @DisplayName("Apply commission success")
-    public void applyCommission(){
+    public void applyCommission() throws MessagingException, IOException {
         //Creation of an antiquity
         this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         //The photos for the antiquity
@@ -317,6 +317,10 @@ public class ListingServiceTests {
 
         // Validate the exception message
         assertEquals("Entity not found", exception.getMessage());
+
+
+    }
+    /**
      * Test to accept an antiquity but with no id
      * @author Verly Noah
      */
