@@ -17,7 +17,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< Updated upstream
 
+=======
+/**
+ * Service to send email with html template
+ * @author Verly Noah
+ */
+>>>>>>> Stashed changes
 @Service
 public class EmailService {
     private static final String URL_TEMPLATE_HTML = "/TemplateHTML/";
@@ -27,7 +34,22 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+<<<<<<< Updated upstream
     public void sendHtmlEmail(String receiver, String sender, String subject, int typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
+=======
+    /**
+     * Function to send a mail with html template
+     * @param receiver the mail of the receiver
+     * @param sender the mail of the sender
+     * @param typeOfMail A enumeration with the type of mail a integer and the name of the template
+     * @param otherInformation other information, who aren't shared with all template
+     * @throws MessagingException error during the creation of the mail
+     * @throws IOException error if the access of the template isn't a success
+     * @author Verly Noah
+     */
+    public void sendHtmlEmail(String receiver, String sender, TypeOfMail typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
+        if(receiver.isEmpty() || sender.isEmpty() ) return;
+>>>>>>> Stashed changes
        try {
            //Allow to create email
            MimeMessage message= this.setInformationMail(sender,receiver,subject);
@@ -60,6 +82,15 @@ public class EmailService {
                default: // Default mail
                    htmlTemplate = "";
                    break;
+<<<<<<< Updated upstream
+=======
+               case 10:
+                   break;
+               case 8:
+                   break;
+               default: // Just in case
+                  return;
+>>>>>>> Stashed changes
 
            }
            //Shared information
@@ -80,8 +111,13 @@ public class EmailService {
      * @param receiver Email of the receiver
      * @param subject Subject of the email
      * @return return the based email
+<<<<<<< Updated upstream
      * @throws MessagingException
      * @Author Verly Noah
+=======
+     * @throws MessagingException error during the creation of the mail
+     * @author Verly Noah
+>>>>>>> Stashed changes
      */
     private MimeMessage setInformationMail(String sender, String receiver, String subject) throws MessagingException {
 
@@ -104,8 +140,13 @@ public class EmailService {
      * Allow to load the base information of the mail
      * @param fileName name of the file with the template
      * @return return the based email
+<<<<<<< Updated upstream
      * @throws MessagingException
      * @Author Verly Noah
+=======
+     * @throws IOException error if the access of the template isn't a success
+     * @author Verly Noah
+>>>>>>> Stashed changes
      */
     private String loadFilePath(String fileName) throws IOException {
         try{
@@ -125,8 +166,12 @@ public class EmailService {
      * @param htmlTemplate name of the file with the template
      * @param receiver Email of the receiver
      * @return return the based email
+<<<<<<< Updated upstream
      * @throws MessagingException
      * @Author Verly Noah
+=======
+     * @author Verly Noah
+>>>>>>> Stashed changes
      */
     private String replaceSharedInformation(String htmlTemplate, String receiver){
         //Get information about the receiver
@@ -138,6 +183,16 @@ public class EmailService {
         return htmlTemplate;
     }
 
+<<<<<<< Updated upstream
+=======
+    /**
+     * Allow to repalce all the antiquity's information
+     * @param htmlTemplate the template html
+     * @param otherInformation the antiquity's information
+     * @return the template with the antiquity's information
+     * @author Verly Noah
+     */
+>>>>>>> Stashed changes
     private String replaceAntiquityInformation(String htmlTemplate, Map<String,String> otherInformation){
         htmlTemplate = htmlTemplate.replace("${title}", otherInformation.get("title"));
         htmlTemplate = htmlTemplate.replace("${description}", otherInformation.get("description"));

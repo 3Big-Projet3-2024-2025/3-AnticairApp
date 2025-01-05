@@ -28,6 +28,20 @@ export class NavbarComponent implements OnInit {
       this.isUserLoggedIn = loggedIn;
     });
   }
+<<<<<<< Updated upstream
+=======
+  isUserAntiquarian(): boolean {
+    if(this.isUserLoggedIn) {
+      const userInfo = this.authService.getUserDetails();
+      if(userInfo['groups'].includes('Antiquarian')) {
+        return true;
+      }else {
+        return false;
+      }
+    }
+    return false;
+  }
+>>>>>>> Stashed changes
 
   isUserAdmin(): boolean {
     if(this.isUserLoggedIn) {

@@ -27,7 +27,7 @@ public class SecurityConfig {
      * @param http HttpSecurity configuration
      * @return Configured SecurityFilterChain
      * @throws Exception if configuration fails
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,7 +47,7 @@ public class SecurityConfig {
     /**
      * Creates a JWT decoder using Keycloak's JWKS endpoint
      * @return Configured JwtDecoder
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @Bean
     public JwtDecoder jwtDecoder() {
@@ -59,17 +59,17 @@ public class SecurityConfig {
     /**
      * Configures CORS settings
      * @return CorsConfigurationSource
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Autorise Angular
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Méthodes autorisées
-        configuration.setAllowedHeaders(List.of("*")); // Tous les en-têtes sont autorisés
-        configuration.setAllowCredentials(true); // Permettre les cookies si nécessaires
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Applique CORS à toutes les routes
+        source.registerCorsConfiguration("/**", configuration); 
         return source;
     }
 }

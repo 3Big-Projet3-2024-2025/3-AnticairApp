@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration for Keycloak server connection
- * @Author Zarzycki Alexis
+ * @author Zarzycki Alexis
  */
 @Configuration
 public class KeycloakConfig {
@@ -35,7 +35,7 @@ public class KeycloakConfig {
     /**
      * Creates a Keycloak client for administrative operations
      * @return Configured Keycloak client
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @Bean
     public Keycloak keycloakClient() {

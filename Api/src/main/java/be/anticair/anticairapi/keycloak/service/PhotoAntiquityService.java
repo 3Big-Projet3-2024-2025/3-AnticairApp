@@ -64,7 +64,7 @@ public class PhotoAntiquityService {
      * @param photoFile The photo file to save.
      * @return The created photo.
      * @throws IOException If an error occurs while saving the photo.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     public PhotoAntiquity createPhotoAntiquity(Listing antiquity, MultipartFile photoFile) throws IOException {
         // Save the photo file
@@ -86,7 +86,7 @@ public class PhotoAntiquityService {
      * @param photoFiles The photo files to save.
      * @return The list of created photos.
      * @throws IOException If an error occurs while saving the photos.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     public List<PhotoAntiquity> createPhotoAntiquities(Listing antiquity, List<MultipartFile> photoFiles) throws IOException {
         List<PhotoAntiquity> savedPhotos = new ArrayList<>();
@@ -105,7 +105,7 @@ public class PhotoAntiquityService {
      * @param file The file to save.
      * @return The path to the saved file.
      * @throws IOException If an error occurs while saving the file.
-     * @Author Blommaert Youry, Neve Thierry
+     * @author Blommaert Youry, Neve Thierry
      */
     public String saveFile(MultipartFile file) throws IOException {
         // Define the directory where the files will be saved

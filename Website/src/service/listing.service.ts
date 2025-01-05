@@ -2,6 +2,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '../app/auth.service';
 import { Observable } from 'rxjs';
+<<<<<<< Updated upstream
+=======
+import { Antiquity } from '../modele/DtoListing';
+import { AuthService } from './auth.service';
+import { Review } from '../modele/Review';
+>>>>>>> Stashed changes
 
 @Injectable({
   providedIn: 'root'
