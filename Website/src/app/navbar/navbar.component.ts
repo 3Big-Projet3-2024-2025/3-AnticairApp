@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { ThemeService } from '../theme.service';
+import { ThemeService } from '../../service/theme.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,11 +24,21 @@ export class NavbarComponent implements OnInit {
     });
 
      // Subscribe to login status
-     this.loginStatusSubscription = this.authService.isLoggedIn().subscribe(loggedIn => {
+    this.loginStatusSubscription = this.authService.isLoggedIn().subscribe(loggedIn => {
       this.isUserLoggedIn = loggedIn;
     });
   }
-
+  isUserAntiquarian(): boolean {
+    if(this.isUserLoggedIn) {
+      const userInfo = this.authService.getUserDetails();
+      if(userInfo['groups'].includes('Antiquarian')) {
+        return true;
+      }else {
+        return false;
+      }
+    }
+    return false;
+  }
   isUserAdmin(): boolean {
     if(this.isUserLoggedIn) {
       return this.authService.isAdmin();
@@ -54,7 +64,7 @@ export class NavbarComponent implements OnInit {
     // Calling keycloak method
     this.authService.login();
   }
-  
+
   // Method to logout from the navbar
   logout() {
     // Calling keycloak method

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ThemeService } from '../../theme.service';
+import { ThemeService } from '../../../service/theme.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../service/user.service';
-import { AuthService } from '../../auth.service';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-users',
@@ -83,6 +83,7 @@ export class UsersComponent implements OnInit {
         console.error('Erreur lors du chargement de tous les utilisateurs:', error);
       }
     });
+
   }
 
   // Method to change the selected user type
@@ -133,9 +134,9 @@ export class UsersComponent implements OnInit {
       if (column === 'phoneNumber') {
         valueA = a.attributes.phoneNumber;
         valueB = b.attributes.phoneNumber;
-      } else if (column === 'homeAddress') {
-        valueA = a.attributes.homeAddress;
-        valueB = b.attributes.homeAddress;
+      } else if (column === 'balance') {
+        valueA = a.attributes.balance;
+        valueB = b.attributes.balance;
       } else {
         valueA = a[column];
         valueB = b[column];
@@ -154,4 +155,56 @@ export class UsersComponent implements OnInit {
         : (valueB - valueA);
     });
   }
+
+  // Method to change the user status (Enabled to Disabled and vice versa)
+  async changeUserStatus(emailid: string, status: string) {
+    const token = await this.authService.getToken();
+  
+    if (status === 'Disabled') {
+      this.userService.enableUser(token, emailid).subscribe({
+        next: (response) => {
+          console.log('User enabled successfully:', response);
+          // Mettre à jour l'utilisateur dans la bonne liste
+          this.updateUserStatus(emailid, 'Enabled');
+        },
+        error: (error) => {
+          console.error('Error enabling user:', error);
+        }
+      });
+    } else {
+      this.userService.disableUser(token, emailid).subscribe({
+        next: (response) => {
+          console.log('User disabled successfully:', response);
+          // Mettre à jour l'utilisateur dans la bonne liste
+          this.updateUserStatus(emailid, 'Disabled');
+        },
+        error: (error) => {
+          console.error('Error disabling user:', error);
+        }
+      });
+    }
+  }
+
+  // Method to update the status of a user in the different lists
+
+  private updateUserStatus(emailid: string, newStatus: string) {
+    // Trouver l'utilisateur dans les différentes listes
+    const updateUserStatusInList = (users: any[], emailid: string) => {
+      const user = users.find(user => user.email === emailid);
+      if (user) {
+        user.enabled = (newStatus === 'Enabled');
+      }
+    };
+  
+    // Mettre à jour dans chaque liste spécifique
+    updateUserStatusInList(this.adminUsers, emailid);
+    updateUserStatusInList(this.antiquarianUsers, emailid);
+    updateUserStatusInList(this.basicUsers, emailid);
+  
+    // Charger à nouveau les utilisateurs filtrés selon le type sélectionné
+    this.loadSelectedUsers();
+  }
+  
+  
+
 }
