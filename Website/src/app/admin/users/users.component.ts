@@ -252,10 +252,6 @@ export class UsersComponent implements OnInit {
     }
   }
 
-
-
-
-
   async forcePasswordReset(emailid: string): Promise<void> {
     const token = await this.authService.getToken();
     if (confirm('Are you sure you want to force a password reset for this user?')) {

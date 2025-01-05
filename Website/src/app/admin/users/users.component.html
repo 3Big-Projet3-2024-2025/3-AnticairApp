@@ -219,6 +219,26 @@
           </tbody>
         </table>
       </div>
+      <!-- Pagination Section -->
+      <div class="flex justify-center space-x-2 mt-8">
+        <button 
+          (click)="changePage(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          class="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg disabled:opacity-50">
+          Previous
+        </button>
+        <button 
+          [class.bg-yellow-500]="currentPage" 
+          class="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg"> 
+          {{ currentPage }}
+        </button>
+        <button 
+          (click)="changePage(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+          class="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg disabled:opacity-50">
+          Next
+        </button>
+      </div>
     </div>
   </div>
 </ng-template>
