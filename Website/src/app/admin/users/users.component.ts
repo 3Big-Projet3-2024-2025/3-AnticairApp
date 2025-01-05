@@ -209,9 +209,10 @@ export class UsersComponent implements OnInit {
   }
 
 
-  forcePasswordReset(userId: string): void {
+  async forcePasswordReset(userId: string): Promise<void> {
+    const token = await this.authService.getToken();
     if (confirm('Are you sure you want to force a password reset for this user?')) {
-      this.adminService.forcePasswordReset(userId).subscribe({
+      this.adminService.forcePasswordReset(token, userId).subscribe({
         next: () => {
           // Succès
           alert('Password reset has been forced. User will be prompted to change password at next login.');

@@ -1,10 +1,15 @@
 package be.anticair.anticairapi.keycloak.service;
 
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
-import org.keycloak.representations.idm.CredentialRepresentation;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminService {
@@ -18,14 +23,15 @@ public class AdminService {
         this.keycloak = keycloak;
     }
 
+    /**
+     * Force la réinitialisation du mot de passe en utilisant les actions requises de Keycloak
+     * @param userId ID de l'utilisateur
+     */
     public void forcePasswordReset(String userId) {
         UsersResource usersResource = keycloak.realm(realm).users();
 
-        CredentialRepresentation passwordCredential = new CredentialRepresentation();
-        passwordCredential.setTemporary(true);
-        passwordCredential.setType(CredentialRepresentation.PASSWORD);
-        //passwordCredential.setValue("azerty");
-
-        usersResource.get(userId).resetPassword(passwordCredential);
+        // Utiliser les actions requises pour forcer la mise à jour du mot de passe
+        usersResource.get(userId).executeActionsEmail(Arrays.asList("UPDATE_PASSWORD"));
     }
+
 }

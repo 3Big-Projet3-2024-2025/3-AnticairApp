@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AdminService} from '../../../../service/admin.service';
+import {UserService} from '../../../../service/user.service';
 
 @Component({
   selector: 'app-manage-users',
@@ -7,9 +7,11 @@ import {AdminService} from '../../../../service/admin.service';
   styleUrl: './manage-users.component.css'
 })
 export class ManageUsersComponent implements OnInit {
-  users: any[] = [];
+  ngOnInit(): void {
+  }
+ /* users: any[] = [];
 
-  constructor(private adminService: AdminService) {}
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -23,8 +25,8 @@ export class ManageUsersComponent implements OnInit {
   }
 
   forcePasswordReset(userId: string): void {
-    this.adminService.forcePasswordReset(userId).subscribe(() => {
+    this.userService.forcePasswordReset(userId).subscribe(() => {
       alert('Le lien de réinitialisation de mot de passe a été envoyé.');
     });
-  }
+  }*/
 }

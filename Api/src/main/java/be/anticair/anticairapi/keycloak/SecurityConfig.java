@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/listing/checked").permitAll()
                         .requestMatchers("/api/photoAntiquity/images/**").permitAll()
                         .requestMatchers("/api/listing/**").permitAll()
+                        .requestMatchers("/api/admin/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
