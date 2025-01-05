@@ -17,6 +17,10 @@ export class UsersComponent implements OnInit {
   adminUsers: any[] = [];
   antiquarianUsers: any[] = [];
   basicUsers: any[] = [];
+  currentPage: number = 1;
+  itemsPerPage: number = 3; // Adjust this value based on your requirements
+  totalPages: number = 1;
+  paginatedUsers: any[] = [];
 
   // Table where users will be displayed
   displayedUsers: any[] = [];
@@ -46,44 +50,43 @@ export class UsersComponent implements OnInit {
     this.loadAllUsers();
   }
 
-  // Load of all users
   private async loadAllUsers() {
-    const token = this.authService.getToken();
+    const token = await this.authService.getToken();
 
-    // Load the number of users
+    // Load all users as before...
     this.userService.getAdminUsers(await token).subscribe({
       next: (users) => {
         this.adminUsers = users;
+        this.calculateTotalPages(users);
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des utilisateurs administrateurs:', error);
+        console.error('Error loading admin users:', error);
       }
     });
 
-    // Load the antiquarian users
     this.userService.getAntiquarianUsers(await token).subscribe({
       next: (users) => {
         this.antiquarianUsers = users;
+        this.calculateTotalPages(users);
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des utilisateurs antiquaires:', error);
-      }
-    });
-    
-    // Load the basic users
-    this.userService.getSimpleUsers(await token).subscribe({
-      next: (users) => {
-        this.basicUsers = users;
-        // If the selected user type is basic, we display the basic users
-        if (this.selectedUserType === 'basic') {
-          this.displayedUsers = users;
-        }
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement de tous les utilisateurs:', error);
+        console.error('Error loading antiquarian users:', error);
       }
     });
 
+    this.userService.getSimpleUsers(await token).subscribe({
+      next: (users) => {
+        this.basicUsers = users;
+        this.calculateTotalPages(users);
+        if (this.selectedUserType === 'basic') {
+          this.displayedUsers = users;
+          this.paginateUsers();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading basic users:', error);
+      }
+    });
   }
 
   // Method to change the selected user type
@@ -108,6 +111,8 @@ export class UsersComponent implements OnInit {
     } else {
       this.displayedUsers = usersToSort;
     }
+
+    this.changePage(1);
   }
 
   // Sorting method
@@ -203,6 +208,43 @@ export class UsersComponent implements OnInit {
   
     // Charger à nouveau les utilisateurs filtrés selon le type sélectionné
     this.loadSelectedUsers();
+  }
+
+  // Method to calculate total pages
+  calculateTotalPages(users: any[]) {
+    this.totalPages = Math.ceil(users.length / this.itemsPerPage);
+    this.paginateUsers();
+  }
+
+  // Method to paginate the users based on the current page
+  paginateUsers() {
+    let usersToDisplay: any[];
+
+    switch (this.selectedUserType) {
+      case 'admin':
+        usersToDisplay = this.adminUsers;
+        break;
+      case 'antiquarian':
+        usersToDisplay = this.antiquarianUsers;
+        break;
+      case 'basic':
+      default:
+        usersToDisplay = this.basicUsers;
+        break;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+
+    this.paginatedUsers = usersToDisplay.slice(startIndex, endIndex);
+  }
+
+  // Method to change the page
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.paginateUsers();
+    }
   }
   
   
