@@ -6,6 +6,7 @@ import org.apache.catalina.User;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -66,6 +67,7 @@ public class UserController {
      * @return a ResponseEntity containing a list of all users.
      * @author Blommaert Youry
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/list")
     public ResponseEntity<List<UserRepresentation>> listUsers() {
         List<UserRepresentation> users = userService.getAllUsers();
@@ -78,6 +80,7 @@ public class UserController {
      * @return a ResponseEntity containing a list of all users without groups.
      * @author Blommaert Youry
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/list/users")
     public ResponseEntity<List<UserRepresentation>> listUsersWithoutGroups() {
         List<UserRepresentation> users = userService.getUsersWithoutGroups();
@@ -101,6 +104,7 @@ public class UserController {
      * @return ResponseEntity containing a list of all users in the group specified.
      * @author Blommaert Youry
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/list/admin")
     public ResponseEntity<List<UserRepresentation>> listAdmins() {
         List<UserRepresentation> admins = userService.getUsersByGroupName("Admin");
@@ -112,6 +116,7 @@ public class UserController {
      * @return ResponseEntity containing a list of all users in the antiquarian group specified.
      * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/list/antiquarian")
     public ResponseEntity<List<UserRepresentation>> listAntiquarian() {
         List<UserRepresentation> antiquarian = userService.getUsersByGroupName("Antiquarian");
@@ -123,6 +128,7 @@ public class UserController {
      * @return ResponseEntity containing a Json
      * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/desactivate")
     public ResponseEntity<Map<String,String>> desactivateUser(
             @RequestParam String emailId
@@ -139,6 +145,7 @@ public class UserController {
      * @return ResponseEntity containing a Json
      * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/activate")
     public ResponseEntity<Map<String,String>> activateUser(
             @RequestParam String emailId
@@ -154,6 +161,7 @@ public class UserController {
      * @return ResponseEntity containing a Json
      * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getUserStatus(
             @RequestParam String emailId
@@ -169,6 +177,7 @@ public class UserController {
      * @return ResponseEntity containing a Json
      * @author Verly Noah
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PutMapping("/redistributeAntiquity")
     public ResponseEntity<Map<String, String>> redistributeAntiquity(
             @RequestParam String emailId

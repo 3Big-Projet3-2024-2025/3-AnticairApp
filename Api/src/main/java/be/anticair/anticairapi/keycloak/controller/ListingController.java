@@ -17,6 +17,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -184,6 +185,7 @@ public class ListingController {
      * @author Verly Noah
      * @return ResponseEntity containing a Map <String, String>, with the message to know the result
      */
+    @PreAuthorize("hasAuthority('ROLE_Antiquarian')")
     @PutMapping("/rejectAntiquity")
     public ResponseEntity<Map<String,String>> rejectAntiquity(@RequestBody Map<String, String> otherInformation) {
         Listing rejectedAntiquity= this.listingService.rejectAntiquity(otherInformation);
@@ -203,6 +205,7 @@ public class ListingController {
      * @author Verly Noah
      * @return ResponseEntity containing a Map <String, String>, with the message to know the result
      */
+    @PreAuthorize("hasAuthority('ROLE_Antiquarian')")
     @PutMapping("/acceptAntiquity")
     public ResponseEntity<Map<String,String>> acceptAntiquity(@RequestBody Map<String, String> otherInformation) {
         Listing acceptAntiquity= this.listingService.acceptAntiquity(otherInformation);
@@ -341,6 +344,7 @@ public class ListingController {
      * @see PhotoAntiquity
      * @see ListingService#getAntiquitiesByState(String)
      */
+    @PreAuthorize("hasAuthority('ROLE_Antiquarian')")
     @GetMapping("/by-state")
     public ResponseEntity<List<ListingWithPhotosDto>> getAntiquitiesByState(@RequestParam String mailAntiquarian) {
         List<ListingWithPhotosDto> antiquitiesWithPhoto = new ArrayList<>();
@@ -402,7 +406,6 @@ public class ListingController {
         }
         return ResponseEntity.ok(antiquitiesWithPhoto);
     }
-
 
     /**
      * Updates the 'isDisplay' field of a listing to false based on the provided ID.

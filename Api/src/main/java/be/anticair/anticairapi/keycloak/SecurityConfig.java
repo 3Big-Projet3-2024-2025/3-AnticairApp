@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -37,14 +39,14 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configuration CORS
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(Customizer.withDefaults())
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/api/listing/payment/success").permitAll()
-                        .requestMatchers("/api/listing/checked").permitAll()
-                        .requestMatchers("/api/photoAntiquity/images/**").permitAll()
-                        .requestMatchers("/api/listing/**").permitAll()
-                        .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/api/listing/**").permitAll() // Allow to display antiquities even if not login
+                        .requestMatchers("/api/photoAntiquity/images/**").permitAll() // Allow to get images
+                        .requestMatchers("/uploads/**").permitAll() // Allow to retrieve the images
+                        .requestMatchers("/api/users/nbrUsers").permitAll() // Allow to counts the user to set admin or not
+                        .requestMatchers("/api/listing/payment/execute").permitAll() // Allow to check if a payment has been done
                         .anyRequest().authenticated()
                 );
         return http.build();
@@ -60,6 +62,17 @@ public class SecurityConfig {
         return NimbusJwtDecoder
                 .withJwkSetUri("http://localhost:8081/realms/anticairapp/protocol/openid-connect/certs")
                 .build();
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("groups");
+
+        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+        authenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return authenticationConverter;
     }
 
     /**

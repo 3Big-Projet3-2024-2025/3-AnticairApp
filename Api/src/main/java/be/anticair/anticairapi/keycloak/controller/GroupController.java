@@ -6,6 +6,7 @@ import org.keycloak.representations.idm.GroupRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -45,6 +46,7 @@ public class GroupController {
      * @return a ResponseEntity containing a success message.
      * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/")
     public ResponseEntity<List<Map<String, Object>>> getGroups() {
         List<GroupRepresentation> groups = groupService.getGroup();
@@ -68,6 +70,7 @@ public class GroupController {
      * @return a ResponseEntity containing a list of groups the user belongs to.
      * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/{emailId}/groups")
     public ResponseEntity<List<Map<String, Object>>> getGroupsFromUser(@RequestParam String emailId) {
         // Fetch the groups the user is a member of (assuming groupService.getGroupsForUser fetches this)
@@ -98,6 +101,7 @@ public class GroupController {
      * @return a ResponseEntity containing a success message.
      * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/add")
     public ResponseEntity<Map<String, String>> addGroup(
             @RequestParam String emailId,
@@ -117,6 +121,7 @@ public class GroupController {
      * @return a ResponseEntity containing a success message.
      * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/remove")
     public ResponseEntity<Map<String, String>> removeGroup(
             @RequestParam String emailId,

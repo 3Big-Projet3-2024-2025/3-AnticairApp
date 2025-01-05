@@ -2,6 +2,7 @@ package be.anticair.anticairapi.keycloak.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import be.anticair.anticairapi.keycloak.service.AdminService;
 
@@ -15,6 +16,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/force-password-reset/{userEmail}")
     public ResponseEntity<?> forcePasswordReset(@PathVariable String userEmail) {
         adminService.forcePasswordReset(userEmail);
