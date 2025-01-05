@@ -2,6 +2,7 @@ package be.anticair.anticairapi.keycloak;
 
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.enumeration.AntiquityState;
+import be.anticair.anticairapi.keycloak.service.AdminService;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.UserService;
 import jakarta.mail.MessagingException;
@@ -33,6 +34,9 @@ public class UserServiceTests {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AdminService adminService;
   
     private static final String TEST_USER_EMAIL = "test-user@gmail.com";
     private static final String TEST_ADMIN_EMAIL = "test-admin@gmail.com";
@@ -214,6 +218,33 @@ public class UserServiceTests {
             userService.getUserStatus("nonexistent_user_987654@gmail.com");
         });
     }
+
+    /**
+     * Test to verify successful password reset for an existing user.
+     * @Author Lawzen
+     */
+    @Test
+    @DisplayName("Force Password Reset - Existing User")
+    public void testForcePasswordReset_Success() {
+        assertDoesNotThrow(() -> {
+            adminService.forcePasswordReset("alexis.zarzycki0212@gmail.com");
+        }, "Password reset should not throw an exception for an existing user.");
+    }
+
+    /**
+     * Test to verify that a UserNotFoundException is thrown for a non-existent user.
+     * @Author Lawzen
+     */
+    @Test
+    @DisplayName("Force Password Reset - Non-Existent User")
+    public void testForcePasswordReset_UserNotFound() {
+        Exception exception = assertThrows(Exception.class, () -> {
+            adminService.forcePasswordReset("NON_EXISTENT_USER_EMAIL@gmail.com");
+        }, "A UserNotFoundException should be thrown for a non-existent user.");
+
+        assertEquals("No users found with email: NON_EXISTENT_USER_EMAIL@gmail.com", exception.getMessage());
+    }
+
 
 
     /**
