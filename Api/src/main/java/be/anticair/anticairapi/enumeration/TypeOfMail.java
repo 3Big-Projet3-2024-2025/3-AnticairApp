@@ -15,6 +15,7 @@ public enum TypeOfMail {
     REDISTRIBUTEANTIQUITYNEWANTIQUARIAN (5, "redistributeAntiquityNewAntiquarian.html", "A new to antiquity to be checked"),
     ENABLEORDISABLEUSER(6, "enableOrDisableUser.html", "Your account has been updated"),
     PAYMENTOFCOMMISSION(7, "PaymentOfCommission.html", "You received a payment"),
+    NEWANTIQUITY(8, "newAntiquity.html", "A new antiquity"),
     DELETEUSERDATA(10, "ConfirmationRGPDUser.html","Your datas has been deleted");
 
     /**

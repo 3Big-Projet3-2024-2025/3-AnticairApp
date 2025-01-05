@@ -17,14 +17,14 @@ import java.util.Objects;
 
 /**
  * REST Controller for managing users in Keycloak.
- * @Author Blommaert Youry
+ * @author Blommaert Youry
  */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     /**
      * Service for performing users-related operations.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     private final UserService userService;
 
@@ -32,7 +32,7 @@ public class UserController {
      * Constructor with dependency injection for the UserService.
      *
      * @param userService the service used to manage users in Keycloak.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     @Autowired
     public UserController(UserService userService) {
@@ -43,7 +43,7 @@ public class UserController {
      * Constructor with dependency injection for the UserService.
      *
      * @param userDetails the service to edit user details.
-     * @Author Dewever David
+     * @author Dewever David
      */
     @PutMapping("/update")
     public ResponseEntity<Map<String, String>> updateUserProfile(
@@ -64,7 +64,7 @@ public class UserController {
      * Get all users from the database.
      *
      * @return a ResponseEntity containing a list of all users.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     @GetMapping("/list")
     public ResponseEntity<List<UserRepresentation>> listUsers() {
@@ -76,7 +76,7 @@ public class UserController {
      * Get all users without groups from the database.
      *
      * @return a ResponseEntity containing a list of all users without groups.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     @GetMapping("/list/users")
     public ResponseEntity<List<UserRepresentation>> listUsersWithoutGroups() {
@@ -88,7 +88,7 @@ public class UserController {
      * Get the number of users from the database
      *
      * @return a ResponseEntity containing the number of users
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     @GetMapping("/nbrUsers")
     public ResponseEntity<Integer> numberUsers() {
@@ -99,7 +99,7 @@ public class UserController {
     /**
      * Get all users from a specific group.
      * @return ResponseEntity containing a list of all users in the group specified.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     @GetMapping("/list/admin")
     public ResponseEntity<List<UserRepresentation>> listAdmins() {
@@ -110,7 +110,7 @@ public class UserController {
     /**
      * Get all users from a specific group
      * @return ResponseEntity containing a list of all users in the antiquarian group specified.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @GetMapping("/list/antiquarian")
     public ResponseEntity<List<UserRepresentation>> listAntiquarian() {
@@ -121,7 +121,7 @@ public class UserController {
     /**
      * Desactivate a user
      * @return ResponseEntity containing a Json
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @PostMapping("/desactivate")
     public ResponseEntity<Map<String,String>> desactivateUser(
@@ -137,7 +137,7 @@ public class UserController {
     /**
      * Activate a user
      * @return ResponseEntity containing a Json
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @PostMapping("/activate")
     public ResponseEntity<Map<String,String>> activateUser(
@@ -152,7 +152,7 @@ public class UserController {
     /**
      * Get the status of a user
      * @return ResponseEntity containing a Json
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getUserStatus(
@@ -165,9 +165,9 @@ public class UserController {
     }
 
     /**
-     * Redistrute the antiquity of a antiquarian
+     * Redistribute the antiquity of an antiquarian
      * @return ResponseEntity containing a Json
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     @PutMapping("/redistributeAntiquity")
     public ResponseEntity<Map<String, String>> redistributeAntiquity(
