@@ -81,7 +81,7 @@
                                 {{ user.enabled ? 'Disable' : 'Enable' }}</button>
 
                           <button class="px-4 py-2 bg-yellow-500 text-white rounded mt-4 ml-4"
-                                  (click)="forcePasswordReset(user.id)">
+                                  (click)="forcePasswordReset(user.email)">
                             Reset Password
                           </button>
                         </td>
@@ -191,7 +191,7 @@
                                 </button>
 
                               <button class="px-4 py-2 bg-yellow-500 text-white rounded mt-4 ml-4"
-                                      (click)="forcePasswordReset(user.id)">
+                                      (click)="forcePasswordReset(user.email)">
                                 Reset Password
                               </button>
                             </td>

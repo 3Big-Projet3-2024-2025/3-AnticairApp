@@ -15,10 +15,12 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @PostMapping("/force-password-reset/{userId}")
-    public ResponseEntity<?> forcePasswordReset(@PathVariable String userId) {
-        adminService.forcePasswordReset(userId);
-        return ResponseEntity.ok("Password reset has been forced successfully.");
+    @PostMapping("/force-password-reset/{userEmail}")
+    public ResponseEntity<?> forcePasswordReset(@PathVariable String userEmail) {
+        adminService.forcePasswordReset(userEmail);
+        Map<String, String> responseMessage = new HashMap<>();
+        responseMessage.put("message", "Password has been forced to be reset successfully");
+        return ResponseEntity.ok(responseMessage);
     }
 
 

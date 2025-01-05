@@ -14,8 +14,8 @@ export class AdminService {
     return this.http.get(`${this.apiUrl}/api/users/list`);
   }
 
-  forcePasswordReset(rawToken: string, userId: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/force-password-reset/${userId}`, null, {
+  forcePasswordReset(rawToken: string, emailid: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/force-password-reset/${emailid}`, null, {
       headers: {
         Authorization: `Bearer ${rawToken}`,
       }

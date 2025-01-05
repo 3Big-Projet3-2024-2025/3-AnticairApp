@@ -199,26 +199,24 @@ export class UsersComponent implements OnInit {
       }
     };
 
-    // Mettre à jour dans chaque liste spécifique
     updateUserStatusInList(this.adminUsers, emailid);
     updateUserStatusInList(this.antiquarianUsers, emailid);
     updateUserStatusInList(this.basicUsers, emailid);
 
-    // Charger à nouveau les utilisateurs filtrés selon le type sélectionné
     this.loadSelectedUsers();
   }
 
 
-  async forcePasswordReset(userId: string): Promise<void> {
+  async forcePasswordReset(emailid: string): Promise<void> {
     const token = await this.authService.getToken();
     if (confirm('Are you sure you want to force a password reset for this user?')) {
-      this.adminService.forcePasswordReset(token, userId).subscribe({
+      this.adminService.forcePasswordReset(token, emailid).subscribe({
         next: () => {
-          // Succès
+          // Sucess
           alert('Password reset has been forced. User will be prompted to change password at next login.');
         },
         error: (error) => {
-          // Erreur
+          // Error
           console.error('Error forcing password reset:', error);
           alert('Failed to force password reset. Please try again.');
         }
