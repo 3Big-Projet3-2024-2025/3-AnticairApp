@@ -21,7 +21,6 @@ export class DashboardComponent {
     // Subscribe to Theme event
     this.themeService.theme$.subscribe(theme => {
       this.currentTheme = theme;
-
     });
     this.fetchUserCount();
 
