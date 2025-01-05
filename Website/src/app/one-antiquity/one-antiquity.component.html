@@ -2,10 +2,12 @@
     <div class="flex justify-center items-center pt-16 bg-gray-800">
         <div *ngIf="antiquity" class="bg-gray-700 text-gray-200 p-8 rounded-lg shadow-lg max-w-3xl w-full">
             <h2 class="text-3xl font-bold text-center mb-6">{{ antiquity.titleAntiquity }}</h2>
-
             <div class="mb-6">
-                <img *ngIf="antiquity.photos && antiquity.photos.length > 0" [src]="antiquity.photos[0]"
-                    [alt]="antiquity.titleAntiquity" class="w-full h-auto max-h-64 object-contain rounded-md mb-4">
+                <div class="carousel" *ngIf="imageUrls.length > 0">
+                    <button *ngIf="imageUrls.length > 1" (click)="prevImage()">&#10094;</button>
+                    <img [src]="imageUrls[currentImageIndex]" alt="Image {{ currentImageIndex + 1 }}" class="d-block w-100 carousel-image">
+                    <button *ngIf="imageUrls.length > 1" (click)="nextImage()">&#10095;</button>
+                </div>
 
                 <ng-template #placeholder>
                     <div class="w-full h-64 bg-gray-500 rounded-md mb-4 flex items-center justify-center">
@@ -27,8 +29,11 @@
             <h2 class="text-3xl font-bold text-center mb-6">{{ antiquity.titleAntiquity }}</h2>
 
             <div class="mb-6">
-                <img *ngIf="antiquity.photos && antiquity.photos.length > 0" [src]="antiquity.photos[0]"
-                    [alt]="antiquity.titleAntiquity" class="w-full h-auto max-h-64 object-contain rounded-md mb-4">
+                <div class="carousel" *ngIf="imageUrls.length > 0">
+                    <button *ngIf="imageUrls.length > 1" (click)="prevImage()">&#10094;</button>
+                    <img [src]="imageUrls[currentImageIndex]" alt="Image {{ currentImageIndex + 1 }}" class="d-block w-100 carousel-image">
+                    <button *ngIf="imageUrls.length > 1" (click)="nextImage()">&#10095;</button>
+                </div>
 
                 <ng-template #placeholder>
                     <div class="w-full h-64 bg-gray-500 rounded-md mb-4 flex items-center justify-center">

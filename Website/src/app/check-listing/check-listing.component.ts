@@ -4,7 +4,7 @@ import { Antiquity } from '../../modele/DtoListing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import { ThemeService } from '../../service/theme.service';
-import { Review } from '../../modele/review';
+import { Review } from '../../modele/Review';
 
 @Component({
   selector: 'app-check-listing',
