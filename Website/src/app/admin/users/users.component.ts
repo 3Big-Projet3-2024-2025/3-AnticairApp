@@ -55,49 +55,41 @@ export class UsersComponent implements OnInit {
 
   private async loadAllUsers() {
     const token = await this.authService.getToken();
-
-    // Load all users as before...
+  
     this.userService.getAdminUsers(await token).subscribe({
       next: (users) => {
         this.adminUsers = users;
-        this.calculateTotalPages(users);
+        if (this.selectedUserType === 'admin') {
+          this.loadSelectedUsers();
+        }
       },
-      error: (error) => {
-        console.error('Error loading admin users:', error);
-      }
+      error: (error) => console.error('Error loading admin users:', error),
     });
-
+  
     this.userService.getAntiquarianUsers(await token).subscribe({
       next: (users) => {
         this.antiquarianUsers = users;
-        this.calculateTotalPages(users);
+        if (this.selectedUserType === 'antiquarian') {
+          this.loadSelectedUsers();
+        }
       },
-      error: (error) => {
-        console.error('Error loading antiquarian users:', error);
-      }
+      error: (error) => console.error('Error loading antiquarian users:', error),
     });
-
-
-    // Load the basic users
-
+  
     this.userService.getSimpleUsers(await token).subscribe({
       next: (users) => {
         this.basicUsers = users;
-        this.calculateTotalPages(users);
         if (this.selectedUserType === 'basic') {
-          this.displayedUsers = users;
-          this.paginateUsers();
+          this.loadSelectedUsers();
         }
       },
-      error: (error) => {
-        console.error('Error loading basic users:', error);
-      }
+      error: (error) => console.error('Error loading basic users:', error),
     });
   }
+  
 
-  // Method to change the selected user type
   loadSelectedUsers() {
-    let usersToSort: any[];
+    let usersToSort: any[] = [];
     switch (this.selectedUserType) {
       case 'admin':
         usersToSort = this.adminUsers;
@@ -110,16 +102,15 @@ export class UsersComponent implements OnInit {
         usersToSort = this.basicUsers;
         break;
     }
-
-    // If a sort column is set, apply sorting
-    if (this.currentSortColumn) {
-      this.displayedUsers = this.sortUsers(usersToSort, this.currentSortColumn, this.isSortAscending);
-    } else {
-      this.displayedUsers = usersToSort;
-    }
-
-    this.changePage(1);
+  
+    this.currentPage = 1; // Réinitialiser la page courante
+    this.calculateTotalPages();
+    this.displayedUsers = this.sortUsers(usersToSort, this.currentSortColumn, this.isSortAscending);
+    this.paginateUsers();
   }
+  
+
+  
 
   // Sorting method
   sortByColumn(column: string) {
@@ -215,16 +206,8 @@ export class UsersComponent implements OnInit {
   }
 
 
-  // Method to calculate total pages
-  calculateTotalPages(users: any[]) {
-    this.totalPages = Math.ceil(users.length / this.itemsPerPage);
-    this.paginateUsers();
-  }
-
-  // Method to paginate the users based on the current page
-  paginateUsers() {
+  calculateTotalPages() {
     let usersToDisplay: any[];
-
     switch (this.selectedUserType) {
       case 'admin':
         usersToDisplay = this.adminUsers;
@@ -237,12 +220,36 @@ export class UsersComponent implements OnInit {
         usersToDisplay = this.basicUsers;
         break;
     }
+    this.totalPages = Math.ceil(usersToDisplay.length / this.itemsPerPage);
+  }
+  
 
+  paginateUsers() {
+    let usersToDisplay: any[];
+    switch (this.selectedUserType) {
+      case 'admin':
+        usersToDisplay = this.adminUsers;
+        break;
+      case 'antiquarian':
+        usersToDisplay = this.antiquarianUsers;
+        break;
+      case 'basic':
+      default:
+        usersToDisplay = this.basicUsers;
+        break;
+    }
+  
+    // Vérifier si la page courante dépasse le nombre total de pages
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-
+  
     this.paginatedUsers = usersToDisplay.slice(startIndex, endIndex);
   }
+  
 
   // Method to change the page
   changePage(page: number) {
@@ -251,7 +258,7 @@ export class UsersComponent implements OnInit {
       this.paginateUsers();
     }
   }
-
+  
   async forcePasswordReset(emailid: string): Promise<void> {
     const token = await this.authService.getToken();
     if (confirm('Are you sure you want to force a password reset for this user?')) {
