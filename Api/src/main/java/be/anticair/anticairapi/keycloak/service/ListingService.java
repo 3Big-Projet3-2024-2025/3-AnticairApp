@@ -153,66 +153,6 @@ public class ListingService {
 
 
 
-    public Listing rejectAntiquity(Map<String,String> otherInformation){
-        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
-        if(antiquity.isEmpty()){return null;}
-        antiquity.get().setState(REJECTED.getState());
-
-        otherInformation.put("title",antiquity.get().getTitleAntiquity());
-        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
-        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
-
-        otherInformation.put("note_title",otherInformation.get("note_title"));
-        otherInformation.put("note_description",otherInformation.get("note_description"));
-        otherInformation.put("note_price",otherInformation.get("note_price"));
-        otherInformation.put("note_photo",otherInformation.get("note_photo"));
-        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
-        try {
-            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.REJECTIONOFANTIQUITY,otherInformation);
-            return antiquity.get();
-        } catch (MessagingException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Listing acceptAntiquity(Map<String,String> otherInformation){
-        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
-        if(antiquity.isEmpty()){return null;}
-        antiquity.get().setState(ACCEPTED.getState());
-
-        otherInformation.put("title",antiquity.get().getTitleAntiquity());
-        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
-        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
-
-        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
-        try {
-            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
-
-            return this.applyCommission(Integer.valueOf(otherInformation.get("id")));
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Get all the listing in the database.
-     * @return The list of all the listings.
-     * @author Blommaert Youry
-     */
-    public List<Listing> getAllListingsAccepted() {
-        List<Listing> listings = new ArrayList<>();
-        listings = ListingRepository.getAllAntiquityChecked();
-
-        if(listings.isEmpty()) {
-            throw new RuntimeException("No listings found");
-        }
-
-        return listings;
-    }
-
-
     /**
      * Function to reject the antiquity, apply the commission and send the mail
      *
