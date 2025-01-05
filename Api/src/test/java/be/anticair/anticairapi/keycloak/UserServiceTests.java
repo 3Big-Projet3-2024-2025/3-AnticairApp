@@ -58,6 +58,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test list all Antiquarian")
     public void testGetAllAntiquarianUsers() {
         // Attempt to retrieve User with a specific Email
         List<UserRepresentation> users = userService.getUsersByGroupName("Antiquarian");
@@ -72,6 +73,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test get user by email that exist")
     public void testGetExistentUserByEmail() {
         // Attempt to retrieve User with a specific Email
         List<UserRepresentation> users = userService.getUsersByEmail(TEST_USER_EMAIL);
@@ -86,6 +88,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test get a user by email that does not exist")
     public void testGetNotExistentUserByEmail() {
         assertThrows(NotFoundException.class, () -> {
             // Attempt to retrieve User with a specific Email
@@ -97,6 +100,7 @@ public class UserServiceTests {
      * @Author Blommaert Youry
      */
     @Test
+    @DisplayName("Test get all users")
     public void testGetAllUsers() {
         List<UserRepresentation> users = userService.getAllUsers();
 
@@ -111,6 +115,7 @@ public class UserServiceTests {
      *
      */
     @Test
+    @DisplayName("Test lisst all Admin Users")
     public void testGetAllAdminUsers() {
         List<UserRepresentation> users = userService.getUsersByGroupName("Admin");
 
@@ -123,6 +128,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test desactivateUser a existent User")
     public void testDesactiveUser(){
         assertTrue(userService.disableUser(TEST_USER_EMAIL));
     }
@@ -132,6 +138,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test desactivateUser a non-existent User")
     public void testDesactiveNonExistentUser(){
         assertThrows(NotFoundException.class, () -> {
             userService.disableUser("nonexistent_user_987654@gmail.com");
@@ -143,6 +150,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test enableUser a existent User")
     public void testEnableUser(){
         assertTrue(userService.enableUser(TEST_USER_EMAIL));
     }
@@ -152,6 +160,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test enableUser a non-existent User")
     public void testEnableNonExistentUser(){
         assertThrows(NotFoundException.class, () -> {
             userService.enableUser("nonexistent_user_987654@gmail.com");
@@ -164,6 +173,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test disableUser on an admin User")
     public void testDisableAdminUser(){
         assertThrows(RuntimeException.class, () -> {
             userService.disableUser(TEST_ADMIN_EMAIL);
@@ -176,6 +186,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test getStatus on an enabled User")
     public void testGetStatusEnabledUser(){
         assertTrue(userService.getUserStatus(TEST_USER_EMAIL));
     }
@@ -185,6 +196,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test getStatus on a disabled User")
     public void testGetStatusDisabledUser(){
         userService.disableUser(TEST_USER_EMAIL);
         assertFalse(userService.getUserStatus(TEST_USER_EMAIL));
@@ -196,6 +208,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test getStatus on a non-existent User")
     public void testGetStatusEnabledNonExistentUser(){
         assertThrows(NotFoundException.class, () -> {
             userService.getUserStatus("nonexistent_user_987654@gmail.com");
@@ -208,6 +221,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test getStatus on a non-existent User")
     public void testGetStatusDisabledNonExistentUser(){
         assertThrows(NotFoundException.class, () -> {
             userService.getUserStatus("nonexistent_user_987654@gmail.com");
@@ -219,6 +233,7 @@ public class UserServiceTests {
      * @Author Verly Noah
      */
     @Test
+    @DisplayName("Test change antiquarian from antiquity")
     public void testChangeAntiquarianFromAntiquityOK() throws MessagingException, IOException {
         for (int i = 0; i < 5; i++) {
             this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_USER_EMAIL);
@@ -237,6 +252,7 @@ public class UserServiceTests {
      * @Author Verly Noah
      */
     @Test
+    @DisplayName("Test change antiquarian from antiquity with null email")
     public void testChangeAntiquarianFromAntiquityNull() throws MessagingException, IOException {
         assertEquals("No email address provided",this.userService.redistributeAntiquity(null));
     }
@@ -246,6 +262,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test get user balance with a valid user")
     public void testGetUserBalanceValidUser() {
         double balance = userService.getUserBalance(TEST_USER_EMAIL);
         assertTrue(balance >= 0, "Balance should be a non-negative integer.");
@@ -257,6 +274,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test get user balance with a non-existent user")
     public void testGetUserBalanceNonExistentUser() {
         String nonExistentEmail = "nonexistent_user_987654@gmail.com";
         NotFoundException exception = assertThrows(
@@ -272,6 +290,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test add to user balance with a valid user")
     public void testAddToUserBalanceValidUser() {
         double initialBalance = userService.getUserBalance(TEST_USER_EMAIL);
 
@@ -288,6 +307,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test add to user balance with a non-existent user")
     public void testAddToUserBalanceNonExistentUser() {
         String nonExistentEmail = "nonexistent_user_987654@gmail.com";
         NotFoundException exception = assertThrows(
@@ -303,6 +323,7 @@ public class UserServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test add to user balance with a negative amount")
     public void testAddToUserBalanceNegativeAmount() {
         RuntimeException exception = assertThrows(
                 RuntimeException.class,

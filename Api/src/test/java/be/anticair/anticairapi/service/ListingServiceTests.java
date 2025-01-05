@@ -6,6 +6,7 @@ import be.anticair.anticairapi.enumeration.AntiquityState;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import jakarta.mail.MessagingException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,6 +78,7 @@ public class ListingServiceTests {
      * @Author Blommaert Youry
      */
     @Test
+    @DisplayName("Create listing success")
     public void testCreateListing_Success() {
         listing = new Listing();
         listing.setPriceAntiquity(100.0);
@@ -97,6 +99,7 @@ public class ListingServiceTests {
      * @Author Blommaert Youry
      */
     @Test
+    @DisplayName("Create listing with price less than 0")
     public void testCreateListing_PriceLessThanZero() {
         listing = new Listing();
         listing.setPriceAntiquity(-1.0);
@@ -115,6 +118,7 @@ public class ListingServiceTests {
      * @Author Blommaert Youry
      */
     @Test
+    @DisplayName("Create listing with user not found")
     public void testCreateListing_UserNotFound() {
         listing = new Listing();
         listing.setPriceAntiquity(100.0);
@@ -133,6 +137,7 @@ public class ListingServiceTests {
      * @Author Blommaert Youry
      */
     @Test
+    @DisplayName("Create listing with missing required fields")
     public void testCreateListing_MissingRequiredFields() {
         listing = new Listing();
         listing.setPriceAntiquity(0.0);
@@ -151,6 +156,7 @@ public class ListingServiceTests {
      * @Author Blommaert Youry
      */
     @Test
+    @DisplayName("Get all antiquities success")
     public void testGetAllAntiquities() {
         List<Listing> listings = listingRepository.findAll();
 
@@ -162,6 +168,7 @@ public class ListingServiceTests {
      * @Author Blommaert Youry
      */
     @Test
+    @DisplayName("Get all antiquities empty")
     public void testGetAllAntiquities_Empty() {
         List<Listing> listings = new ArrayList<Listing>();
 
@@ -174,6 +181,7 @@ public class ListingServiceTests {
      * @Author Verly Noah
      */
     @Test
+    @DisplayName("Apply commission success")
     public void applyCommission(){
         //Creation of an antiquity
         this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
@@ -198,17 +206,20 @@ public class ListingServiceTests {
      * @Author Verly Noah
      */
     @Test
+    @DisplayName("Apply commission null")
     public void applyCommissionNull(){
         assertNull(this.listingService.applyCommission(null));
         assertNull(this.listingService.applyCommission(0));
         assertNull(this.listingService.applyCommission(-1));
 
     }
+
     /**
      * Test to check if the changeListing antiquarian work
      * @Author Verly Noah
      */
     @Test
+    @DisplayName("Change antiquarian success")
     public void ChangeAntiquarianTestFromListingService() throws MessagingException, IOException {
         for (int i = 0; i < 10; i++) {
             this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
@@ -230,6 +241,7 @@ public class ListingServiceTests {
      * @Author Verly Noah
      */
     @Test
+    @DisplayName("Reject antiquarian success")
     public void rejectAntiquarianTestFromListingService() throws MessagingException, IOException {
         this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         this.listing = this.listingRepository.save(this.listing);
@@ -252,6 +264,7 @@ public class ListingServiceTests {
      * @Author Verly Noah
      */
     @Test
+    @DisplayName("Accept antiquarian success")
     public void acceptAntiquarianTestFromListingService() throws MessagingException, IOException {
         this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         this.listing = this.listingRepository.save(this.listing);
