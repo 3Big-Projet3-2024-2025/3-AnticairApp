@@ -361,6 +361,7 @@ public class ListingServiceTests {
      *
      * @throws MessagingException if an email-related error occurs
      * @throws IOException if an input/output error occurs
+     * @author Neve Thierry
      */
     @Test
     @Transactional
@@ -387,10 +388,12 @@ public class ListingServiceTests {
 
     /**
      * Test for successfully updating a listing with state 1.
-     * Ensures that the price, description, and state are updated correctly.
+     * Ensures that the price, description, and state are updated correctly to reflect a modification.
      *
      * @throws MessagingException if an email-related error occurs
      * @throws IOException if an input/output error occurs
+     *
+     * @author Neve Thierry
      */
     @Test
     @Transactional
@@ -417,10 +420,12 @@ public class ListingServiceTests {
 
     /**
      * Test to ensure no changes are made when the listing's state is 3.
-     * Verifies that the listing remains unchanged.
+     * Verifies that the listing remains unchanged for immutable states.
      *
      * @throws MessagingException if an email-related error occurs
      * @throws IOException if an input/output error occurs
+     *
+     * @author Neve Thierry
      */
     @Test
     @Transactional
@@ -448,10 +453,12 @@ public class ListingServiceTests {
 
     /**
      * Test for successfully updating a listing with a default state (0).
-     * Ensures that the price, description, and title are updated correctly.
+     * Ensures that the price, description, and title are updated correctly for new listings.
      *
      * @throws MessagingException if an email-related error occurs
      * @throws IOException if an input/output error occurs
+     *
+     * @author Neve Thierry
      */
     @Test
     @Transactional
@@ -474,6 +481,100 @@ public class ListingServiceTests {
 
         // Clean up
         this.cleanListing(result);
+    }
+
+    /**
+     * Test for successfully retrieving listings with state 0 or 2 for a given antiquarian email.
+     * Ensures that only the listings with the specified states are returned.
+     *
+     * @see ListingService#getAntiquitiesByState(String)
+     *
+     * @author Neve Thierry
+     */
+    @Test
+    @Transactional
+    @DisplayName("Successfully retrieve listings with state 0 or 2 for a specific antiquarian")
+    void testGetAntiquitiesByState_Success() {
+        // Arrange
+        String mailAntiquarian = TEST_ANTIQUARIAN_EMAIL;
+
+        Listing listing1 = new Listing(0, 100.0, "Description 1", "Title 1", mailAntiquarian, 0, true, TEST_SELLER_EMAIL);
+        Listing listing2 = new Listing(0, 150.0, "Description 2", "Title 2", mailAntiquarian, 2, true, TEST_SELLER_EMAIL);
+        Listing listing3 = new Listing(0, 200.0, "Description 3", "Title 3", mailAntiquarian, 1, true, TEST_SELLER_EMAIL);
+
+        this.listingRepository.save(listing1);
+        this.listingRepository.save(listing2);
+        this.listingRepository.save(listing3);
+
+        // Act
+        List<Listing> result = listingService.getAntiquitiesByState(mailAntiquarian);
+
+        // Assert
+        assertNotNull(result, "The result list should not be null");
+        assertEquals(2, result.size(), "The result list should contain only listings with state 0 or 2");
+        assertTrue(result.stream().allMatch(listing -> Arrays.asList(0, 2).contains(listing.getState())),
+                "All retrieved listings should have a state of 0 or 2");
+
+        // Clean up
+        this.cleanListing(listing1);
+        this.cleanListing(listing2);
+        this.cleanListing(listing3);
+    }
+
+    /**
+     * Test for retrieving listings when no matching entries exist for the given antiquarian email.
+     * Ensures that an empty list is returned when no results match the query criteria.
+     *
+     * @see ListingService#getAntiquitiesByState(String)
+     *
+     * @author Neve Thierry
+     */
+    @Test
+    @Transactional
+    @DisplayName("Return an empty list when no matching listings are found for a specific antiquarian")
+    void testGetAntiquitiesByState_NoResults() {
+        // Arrange
+        String mailAntiquarian = TEST_ANTIQUARIAN_EMAIL;
+
+        Listing listing1 = new Listing(0, 100.0, "Description 1", "Title 1", mailAntiquarian, 1, true, TEST_SELLER_EMAIL);
+        Listing listing2 = new Listing(0, 150.0, "Description 2", "Title 2", mailAntiquarian, 3, true, TEST_SELLER_EMAIL);
+
+        this.listingRepository.save(listing1);
+        this.listingRepository.save(listing2);
+
+        // Act
+        List<Listing> result = listingService.getAntiquitiesByState(mailAntiquarian);
+
+        // Assert
+        assertNotNull(result, "The result list should not be null");
+        assertTrue(result.isEmpty(), "The result list should be empty when no matching listings are found");
+
+        // Clean up
+        this.cleanListing(listing1);
+        this.cleanListing(listing2);
+    }
+
+    /**
+     * Test for retrieving listings with a nonexistent antiquarian email.
+     * Ensures that an empty list is returned when the email provided does not exist in the database.
+     *
+     * @see ListingService#getAntiquitiesByState(String)
+     *
+     * @author Neve Thierry
+     */
+    @Test
+    @Transactional
+    @DisplayName("Return an empty list when the antiquarian email does not exist")
+    void testGetAntiquitiesByState_NonexistentEmail() {
+        // Arrange
+        String nonexistentEmail = "nonexistent@anticairapp.com";
+
+        // Act
+        List<Listing> result = listingService.getAntiquitiesByState(nonexistentEmail);
+
+        // Assert
+        assertNotNull(result, "The result list should not be null");
+        assertTrue(result.isEmpty(), "The result list should be empty when the antiquarian email does not exist");
     }
 }
 
