@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ThemeService } from '../../theme.service';
+import { ThemeService } from '../../../service/theme.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../service/user.service';
-import { AuthService } from '../../auth.service';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-users',
@@ -134,9 +134,9 @@ export class UsersComponent implements OnInit {
       if (column === 'phoneNumber') {
         valueA = a.attributes.phoneNumber;
         valueB = b.attributes.phoneNumber;
-      } else if (column === 'homeAddress') {
-        valueA = a.attributes.homeAddress;
-        valueB = b.attributes.homeAddress;
+      } else if (column === 'balance') {
+        valueA = a.attributes.balance;
+        valueB = b.attributes.balance;
       } else {
         valueA = a[column];
         valueB = b[column];

@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ThemeService } from '../theme.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ThemeService } from '../../service/theme.service';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
 import { ListingService } from '../../service/listing.service';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-create-listing',
@@ -10,6 +10,8 @@ import { ListingService } from '../../service/listing.service';
   styleUrl: './create-listing.component.css'
 })
 export class CreateListingComponent {
+  @ViewChild('fileInput') fileInput: any;
+
   currentTheme: 'dark' | 'light' = 'light';
 
   email: string = '';
@@ -17,9 +19,12 @@ export class CreateListingComponent {
   description: string = '';
   price: number = 0;
   photos: File[] = [];
+  imagePreviews: String[] = []; 
 
   errorMessage: string = '';
   successMessage: string = '';
+
+  stayOnPage: boolean = false;
 
   constructor(
     private themeService: ThemeService,
@@ -34,12 +39,23 @@ export class CreateListingComponent {
     });
 
     this.email = this.authService.getUserDetails().email;
-    console.log(this.email);
+  }
+
+  redirectToHome() {
+    this.router.navigate(['/home']);
   }
 
   // Method who manages the file selection
   onFileSelected(event: any) {
     this.photos = Array.from(event.target.files);
+    this.imagePreviews = [];
+    for (let file of this.photos) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreviews.push(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   // Method who submits the form
@@ -65,12 +81,22 @@ export class CreateListingComponent {
 
     // Validation for Files
     if (this.photos && this.photos.length > 0) {
-      for (let photo of this.photos) {
-        if (!photo.name.toLowerCase().endsWith('.jpg')) {
-          this.errorMessage = 'All files must be in .jpg format';
-          return;
+      if(this.photos.length <= 10) {
+        for (let photo of this.photos) {
+          if (!photo.name.toLowerCase().endsWith('.jpg')) {
+            this.errorMessage = 'All files must be in .jpg format';
+            return;
+          }
         }
-    }
+
+      } else {
+        this.errorMessage = 'You can only upload 10 photos maximum';
+        return;
+      }
+
+    } else {
+      this.errorMessage = 'At least one photo is required';
+      return;
     }
 
     this.listingService.createListing(
@@ -81,8 +107,18 @@ export class CreateListingComponent {
       this.photos,
     ).subscribe({
       next: (response) => {
-        this.successMessage = 'Listing created successfully!';
         this.resetForm();
+
+        if(this.stayOnPage) {
+          this.successMessage = 'Listing created successfully!';
+        } else {
+          this.successMessage = 'Listing created successfully! You are being redirected to the home page';
+          setTimeout(() => {
+            this.redirectToHome();
+          }, 3000);
+        }
+        
+        
       },
       error: (error) => {
         // Gestion des erreurs
@@ -107,6 +143,24 @@ export class CreateListingComponent {
     this.description = '';
     this.price = 0;
     this.photos = [];
+    this.imagePreviews = [];
+    this.fileInput.nativeElement.value = '';
+  }
+
+  // Method to remove a selected image
+  removeImage(index: number) {
+    this.photos.splice(index, 1);
+    this.imagePreviews.splice(index, 1);
+
+    // Create a new DataTransfer object and assign the remaining files to it
+    const dataTransfer = new DataTransfer();
+    this.photos.forEach(file => dataTransfer.items.add(file));
+    this.fileInput.nativeElement.files = dataTransfer.files;
+
+    // Reset the file input if all images are removed
+    if (this.photos.length === 0) {
+      this.fileInput.nativeElement.value = '';
+    }
   }
 }
 

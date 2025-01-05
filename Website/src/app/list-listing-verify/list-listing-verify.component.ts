@@ -16,7 +16,6 @@ export class ListListingVerifyComponent implements OnInit {
   antiquities: Antiquity[] = []
   currentTheme: 'dark' | 'light' = 'light';
 
-
   constructor(private listingService: ListingService,private themeService: ThemeService,private imageService:ImageServiceService,private authService: AuthService, private router : Router) { }
 
 

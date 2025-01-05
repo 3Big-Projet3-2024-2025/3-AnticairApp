@@ -31,7 +31,7 @@
 
             <!-- Price Field -->
             <div class="mb-4">
-                <label for="price" class="block text-gray-400 font-semibold mb-2">Price</label>
+                <label for="price" class="block text-gray-400 font-semibold mb-2">Price (euro/€)</label>
                 <input type="number" name="price" id="price" required 
                     [(ngModel)]="price" 
                     step="0.01" min="0"
@@ -40,11 +40,37 @@
 
             <!-- Photos Field (Multiple Files) -->
             <div class="mb-4">
-                <label for="photos" class="block text-gray-400 font-semibold mb-2">Photos</label>
+                <label for="photos" class="block text-gray-400 font-semibold mb-5">Pictures (only .jpg files + max 10)</label>
                 <input type="file" name="photos" id="photos" multiple 
                     (change)="onFileSelected($event)"
-                    class="w-full p-3 bg-gray-700 text-gray-200 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    #fileInput
+                    class="hidden">      
+                <!-- Custom label acting as the file upload button -->
+                <label 
+                    for="photos" 
+                    class="cursor-pointer w-full p-3 bg-blue-500 text-white text-center border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Select Photos
+                </label>                                 
             </div>
+
+            <!-- Image Previews -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div *ngFor="let photo of imagePreviews; let i = index" class="relative">
+                    <img [src]="photo" alt="Image Preview" class="w-full h-auto rounded shadow">
+                    <button type="button" (click)="removeImage(i)" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">
+                        &times;
+                    </button>
+                </div>
+            </div>
+
+            <!-- Checkbox Section -->
+            <div class="mb-4 flex items-center">
+                <label for="checkbox" class="block text-gray-400 font-semibold mb-0 mr-2">Sell other antiquity ?</label>
+                <input type="checkbox" name="checkbox" id="checkbox" required 
+                       [(ngModel)]="stayOnPage"
+                       class="bg-gray-700 text-gray-200 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-4 h-4">
+              </div>             
+              
 
             <!-- Submit Button -->
             <div class="mt-6 text-center">
@@ -92,7 +118,7 @@
 
                 <!-- Price Field -->
                 <div class="mb-4">
-                    <label for="price" class="block text-gray-700 font-semibold mb-2">Price</label>
+                    <label for="price" class="block text-gray-700 font-semibold mb-2">Price (euro/€)</label>
                     <input type="number" name="price" id="price" required 
                         [(ngModel)]="price" 
                         step="0.01" min="0"
@@ -101,11 +127,35 @@
 
                 <!-- Photos Field (Multiple Files) -->
                 <div class="mb-4">
-                    <label for="photos" class="block text-gray-700 font-semibold mb-2">Photos</label>
+                    <label for="photos" class="block text-gray-700 font-semibold mb-5">Pictures (only .jpg files + max 10)</label>
                     <input type="file" name="photos" id="photos" multiple 
                         (change)="onFileSelected($event)"
-                        class="w-full p-3 bg-gray-200 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        #fileInput
+                        class="hidden">
+                        <label 
+                        for="photos" 
+                        class="cursor-pointer w-full p-3 bg-blue-500 text-white text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        Select Photos
+                      </label>
                 </div>
+
+                <!-- Image Previews -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <div *ngFor="let photo of imagePreviews; let i = index" class="relative">
+                        <img [src]="photo" alt="Image Preview" class="w-full h-auto rounded shadow">
+                        <button type="button" (click)="removeImage(i)" class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Checkbox Section -->
+                <div class="mb-4 flex items-center">
+                    <label for="checkbox" class="block text-gray-700 font-semibold mb-0 mr-2">Sell other antiquity ?</label>
+                    <input type="checkbox" name="checkbox" id="checkbox" required 
+                       [(ngModel)]="stayOnPage"
+                       class="bg-gray-700 text-gray-200 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-4 h-4">
+                </div> 
 
                 <!-- Submit Button -->
                 <div class="mt-6 text-center">

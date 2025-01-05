@@ -4,25 +4,31 @@ package be.anticair.anticairapi.keycloak.controller;
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.Class.PhotoAntiquity;
+import be.anticair.anticairapi.PaypalConfig;
+import be.anticair.anticairapi.enumeration.AntiquityState;
 import be.anticair.anticairapi.keycloak.service.ListingService;
 import be.anticair.anticairapi.keycloak.service.PhotoAntiquityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paypal.api.payments.Invoice;
+import com.paypal.api.payments.Payer;
+import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.Transaction;
+import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  * REST Controller for managing listing in the database.
-<<<<<<< Updated upstream
- * @Author Blommaert Youry, Neve Thierry
-=======
  * @author Blommaert Youry, Neve Thierry, Zarzycki Alexis
->>>>>>> Stashed changes
  */
 
 @RestController
@@ -32,30 +38,52 @@ public class ListingController {
     private ListingService listingService;
     @Autowired
     private PhotoAntiquityService photoAntiquityService;
+    @Autowired
+    private PaypalConfig paypalConfig;
 
 
     /**
-     * Update an antiquity along with its associated images.
+     * Updates an existing antiquity and its associated photos.
      *
-     * @param antiquityJson JSON representation of the antiquity object.
-     * @param images Multipart files representing new images for the antiquity.
-     * @return ResponseEntity indicating the update status.
+     * <p>This endpoint allows updating an antiquity's details (such as price, description, title, etc.)
+     * and optionally uploading new photos. The antiquity details are provided as a JSON string,
+     * which is deserialized into a {@link Listing} object. The photos are provided as a list of
+     * {@link MultipartFile} objects. If photos are provided, they are updated alongside the antiquity details.</p>
+     *
+     * @param id the ID of the antiquity to update
+     * @param antiquityJson a JSON string representing the new details of the antiquity
+     * @param images a list of {@link MultipartFile} objects representing the new photos to associate with the antiquity (optional)
+     * @return a {@link ResponseEntity} containing a message indicating success or failure
+     *
+     * @author Neve Thierry
+     * @see ListingService#updateListing(Long, Listing)
+     * @see PhotoAntiquityService#updatePhotos(Integer, List)
+     * @see Listing
+     * @see MultipartFile
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateAntiquityWithPhotos(@PathVariable Integer id, @RequestParam("antiquity") String antiquityJson, @RequestParam(value = "images", required = false) List<MultipartFile> images) {
+    public ResponseEntity<Map<String,String>> updateAntiquityWithPhotos(@PathVariable Integer id, @RequestParam("antiquity") String antiquityJson, @RequestParam(value = "images", required = false) List<MultipartFile> images) {
         try {
             // Deserialize the antiquity JSON into a Listing object
             ObjectMapper objectMapper = new ObjectMapper();
             Listing antiquity = objectMapper.readValue(antiquityJson, Listing.class);
 
             // Call the Listing service and the Images service to update the antiquity
-            listingService.updateListing(Long.valueOf(id), antiquity);
-            photoAntiquityService.updatePhotos(id, images);
+            if(antiquity != null){
+                listingService.updateListing(Long.valueOf(id), antiquity);
+            }
+            if(images!=null){
+                photoAntiquityService.updatePhotos(id, images);
+            }
 
-            return ResponseEntity.ok("Antiquity and images updated successfully.");
+            Map<String, String> responseMessage = new HashMap<>();
+            responseMessage.put("message", "Antiquity updated successfully");
+            return ResponseEntity.ok(responseMessage);
         } catch (Exception e) {
+            Map<String, String> responseMessage = new HashMap<>();
+            responseMessage.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error : " + e.getMessage());
+                    .body(responseMessage);
         }
     }
 
@@ -102,10 +130,26 @@ public class ListingController {
 
         } catch (Exception e) {
             // Manage unexpected exceptions
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
+
+    /**
+     * Retrieves a listing by its ID along with its associated photos.
+     *
+     * <p>This endpoint retrieves a listing and its associated photos using the given ID.
+     * If the listing is found, it returns a {@link ListingWithPhotosDto} object in the response.
+     * If no listing is found with the provided ID, it returns a {@link HttpStatus#NOT_FOUND} response.</p>
+     *
+     * @param id the ID of the listing to retrieve
+     * @return a {@link ResponseEntity} containing a {@link ListingWithPhotosDto} object if found,
+     *         or a {@link HttpStatus#NOT_FOUND} status if the listing is not found
+     *
+     * @author Neve Thierry
+     * @see ListingService#getListingById(Integer)
+     * @see ListingWithPhotosDto
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ListingWithPhotosDto> getListingById(@PathVariable Integer id) {
         try {
@@ -115,8 +159,6 @@ public class ListingController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-<<<<<<< Updated upstream
-=======
 
 
     /**
@@ -378,6 +420,4 @@ public class ListingController {
         Listing listing = listingService.updateIsDisplay(id);
         return ResponseEntity.ok(listing);
     }
-
->>>>>>> Stashed changes
 }

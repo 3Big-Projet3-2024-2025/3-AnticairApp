@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -14,9 +14,24 @@ export class AuthService {
   private keycloakInitialized = false; // Is Keycloak Initialized ?
   public userDetails: any = null; // To store the user's info
   private loggedInSubject = new BehaviorSubject<boolean>(false); // BehaviorSubject for login status
+  private _userService!: UserService;
+  private _groupService!: GroupService;
 
+  constructor(private keycloakService: KeycloakService, private http: HttpClient, private router: Router, private injector: Injector) {} // Inject Router
 
-  constructor(private keycloakService: KeycloakService, private http: HttpClient, private router: Router, private userService : UserService, private groupService : GroupService) {} // Inject Router
+  private get userService(): UserService {
+    if (!this._userService) {
+      this._userService = this.injector.get(UserService);
+    }
+    return this._userService;
+  }
+
+  private get groupService(): GroupService {
+    if (!this._groupService) {
+      this._groupService = this.injector.get(GroupService);
+    }
+    return this._groupService;
+  }
 
   // Method to initialize Keycloak
   async initKeycloak(): Promise<boolean> {
@@ -32,15 +47,15 @@ export class AuthService {
             onLoad: 'check-sso',
             silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
           },
-          
+
         });
 
-        const timeoutPromise = new Promise<boolean>((_, reject) => 
+        const timeoutPromise = new Promise<boolean>((_, reject) =>
           setTimeout(() => reject(new Error('Keycloak initialization timed out')), 5000)
         );
 
         await Promise.race([keycloakInitPromise, timeoutPromise]);
-        
+
         this.keycloakInitialized = true;
         await this.loadUserProfile();
         this.loggedInSubject.next(await this.keycloakService.isLoggedIn()); // Update login status
@@ -89,13 +104,14 @@ export class AuthService {
       const userProfile = await this.keycloakService.loadUserProfile();
       const tokenParsed = this.keycloakService.getKeycloakInstance().tokenParsed;
       const phoneNumber = this.getFirstElement(userProfile['attributes']?.['phoneNumber']);
-
+      const balance = this.getFirstElement(userProfile['attributes']?.['balance']);
       // Initialize userDetails with basic information
       this.userDetails = {
         email: userProfile.email,
         firstName: userProfile.firstName,
         lastName: userProfile.lastName,
         phoneNumber: phoneNumber,
+        balance: balance,
         groups: tokenParsed && tokenParsed['groups'] ? this.extractGroups(tokenParsed['groups']) : ''
       };
       this.loggedInSubject.next(true); // Update login status
@@ -105,8 +121,6 @@ export class AuthService {
       } else {
         console.error('Cannot logout because Keycloak is not initialized');
       }
-     console.table(this.userDetails);
-
     }
 
   }
@@ -114,29 +128,29 @@ export class AuthService {
   async initAdminAccount(): Promise<void> {
 
     // Check if keycloak is initialized
-      if (!this.keycloakInitialized) {
-        console.error('Cannot logout because Keycloak is not initialized');
-        return;
-      }
-  
-      // Check if the inforamtions about the user is storaged and if he has a email
-      if (!this.userDetails || !this.userDetails.email) {
-        console.error('No information about the user');
-        return;
-      }
-  
-      // Get the raw token
-      const rawToken = await this.keycloakService.getToken();
-      // Get the number of users in the database 
-      const nbrUser = await this.userService.numberOfUsers(rawToken);
-      // If the number of users in the database is 1, the user will be add to the group Admin
-      if (1 == nbrUser) {
-        // Add the user in the group Admin
-        await this.groupService.addGroupByEmail(this.userDetails.email, "Admin", rawToken);
-      }
-    
+    if (!this.keycloakInitialized) {
+      console.error('Cannot logout because Keycloak is not initialized');
+      return;
+    }
+
+    // Check if the inforamtions about the user is storaged and if he has a email
+    if (!this.userDetails || !this.userDetails.email) {
+      console.error('No information about the user');
+      return;
+    }
+
+    // Get the raw token
+    const rawToken = await this.keycloakService.getToken();
+    // Get the number of users in the database
+    const nbrUser = await this.userService.numberOfUsers(rawToken);
+    // If the number of users in the database is 1, the user will be add to the group Admin
+    if (1 == nbrUser) {
+      // Add the user in the group Admin
+      await this.groupService.addGroupToUser(this.userDetails.email, "Admin");
+    }
+
   }
-  
+
   // Returns user details if available
   getUserDetails(): any {
     return this.userDetails;

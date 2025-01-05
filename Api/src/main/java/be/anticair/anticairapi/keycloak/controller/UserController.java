@@ -1,12 +1,14 @@
 package be.anticair.anticairapi.keycloak.controller;
 
 import be.anticair.anticairapi.keycloak.service.UserService;
+import jakarta.mail.MessagingException;
 import org.apache.catalina.User;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +40,6 @@ public class UserController {
     }
 
     /**
-<<<<<<< Updated upstream
-=======
      * Constructor with dependency injection for the UserService.
      *
      * @param userDetails the service to edit user details.
@@ -61,7 +61,6 @@ public class UserController {
 
 
     /**
->>>>>>> Stashed changes
      * Get all users from the database.
      *
      * @return a ResponseEntity containing a list of all users.
@@ -134,6 +133,7 @@ public class UserController {
         return ResponseEntity.ok(responseMessage);
     }
 
+
     /**
      * Activate a user
      * @return ResponseEntity containing a Json
@@ -172,7 +172,7 @@ public class UserController {
     @PutMapping("/redistributeAntiquity")
     public ResponseEntity<Map<String, String>> redistributeAntiquity(
             @RequestParam String emailId
-    ){
+    ) throws MessagingException, IOException {
         String value = String.valueOf(userService.redistributeAntiquity(emailId));
         Map<String, String> responseMessage = new HashMap<>();
         responseMessage.put("message", value);

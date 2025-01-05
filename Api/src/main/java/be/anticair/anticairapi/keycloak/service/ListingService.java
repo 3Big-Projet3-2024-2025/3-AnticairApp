@@ -2,17 +2,21 @@ package be.anticair.anticairapi.keycloak.service;
 
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
 import be.anticair.anticairapi.Class.PhotoAntiquity;
+import be.anticair.anticairapi.enumeration.TypeOfMail;
+import jakarta.mail.MessagingException;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.enumeration.AntiquityState;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static be.anticair.anticairapi.enumeration.AntiquityState.*;
 
 /**
  * Service for performing listing-related operations.
@@ -23,17 +27,24 @@ import java.util.Optional;
 @Service
 public class ListingService {
 
+    @Autowired
+    private ListingRepository listingRepository;
+
     public ListingService() {
     }
 
     @Autowired
     private ListingRepository ListingRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private UserService userService;
 
     @Autowired
     private PhotoAntiquityService photoAntiquityService;
+
+    private AntiquityState antiquityState;
 
     public Optional<Listing> getAntiquityById(Long id) {
         return ListingRepository.findById(id);
@@ -48,15 +59,10 @@ public class ListingService {
      * @return The created listing.
      * @author Blommaert Youry
      */
-<<<<<<< Updated upstream
-    public Listing createListing(String email, Listing newListing, List<MultipartFile> photos) {
-=======
     public Listing createListing(String email, Listing newListing, List<MultipartFile> photos) throws MessagingException, IOException {
         if(newListing.getPriceAntiquity() < 0) {
             throw new IllegalArgumentException("Price is negative");
         }
-
->>>>>>> Stashed changes
         List<UserRepresentation> users = userService.getUsersByEmail(email);
 
 
@@ -67,24 +73,30 @@ public class ListingService {
         UserRepresentation user = userService.getUsersByEmail(email).get(0);
 
         // Verify that the listing has a price, description, and title
-        if (newListing.getPriceAntiquity() == null ||
+        if (newListing.getPriceAntiquity() == 0 ||
                 newListing.getDescriptionAntiquity() == null ||
                 newListing.getTitleAntiquity() == null) {
-            throw new IllegalArgumentException("Price, description, and title are required");
+            throw new NullPointerException("Price, description, and title are required");
         }
 
+        List<UserRepresentation> usersAntiquarians = userService.getUsersByGroupName("Antiquarian");
+        if(usersAntiquarians.isEmpty()) {
+            throw new RuntimeException("Antiquarian not found");
+        }
 
-        //NEED TO BE MODIFIED
-        newListing.setMailAntiquarian(user.getEmail());
-        //NEED TO BE MODIFIED
-
-
+        UserRepresentation userAntiquarian;
+        // Get a random antiquarian different from the author of the listing
+        do {
+            Random random = new Random();
+            userAntiquarian = usersAntiquarians.get(random.nextInt(usersAntiquarians.size()));
+        } while (email.equals(userAntiquarian.getEmail()));
 
         newListing.setMailSeller(email);
         newListing.setState(NEED_TO_BE_CHECKED.getState());  // Initialized to 0 (not yet verified)
         newListing.setIsDisplay(false);  // Initialized to false (not yet displayed)
+        newListing.setMailAntiquarian(userAntiquarian.getEmail());
 
-        // Save the listing
+        // Save the listing if it has all the required fields
         Listing savedListing = ListingRepository.save(newListing);
         try {
             this.emailService.sendHtmlEmail(userAntiquarian.getEmail(),"info@anticairapp.sixela.be",TypeOfMail.NEWANTIQUITY,new HashMap<>());
@@ -107,9 +119,83 @@ public class ListingService {
         return savedListing;
     }
 
-<<<<<<< Updated upstream
-    public Listing updateListing(Long id, Listing updatedListing) {
-=======
+    /**
+     * Get all the listing accepted in the database.
+     * @return The list of all the listings accepted.
+     * @Author Blommaert Youry
+     */
+    public List<Listing> getAllListingsAccepted() {
+        List<Listing> listings = new ArrayList<>();
+        listings = ListingRepository.getAllAntiquityChecked();
+
+        if(listings.isEmpty()) {
+            throw new RuntimeException("No listings found");
+        }
+
+        return listings;
+    }
+
+    /**
+     * Get all the listing in the database.
+     * @return The list of all the listings.
+     * @Author Blommaert Youry
+     */
+    public List<Listing> getAllListing() {
+        List<Listing> listings = new ArrayList<>();
+        listings = ListingRepository.findAll();
+
+        if(listings.isEmpty()) {
+            throw new RuntimeException("No listings found");
+        }
+
+        return listings;
+    }
+
+
+
+    public Listing rejectAntiquity(Map<String,String> otherInformation){
+        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
+        if(antiquity.isEmpty()){return null;}
+        antiquity.get().setState(REJECTED.getState());
+
+        otherInformation.put("title",antiquity.get().getTitleAntiquity());
+        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
+
+        otherInformation.put("note_title",otherInformation.get("note_title"));
+        otherInformation.put("note_description",otherInformation.get("note_description"));
+        otherInformation.put("note_price",otherInformation.get("note_price"));
+        otherInformation.put("note_photo",otherInformation.get("note_photo"));
+        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
+        try {
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.REJECTIONOFANTIQUITY,otherInformation);
+            return antiquity.get();
+        } catch (MessagingException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Listing acceptAntiquity(Map<String,String> otherInformation){
+        Optional<Listing> antiquity = getAntiquityById(Long.valueOf(otherInformation.get("id")));
+        if(antiquity.isEmpty()){return null;}
+        antiquity.get().setState(ACCEPTED.getState());
+
+        otherInformation.put("title",antiquity.get().getTitleAntiquity());
+        otherInformation.put("description",antiquity.get().getDescriptionAntiquity());
+        otherInformation.put("price", antiquity.get().getPriceAntiquity().toString());
+
+        antiquity = Optional.of(this.ListingRepository.save(antiquity.get()));
+        try {
+            this.emailService.sendHtmlEmail(antiquity.get().getMailSeller(),"info@anticairapp.sixela.be",TypeOfMail.VALIDATIONOFANANTIQUITY,otherInformation);
+
+            return this.applyCommission(Integer.valueOf(otherInformation.get("id")));
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Get all the listing in the database.
      * @return The list of all the listings.
@@ -231,7 +317,6 @@ public class ListingService {
                 break;
         }
         int finalNewState = newState;
->>>>>>> Stashed changes
         return ListingRepository.findById(id).map(antiquity -> {
             antiquity.setPriceAntiquity(updatedListing.getPriceAntiquity());
             antiquity.setDescriptionAntiquity(updatedListing.getDescriptionAntiquity());
@@ -244,6 +329,24 @@ public class ListingService {
         }).orElseThrow(() -> new RuntimeException("Antiquity not found with id: " + id));
     }
 
+
+    /**
+     * Retrieves a listing by its ID along with its associated photos.
+     *
+     * <p>This method searches for a listing by its ID and retrieves all the photos
+     * associated with that listing. If no listing is found with the given ID,
+     * a {@link RuntimeException} is thrown. The method returns a {@link ListingWithPhotosDto}
+     * object containing the listing details and the associated photos.</p>
+     *
+     * @param id the ID of the listing to retrieve
+     * @return a {@link ListingWithPhotosDto} object containing the listing and its associated photos
+     * @throws RuntimeException if no listing is found with the given ID
+     *
+     *
+     * @author Neve Thierry
+     * @see PhotoAntiquityService#findByIdAntiquity(Integer)
+     * @see ListingWithPhotosDto
+     */
     public ListingWithPhotosDto getListingById(Integer id) {
         // Get the listing
         Listing listing = ListingRepository.findById(Long.valueOf(id))
@@ -284,12 +387,8 @@ public class ListingService {
      * @return a boolean, true if the change has been made, false, in case of a problem
      * @author Verly Noah
      */
-<<<<<<< Updated upstream
-    public boolean changeListingAntiquarian(Listing antiquity, String emailNewAntiquarian) {
-=======
     public boolean changeListingAntiquarian(Listing antiquity, String emailNewAntiquarian) throws MessagingException, IOException {
         //If th antiquity is null or the email is empty, return null
->>>>>>> Stashed changes
         if(antiquity==null || emailNewAntiquarian.isEmpty()) return false;
         //Check if the user exist
         if(userService.getUsersByEmail(emailNewAntiquarian).getFirst() == null) {return false;}
@@ -299,11 +398,7 @@ public class ListingService {
         antiquity.setMailAntiquarian(emailNewAntiquarian);
         //Save
         ListingRepository.save(antiquity);
-<<<<<<< Updated upstream
-        return true;
-    }
-=======
-        //Prepare a mail with the inforamtion of the antiquity to warn the antiquarian
+       //Prepare a mail with the inforamtion of the antiquity to warn the antiquarian
         Map<String,String> otherInformation = new HashMap<>();
         otherInformation.put("title", antiquity.getTitleAntiquity());
         otherInformation.put("description", antiquity.getDescriptionAntiquity());
@@ -377,7 +472,6 @@ public class ListingService {
 
 
     }
->>>>>>> Stashed changes
 }
 
 

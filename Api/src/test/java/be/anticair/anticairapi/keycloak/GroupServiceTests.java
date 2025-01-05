@@ -2,6 +2,7 @@ package be.anticair.anticairapi.keycloak;
 
 import be.anticair.anticairapi.keycloak.service.GroupService;
 import be.anticair.anticairapi.keycloak.service.UserService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,13 +36,14 @@ public class GroupServiceTests {
     @Autowired
     private UserService userService;
 
-    private static final String TEST_USER_EMAIL = "john.doe@example.com";
+    private static final String TEST_USER_EMAIL = "test-user@gmail.com";
 
     /**
      * Testing the getGroupsByName
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test getGroupsByName")
     public void testGetGroupsByName() {
         // Attempt to retrieve groups
         List<GroupRepresentation> groups = groupService.getGroupsByName("Admin");
@@ -56,6 +58,7 @@ public class GroupServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test addGroup and removeGroup")
     public void testAddAndRemoveGroup() {
         String groupName = "Admin";
 
@@ -102,6 +105,7 @@ public class GroupServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test addGroup with non-existent user")
     public void testAddGroup_NonExistentUser() {
         // Use an email that definitely doesn't exist
         String nonExistentEmail = "nonexistent_user_987654@anticairapp.be";
@@ -116,6 +120,7 @@ public class GroupServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test addGroup with non-existent group")
     public void testAddGroup_NonExistentGroup() {
         // Use a non-existent group
         assertThrows(NotFoundException.class, () -> {
@@ -128,6 +133,7 @@ public class GroupServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test removeGroup with non-existent user")
     public void testRemovingroup_NonExistentUser() {
         // Use an email that definitely doesn't exist
         String nonExistentEmail = "nonexistent_user_987654@anticairapp.be";
@@ -142,6 +148,7 @@ public class GroupServiceTests {
      * @Author Zarzycki Alexis
      */
     @Test
+    @DisplayName("Test removeGroup with non-existent group")
     public void testRemoveGroup_NonExistentGroup() {
         // Use a non-existent group
         assertThrows(NotFoundException.class, () -> {

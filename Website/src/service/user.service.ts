@@ -8,11 +8,13 @@ import { catchError, firstValueFrom, Observable, throwError } from 'rxjs';
 })
 export class UserService {
 
+  private baseUrl = 'http://localhost:8080/api/users';
+
   constructor(private http : HttpClient) { }
 
   async numberOfUsers(rawToken: string): Promise<number> {
     return firstValueFrom(
-        this.http.get<number>("http://localhost:8080/api/users/nbrUsers", {
+        this.http.get<number>(this.baseUrl + "/nbrUsers", {
             headers: {
                 Authorization: 'Bearer ' + rawToken,
             }
@@ -21,7 +23,7 @@ export class UserService {
 }
 
   getAdminUsers(rawToken: string): Observable<any[]> {
-    return this.http.get<any[]>("http://localhost:8080/api/users/list/admin", {
+    return this.http.get<any[]>(this.baseUrl + "/list/admin", {
       headers: {
         Authorization: 'Bearer ' + rawToken,
       }
@@ -29,7 +31,7 @@ export class UserService {
   }
 
   getAntiquarianUsers(rawToken: string): Observable<any[]> {
-    return this.http.get<any[]>("http://localhost:8080/api/users/list/antiquarian", {
+    return this.http.get<any[]>(this.baseUrl + "/list/antiquarian", {
       headers: {
         Authorization: 'Bearer ' + rawToken,
       }
@@ -37,7 +39,7 @@ export class UserService {
   }
 
   getSimpleUsers(rawToken: string): Observable<any[]> {
-    return this.http.get<any[]>("http://localhost:8080/api/users/list/users", {
+    return this.http.get<any[]>(this.baseUrl + "/list/users", {
       headers: {
         Authorization: 'Bearer ' + rawToken,
       }
@@ -45,7 +47,7 @@ export class UserService {
   }
 
   disableUser(rawToken: string, emailId: string): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/api/users/desactivate?emailId=${emailId}`, null, {
+    return this.http.post<any>(this.baseUrl + "/desactivate?emailId=" + emailId, null, {
       headers: {
         Authorization: `Bearer ${rawToken}`,
       }
@@ -58,7 +60,7 @@ export class UserService {
   }
   
   enableUser(rawToken: string, emailId: string): Observable<any> {
-    return this.http.post<any>(`http://localhost:8080/api/users/activate?emailId=${emailId}`, null, {
+    return this.http.post<any>(this.baseUrl + "/activate?emailId=" + emailId, null, {
       headers: {
         Authorization: `Bearer ${rawToken}`,
       }
@@ -68,6 +70,14 @@ export class UserService {
         return throwError(() => new Error('Error enabling user'));
       })
     );
+  }
+
+  getUserByEmail(token: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}`, { headers: { Authorization: `Bearer ${token}` } });
+  }
+
+  updateUserProfile(userData: any, token: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/update`, userData, { headers: { Authorization: `Bearer ${token}` } });
   }
  
 }

@@ -1,6 +1,8 @@
 package be.anticair.anticairapi.keycloak.service;
 
 import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.enumeration.TypeOfMail;
+import jakarta.mail.MessagingException;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.GroupRepresentation;
@@ -10,10 +12,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 
 /**
  * Service that manage user's
@@ -36,10 +41,19 @@ public class UserService {
     @Lazy
     private ListingService listingService;
 
+    @Autowired
+
+    @Lazy
+
+    private EmailService emailService;
+
     private final Keycloak keycloak;
 
     @Value("${keycloak.realm}")
     private String realm;
+
+    @Value("${spring.mail.username}")
+    private String sender;
 
     @Autowired
     public UserService(Keycloak keycloak) {
@@ -66,7 +80,7 @@ public class UserService {
             return users;
         } catch (Exception e) {
             // Debug log for exception
-            throw new NotFoundException("Error while retrieving users with email: " + userEmail, e);
+            throw new NotFoundException("No users found with email: " + userEmail, e);
         }
     }
 
@@ -193,12 +207,25 @@ public class UserService {
             // Get the user's ID
             String userId = user.getId();
 
+            // Check if the user is an admin
+            boolean isAdmin = keycloak.realm(realm).users().get(userId).groups().stream()
+                    .anyMatch(group -> group.getName().equals("Admin"));
+
+            // If the user is an admin, don't allow disabling
+            if (isAdmin) {
+                throw new RuntimeException("Cannot disable an admin user.");
+            }
+
             // Desactivate the user
             user.setEnabled(false);
 
             // Actually update the user in Keycloak
             keycloak.realm(realm).users().get(userId).update(user);
 
+            // Creating the map to store user's status
+            Map<String, String> otherInformation = new HashMap<>();
+            otherInformation.put("account_newstatus", "disabled");
+            emailService.sendHtmlEmail(userEmail, "info@anticairapp.sixela.be", TypeOfMail.ENABLEORDISABLEUSER, otherInformation);
             return true;
         } catch (NotFoundException e) {
             throw new NotFoundException("No users found with email: " + userEmail);
@@ -235,6 +262,10 @@ public class UserService {
             // Actually update the user in Keycloak
             keycloak.realm(realm).users().get(userId).update(user);
 
+            // Creating the map to store user's status
+            Map<String, String> otherInformation = new HashMap<>();
+            otherInformation.put("account_newstatus", "enabled");
+            this.emailService.sendHtmlEmail(userEmail, sender, TypeOfMail.ENABLEORDISABLEUSER, otherInformation);
             return true;
         } catch (NotFoundException e) {
             throw new NotFoundException("No users found with email: " + userEmail);
@@ -277,7 +308,7 @@ public class UserService {
      * @return string, to know what was happened
      * @author Verly Noah
      */
-    public String redistributeAntiquity(String userEmail) {
+    public String redistributeAntiquity(String userEmail) throws MessagingException, IOException {
     //Get the new antiquarian
         if(userEmail == null || userEmail.isEmpty()){ return "No email address provided"; }
         //Get all the antiquarian
@@ -295,11 +326,20 @@ public class UserService {
     //Change all the antiquarian's antiquity
         List<Listing> listings = this.listingRepository.getAllAntiquityNotCheckedFromAnAntiquarian(userEmail);
         if(listings.isEmpty()){ return "Antiquity's antiquarian changed";}
+        Map<String,String> otherInformation = new HashMap<>();
         for(Listing listing : listings){
             if(!this.listingService.changeListingAntiquarian(listing, allAntiquarian.get(randomUser).getEmail())){
                 return "Error while changing antiquarian";
             }
+            otherInformation.put("title",listing.getTitleAntiquity());
+            otherInformation.put("description",listing.getDescriptionAntiquity());
+            otherInformation.put("price", listing.getPriceAntiquity().toString());
+            this.emailService.sendHtmlEmail(allAntiquarian.get(randomUser).getEmail(), sender, TypeOfMail.REDISTRIBUTEANTIQUITYNEWANTIQUARIAN,otherInformation);
         }
+
+        otherInformation.clear();
+        this.emailService.sendHtmlEmail(userEmail, sender, TypeOfMail.REDISTRIBUTEANTIQUITYINITANTIQUARIAN,otherInformation);
+
         return "Antiquity's antiquarian changed";
 
     }
@@ -310,9 +350,6 @@ public class UserService {
      */
    private Function<Integer,Integer> getRandom = max ->  (int) (Math.random() * max);
 
-
-<<<<<<< Updated upstream
-=======
     /**
      * Fonction to update user profile
      * @param userDetails the details of user.
@@ -469,5 +506,4 @@ public class UserService {
         }
     }
 
->>>>>>> Stashed changes
 }

@@ -2,16 +2,26 @@ package be.anticair.anticairapi.service;
 
 import be.anticair.anticairapi.Class.Listing;
 import be.anticair.anticairapi.Class.ListingWithPhotosDto;
+import be.anticair.anticairapi.enumeration.AntiquityState;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.ListingService;
+import jakarta.mail.MessagingException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import java.util.Collections;
+
+import java.util.HashMap;
+
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,15 +54,15 @@ public class ListingServiceTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_SELLER_EMAIL = "john.doe@example.com";
+    private static final String TEST_SELLER_EMAIL = "test-user@gmail.com";
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_ANTIQUARIAN_EMAIL = "alexis.zarzycki0212@gmail.com";
+    private static final String TEST_ANTIQUARIAN_EMAIL = "test-antiquarian@gmail.com";
     /**
      * The mail that will be use for the new owner of the antiquity
      */
-    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "antiquarian@anticairapp.sixela.be";
+    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "test-antiquarian2@gmail.com";
 
     /**
      * Function which allow to delete a antiquity
@@ -62,14 +72,12 @@ public class ListingServiceTests {
     public void cleanListing(Listing listing){
         this.listingRepository.delete(listing);
     }
-
-<<<<<<< Updated upstream
-=======
     /**
      * Test to check if the createListing service work
      * @author Blommaert Youry
      */
     @Test
+    @DisplayName("Create listing success")
     public void testCreateListing_Success() throws MessagingException, IOException {
         listing = new Listing();
         listing.setPriceAntiquity(100.0);
@@ -90,6 +98,7 @@ public class ListingServiceTests {
      * @author Blommaert Youry
      */
     @Test
+    @DisplayName("Create listing with price less than 0")
     public void testCreateListing_PriceLessThanZero() {
         listing = new Listing();
         listing.setPriceAntiquity(-1.0);
@@ -108,6 +117,7 @@ public class ListingServiceTests {
      * @author Blommaert Youry
      */
     @Test
+    @DisplayName("Create listing with user not found")
     public void testCreateListing_UserNotFound() {
         listing = new Listing();
         listing.setPriceAntiquity(100.0);
@@ -126,6 +136,7 @@ public class ListingServiceTests {
      * @author Blommaert Youry
      */
     @Test
+    @DisplayName("Create listing with missing required fields")
     public void testCreateListing_MissingRequiredFields() {
         listing = new Listing();
         listing.setPriceAntiquity(0.0);
@@ -139,14 +150,37 @@ public class ListingServiceTests {
         assertEquals("Price, description, and title are required", exception.getMessage());
     }
 
->>>>>>> Stashed changes
+    /**
+     * Test to check if getAllAntiquities works if the database contains listings.
+     * @author Blommaert Youry
+     */
+    @Test
+    @DisplayName("Get all antiquities success")
+    public void testGetAllAntiquities() {
+        List<Listing> listings = listingRepository.findAll();
+
+        assertFalse(listings.isEmpty());
+    }
+
+    /**
+     * Test to check if getAllAntiquities works if the database is empty.
+     * @author Blommaert Youry
+     */
+    @Test
+    @DisplayName("Get all antiquities empty")
+    public void testGetAllAntiquities_Empty() {
+        List<Listing> listings = new ArrayList<Listing>();
+
+        assertTrue(listings.isEmpty());
+    }
 
     /**
      * Test to check if the applyCommission service work with normal values
      * @author Verly Noah
      */
     @Test
-    public void applyCommission() throws MessagingException, IOException {
+    @DisplayName("Apply commission success")
+    public void applyCommission(){
         //Creation of an antiquity
         this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         //The photos for the antiquity
@@ -170,18 +204,21 @@ public class ListingServiceTests {
      * @author Verly Noah
      */
     @Test
+    @DisplayName("Apply commission null")
     public void applyCommissionNull(){
         assertNull(this.listingService.applyCommission(null));
         assertNull(this.listingService.applyCommission(0));
         assertNull(this.listingService.applyCommission(-1));
 
     }
+
     /**
      * Test to check if the changeListing antiquarian work
      * @author Verly Noah
      */
     @Test
-    public void ChangeAntiquarianTestFromListingService(){
+    @DisplayName("Change antiquarian success")
+    public void ChangeAntiquarianTestFromListingService() throws MessagingException, IOException {
         for (int i = 0; i < 10; i++) {
             this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
             this.listingRepository.save(this.listing);
@@ -196,15 +233,14 @@ public class ListingServiceTests {
         }
 
     }
-<<<<<<< Updated upstream
-=======
 
     /**
      * Test to reject an antiquity
      * @author Verly Noah
      */
     @Test
-    public void rejectAntiquarianTestFromListingService() {
+    @DisplayName("Reject antiquarian success")
+    public void rejectAntiquarianTestFromListingService() throws MessagingException, IOException {
         this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,0,false,TEST_SELLER_EMAIL);
         this.listing = this.listingRepository.save(this.listing);
         Map<String,String> otherInformation = new HashMap<>();
@@ -226,7 +262,8 @@ public class ListingServiceTests {
      * @author Verly Noah
      */
     @Test
-    public void acceptAntiquarianTestFromListingService() {
+    @DisplayName("Accept antiquarian success")
+    public void acceptAntiquarianTestFromListingService() throws MessagingException, IOException {
         this.listing = new Listing(0,100.0,"A description","Pandora's box",TEST_ANTIQUARIAN_EMAIL,AntiquityState.NEED_TO_BE_CHECKED.getState(), false,TEST_SELLER_EMAIL);
         this.listing = this.listingRepository.save(this.listing);
         Map<String,String> otherInformation = new HashMap<>();
@@ -271,5 +308,4 @@ public class ListingServiceTests {
         otherInformation.put("id","-1");
         assertNull(this.listingService.rejectAntiquity(otherInformation));
     }
->>>>>>> Stashed changes
 }
