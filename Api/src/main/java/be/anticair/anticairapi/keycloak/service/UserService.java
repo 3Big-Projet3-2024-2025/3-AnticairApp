@@ -202,6 +202,15 @@ public class UserService {
             // Get the user's ID
             String userId = user.getId();
 
+            // Check if the user is an admin
+            boolean isAdmin = keycloak.realm(realm).users().get(userId).groups().stream()
+                    .anyMatch(group -> group.getName().equals("Admin"));
+
+            // If the user is an admin, don't allow disabling
+            if (isAdmin) {
+                throw new RuntimeException("Cannot disable an admin user.");
+            }
+
             // Desactivate the user
             user.setEnabled(false);
 

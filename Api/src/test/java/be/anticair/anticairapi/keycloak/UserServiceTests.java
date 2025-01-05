@@ -5,6 +5,7 @@ import be.anticair.anticairapi.enumeration.AntiquityState;
 import be.anticair.anticairapi.keycloak.service.ListingRepository;
 import be.anticair.anticairapi.keycloak.service.UserService;
 import jakarta.mail.MessagingException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +34,8 @@ public class UserServiceTests {
     @Autowired
     private UserService userService;
   
-    private static final String TEST_USER_EMAIL = "testuser@gmail.com";
+    private static final String TEST_USER_EMAIL = "test-user@gmail.com";
+    private static final String TEST_ADMIN_EMAIL = "test-admin@gmail.com";
 
     /**
      * The antiquity that will be used for the test
@@ -43,7 +45,7 @@ public class UserServiceTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_ANTIQUARIAN_EMAIL = "testantiquarian2@gmail.com";
+    private static final String TEST_ANTIQUARIAN_EMAIL = "test-antiquarian2@gmail.com";
 
     /**
      * The Listing repository
@@ -87,7 +89,7 @@ public class UserServiceTests {
     public void testGetNotExistentUserByEmail() {
         assertThrows(NotFoundException.class, () -> {
             // Attempt to retrieve User with a specific Email
-            userService.getUsersByEmail("nonexistent_user_987654@anticairapp.be");
+            userService.getUsersByEmail("nonexistent_user_987654@gmail.com");
         });
     }
 
@@ -132,7 +134,7 @@ public class UserServiceTests {
     @Test
     public void testDesactiveNonExistentUser(){
         assertThrows(NotFoundException.class, () -> {
-            userService.disableUser("nonexistent_user_987654@anticairapp.be");
+            userService.disableUser("nonexistent_user_987654@gmail.com");
         });
     }
 
@@ -152,7 +154,19 @@ public class UserServiceTests {
     @Test
     public void testEnableNonExistentUser(){
         assertThrows(NotFoundException.class, () -> {
-            userService.enableUser("nonexistent_user_987654@anticairapp.be");
+            userService.enableUser("nonexistent_user_987654@gmail.com");
+        });
+
+    }
+
+    /**
+     * Testing the disable on an admin user
+     * @Author Zarzycki Alexis
+     */
+    @Test
+    public void testDisableAdminUser(){
+        assertThrows(RuntimeException.class, () -> {
+            userService.disableUser(TEST_ADMIN_EMAIL);
         });
 
     }
@@ -184,7 +198,7 @@ public class UserServiceTests {
     @Test
     public void testGetStatusEnabledNonExistentUser(){
         assertThrows(NotFoundException.class, () -> {
-            userService.getUserStatus("nonexistent_user_987654@anticairapp.be");
+            userService.getUserStatus("nonexistent_user_987654@gmail.com");
         });
     }
 
@@ -196,7 +210,7 @@ public class UserServiceTests {
     @Test
     public void testGetStatusDisabledNonExistentUser(){
         assertThrows(NotFoundException.class, () -> {
-            userService.getUserStatus("nonexistent_user_987654@anticairapp.be");
+            userService.getUserStatus("nonexistent_user_987654@gmail.com");
         });
     }
 
@@ -229,8 +243,6 @@ public class UserServiceTests {
 
     /**
      * Test for getUserBalance with a valid user.
-     * Assumes a user with email 'testuser@gmail.com' exists in Keycloak
-     * and has a 'balance' attribute set.
      * @Author Zarzycki Alexis
      */
     @Test
@@ -241,12 +253,12 @@ public class UserServiceTests {
 
     /**
      * Test for getUserBalance with a non-existent user.
-     * Assumes no user exists with email 'nonexistent_user_987654@anticairapp.be'.
+     * Assumes no user exists with email 'nonexistent_user_987654@gmail.com'.
      * @Author Zarzycki Alexis
      */
     @Test
     public void testGetUserBalanceNonExistentUser() {
-        String nonExistentEmail = "nonexistent_user_987654@anticairapp.be";
+        String nonExistentEmail = "nonexistent_user_987654@gmail.com";
         NotFoundException exception = assertThrows(
                 NotFoundException.class,
                 () -> userService.getUserBalance(nonExistentEmail)
@@ -257,7 +269,6 @@ public class UserServiceTests {
 
     /**
      * Test for addToUserBalance with a valid user.
-     * Assumes a user with email 'testuser@gmail.com' exists in Keycloak.
      * @Author Zarzycki Alexis
      */
     @Test
@@ -273,12 +284,12 @@ public class UserServiceTests {
 
     /**
      * Test for addToUserBalance with a non-existent user.
-     * Assumes no user exists with email 'nonexistent_user_987654@anticairapp.be'.
+     * Assumes no user exists with email 'nonexistent_user_987654@gmail.com'.
      * @Author Zarzycki Alexis
      */
     @Test
     public void testAddToUserBalanceNonExistentUser() {
-        String nonExistentEmail = "nonexistent_user_987654@anticairapp.be";
+        String nonExistentEmail = "nonexistent_user_987654@gmail.com";
         NotFoundException exception = assertThrows(
                 NotFoundException.class,
                 () -> userService.addToUserBalance(nonExistentEmail, 50)
@@ -289,7 +300,6 @@ public class UserServiceTests {
 
     /**
      * Test for addToUserBalance ensuring the balance cannot be negative.
-     * Assumes a user with email 'testuser@gmail.com' exists in Keycloak.
      * @Author Zarzycki Alexis
      */
     @Test

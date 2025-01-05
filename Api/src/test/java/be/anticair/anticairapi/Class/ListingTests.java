@@ -26,11 +26,11 @@ public class ListingTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String mailSeller = "testmail2@gmail.com";
+    private static final String mailSeller = "test-user@gmail.com";
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String mailAntiquarian = "testmail1@gmail.com";
+    private static final String mailAntiquarian = "test-antiquarian@gmail.com";
 
     /**
      * SetUp to create a antiquity

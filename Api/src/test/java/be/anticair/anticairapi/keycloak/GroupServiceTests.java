@@ -35,7 +35,7 @@ public class GroupServiceTests {
     @Autowired
     private UserService userService;
 
-    private static final String TEST_USER_EMAIL = "john.doe@example.com";
+    private static final String TEST_USER_EMAIL = "test-user@gmail.com";
 
     /**
      * Testing the getGroupsByName

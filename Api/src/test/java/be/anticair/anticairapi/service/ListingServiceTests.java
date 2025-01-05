@@ -53,15 +53,15 @@ public class ListingServiceTests {
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_SELLER_EMAIL = "testseller@gmail.com";
+    private static final String TEST_SELLER_EMAIL = "test-user@gmail.com";
     /**
      * The mail that will be use for the owner of the antiquity
      */
-    private static final String TEST_ANTIQUARIAN_EMAIL = "testantiquarian1@gmail.com";
+    private static final String TEST_ANTIQUARIAN_EMAIL = "test-antiquarian@gmail.com";
     /**
      * The mail that will be use for the new owner of the antiquity
      */
-    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "testantiquarian2@gmail.com";
+    private static final String TEST_NEW_ANTIQUARIAN_EMAIL = "test-antiquarian2@gmail.com";
 
     /**
      * Function which allow to delete a antiquity
