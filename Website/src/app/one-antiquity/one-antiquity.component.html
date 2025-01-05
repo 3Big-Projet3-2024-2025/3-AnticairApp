@@ -22,8 +22,8 @@
 </span>
 
 <ng-template #showDefault>
-    <div class="flex justify-center items-center min-h-screen bg-gray-100 pt-16">
-        <div *ngIf="antiquity" class="bg-white text-gray-800 p-8 rounded-lg shadow-lg max-w-3xl w-full">
+    <div class="flex justify-center items-center pt-16 bg-gray-100">
+        <div *ngIf="antiquity" class="bg-gray-100 text-gray-800 p-8 rounded-lg shadow-lg max-w-3xl w-full">
             <h2 class="text-3xl font-bold text-center mb-6">{{ antiquity.titleAntiquity }}</h2>
 
             <div class="mb-6">
@@ -40,7 +40,6 @@
             <p class="text-gray-600 text-lg mb-4">{{ antiquity.descriptionAntiquity }}</p>
 
             <p class="text-yellow-400 font-bold text-lg mb-4">Price: {{ antiquity.priceAntiquity | number: '1.2-2'}}€</p>
-
         </div>
     </div>
 </ng-template>

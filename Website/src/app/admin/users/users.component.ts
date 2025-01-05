@@ -137,9 +137,9 @@ export class UsersComponent implements OnInit {
       if (column === 'phoneNumber') {
         valueA = a.attributes.phoneNumber;
         valueB = b.attributes.phoneNumber;
-      } else if (column === 'homeAddress') {
-        valueA = a.attributes.homeAddress;
-        valueB = b.attributes.homeAddress;
+      } else if (column === 'balance') {
+        valueA = a.attributes.balance;
+        valueB = b.attributes.balance;
       } else {
         valueA = a[column];
         valueB = b[column];

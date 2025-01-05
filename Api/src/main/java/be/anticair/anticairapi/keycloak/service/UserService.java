@@ -13,10 +13,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -359,6 +358,23 @@ public class UserService {
         keycloak.realm(realm).users().get(user.getId()).update(user);
     }
 
+
+    /**
+     * Updates a user's profile in Keycloak to comply with GDPR regulations.
+     *
+     * <p>This method anonymizes the user's personal data such as first name, last name,
+     * email address, and phone number, and disables the user account. The updates are
+     * performed directly in the Keycloak user management system based on the provided
+     * email address.</p>
+     *
+     * @param userDetails a map containing the user's details, including the key "email"
+     *                    which specifies the email of the user to be updated
+     * @throws RuntimeException if the user is not found in Keycloak or if an error occurs during the update
+     *
+     * @author Neve Thierry
+     * @see UserRepresentation
+     * @see org.keycloak.admin.client.Keycloak
+     */
     public void updateRGPDUserProfile(Map<String, Object> userDetails) {
         String email = (String) userDetails.get("email");
         try{List<UserRepresentation> users = keycloak.realm(realm).users().search(email);
@@ -367,8 +383,8 @@ public class UserService {
             }
 
             UserRepresentation user = users.get(0);
-            user.setFirstName("FirstName_"+ user.getFirstName());
-            user.setLastName("LastName_"+ user.getFirstName());
+            user.setFirstName("FirstName_"+ user.getId());
+            user.setLastName("LastName_"+ user.getId());
             user.singleAttribute("phoneNumber", "+32000000000");
             user.setEmail("anonymized"+user.getId()+"@deleted.com");
             user.setEnabled(false);
@@ -376,8 +392,104 @@ public class UserService {
             // Mise à jour sur Keycloak
             keycloak.realm(realm).users().get(user.getId()).update(user);
         } catch (Exception e) {
-    throw new RuntimeException(e);
-}
-
+            throw new RuntimeException(e);
+        }
     }
+
+    /**
+     * Get the balance of a user
+     * @param userEmail the email of the user to get the balance
+     * @return double the amount of the balance
+     * @Author Zarzycki Alexis
+     */
+    public double getUserBalance(String userEmail) {
+        try {
+            // Get the users with the email
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // We get the first user in the list
+            UserRepresentation user = users.get(0);
+
+            // Retrieve the "balance" attribute from user attributes
+            Map<String, List<String>> attributes = user.getAttributes();
+
+            if (attributes != null && attributes.containsKey("balance")) {
+                List<String> balanceValues = attributes.get("balance");
+
+                if (balanceValues != null && !balanceValues.isEmpty()) {
+                    // Convert balance to double for proper calculation
+                    return Double.parseDouble(balanceValues.get(0));
+                }
+            }
+            // If no "balance" attribute is found, return a default value
+            return 0;
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with the email: " + userEmail, e);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid balance value for user with email: " + userEmail, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while getting the balance of the user with email: " + userEmail, e);
+        }
+    }
+
+    /**
+     * Add a specified amount to a user's balance.
+     * @param userEmail the email of the user to update the balance.
+     * @param amount the amount to add to the user's balance.
+     * @Author Zarzycki Alexis
+     */
+    public void addToUserBalance(String userEmail, double amount) {
+        try {
+            // Check the amount
+            if (amount < 0) {
+                throw new IllegalArgumentException("Amount must be non-negative.");
+            }
+
+            // Get the users with the email
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // Get the first user in the list
+            UserRepresentation user = users.get(0);
+
+            // Retrieve the current "balance" attribute
+            Map<String, List<String>> attributes = user.getAttributes();
+            double currentBalance = getUserBalance(userEmail);
+
+            // Calculate the new balance
+            double newBalance = currentBalance + amount;
+
+            // Format the new balance to ensure it's in the correct format (with two decimal places)
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);  // Force dot separator
+            DecimalFormat df = new DecimalFormat("#.00", symbols);  // Always two decimal places
+            String formattedBalance = df.format(newBalance);
+
+            // Update the user's attributes with the new balance
+            if (attributes == null) {
+                attributes = new HashMap<>();
+            }
+            attributes.put("balance", Collections.singletonList(formattedBalance));
+            user.setAttributes(attributes);
+
+            // Update the user in Keycloak
+            keycloak.realm(realm).users().get(user.getId()).update(user);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with the email: " + userEmail, e);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid balance value for user with email: " + userEmail, e);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Error while updating the balance of the user with email: " + userEmail, e);
+        }
+    }
+
 }

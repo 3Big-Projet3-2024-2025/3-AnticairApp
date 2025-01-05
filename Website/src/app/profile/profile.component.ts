@@ -1,17 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {NgClass, NgIf} from "@angular/common";
+import {CurrencyPipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import { ThemeService } from '../../service/theme.service';
 import { AuthService } from '../../service/auth.service';
 import { UserService } from '../../service/user.service';
 import {RgpdService} from '../../service/rgpd.service';
 import {Router} from '@angular/router';
+import {Antiquity} from '../../modele/DtoListing';
+import {ListingService} from '../../service/listing.service';
+import {ImageServiceService} from '../../service/image-service.service';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   standalone: true,
-  imports: [FormsModule, NgIf, NgClass],
+
+  imports: [FormsModule, NgIf, NgClass, CurrencyPipe, NgForOf],
+
 })
 export class ProfileComponent implements OnInit {
   showSuccessMessage: boolean = false;
@@ -19,6 +24,7 @@ export class ProfileComponent implements OnInit {
   userDetails: any = {};
   isLoading: boolean = true;
   currentTheme: 'dark' | 'light' = 'light'; // Actual theme, by default light
+  antiquities: Antiquity[] = []
 
   constructor(
       private authService: AuthService,
@@ -26,6 +32,8 @@ export class ProfileComponent implements OnInit {
       private themeService: ThemeService,
       private rgpdService: RgpdService,
       private router : Router,
+      private listingService: ListingService,
+      private imageService: ImageServiceService
   ) {}
 
 
@@ -35,12 +43,32 @@ export class ProfileComponent implements OnInit {
     });
     try {
       this.userDetails = this.authService.getUserDetails();
-      console.log('User details:', this.userDetails);
+
+
+      this.listingService.getListingSeller(this.userDetails['email']).subscribe(res => {
+        this.antiquities = res;
+        this.antiquities.forEach(antiquity => {
+          let photos: string[] = []
+          antiquity.photos.forEach(photo => {
+            this.imageService.getImageUrl(photo).subscribe(image => {
+              photos.push(image.toString());
+            })
+          })
+          antiquity.photos = photos;
+        });
+      })
+
+
     } catch (error) {
       console.error('Error loading user details:', error);
     } finally {
       this.isLoading = false;
     }
+  }
+
+  viewDetails(id: number): void {
+    this.router.navigate(['/edit/'+id]);
+    console.log(`View details for antiquity with ID: ${id}`);
   }
 
   async saveChanges(): Promise<void> {

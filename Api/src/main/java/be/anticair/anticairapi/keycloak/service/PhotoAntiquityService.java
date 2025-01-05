@@ -22,11 +22,22 @@ public class PhotoAntiquityService {
     }
 
     /**
-     * Get all the photos of an antiquity.
+     * Updates the photos associated with a specific antiquity.
      *
-     * @param antiquityId The id of the antiquity to get the photos of.
-     * @return The list of photos of the antiquity.
-     * @Author Neve Thierry
+     * <p>This method performs the following operations:
+     * <ul>
+     *   <li>Deletes all existing photos associated with the specified antiquity ID.</li>
+     *   <li>Processes and saves the provided list of new photos to both the file system and the database.</li>
+     * </ul>
+     * If a file is empty or an error occurs during processing, an {@link IOException} is thrown.</p>
+     *
+     * @param antiquityId the ID of the antiquity whose photos are being updated
+     * @param photos a list of {@link MultipartFile} objects representing the new photos to be associated with the antiquity
+     * @throws IOException if an error occurs while processing or saving the files
+     *
+     * @author Neve Thierry
+     * @see PhotoAntiquityRepository#deleteByIdAntiquity(Integer)
+     * @see MultipartFile
      */
     @Transactional
     public void updatePhotos(Integer antiquityId, List<MultipartFile> photos) throws IOException {
@@ -145,6 +156,20 @@ public class PhotoAntiquityService {
         return "/uploads/" + dest.getName();
     }
 
+    /**
+     * Retrieves a list of photos associated with a specific antiquity.
+     *
+     * <p>This method queries the database to fetch all photos linked to the antiquity
+     * identified by the provided ID. Each photo is represented as a {@link PhotoAntiquity} object.</p>
+     *
+     * @param id the ID of the antiquity whose photos are to be retrieved
+     * @return a list of {@link PhotoAntiquity} objects representing the photos associated
+     *         with the specified antiquity
+     *
+     * @author Neve Thierry
+     * @see PhotoAntiquity
+     * @see PhotoAntiquityRepository#findByIdAntiquity(Integer)
+     */
     public List<PhotoAntiquity> findByIdAntiquity(Integer id) {
         // Récupérer les photos associées
         return photoAntiquityRepository.findByIdAntiquity(id);
