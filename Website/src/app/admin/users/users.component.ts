@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../service/user.service';
 import { AuthService } from '../../../service/auth.service';
+import { AdminService } from '../../../service/admin.service';
+
 
 @Component({
   selector: 'app-users',
@@ -29,11 +31,12 @@ export class UsersComponent implements OnInit {
   isSortAscending: boolean = true;
 
   constructor(
-    private themeService: ThemeService, 
-    private router: Router, 
+    private themeService: ThemeService,
+    private router: Router,
     private dialog: MatDialog,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private adminService: AdminService
   ) { }
 
   ngOnInit() {
@@ -69,7 +72,7 @@ export class UsersComponent implements OnInit {
         console.error('Erreur lors du chargement des utilisateurs antiquaires:', error);
       }
     });
-    
+
     // Load the basic users
     this.userService.getSimpleUsers(await token).subscribe({
       next: (users) => {
@@ -144,14 +147,14 @@ export class UsersComponent implements OnInit {
 
       // Handle string comparison
       if (typeof valueA === 'string') {
-        return ascending 
-          ? valueA.localeCompare(valueB) 
+        return ascending
+          ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
       }
 
       // Handle numeric comparison
-      return ascending 
-        ? (valueA - valueB) 
+      return ascending
+        ? (valueA - valueB)
         : (valueB - valueA);
     });
   }
@@ -159,7 +162,7 @@ export class UsersComponent implements OnInit {
   // Method to change the user status (Enabled to Disabled and vice versa)
   async changeUserStatus(emailid: string, status: string) {
     const token = await this.authService.getToken();
-  
+
     if (status === 'Disabled') {
       this.userService.enableUser(token, emailid).subscribe({
         next: (response) => {
@@ -195,16 +198,29 @@ export class UsersComponent implements OnInit {
         user.enabled = (newStatus === 'Enabled');
       }
     };
-  
-    // Mettre à jour dans chaque liste spécifique
+
     updateUserStatusInList(this.adminUsers, emailid);
     updateUserStatusInList(this.antiquarianUsers, emailid);
     updateUserStatusInList(this.basicUsers, emailid);
-  
-    // Charger à nouveau les utilisateurs filtrés selon le type sélectionné
+
     this.loadSelectedUsers();
   }
-  
-  
 
+
+  async forcePasswordReset(emailid: string): Promise<void> {
+    const token = await this.authService.getToken();
+    if (confirm('Are you sure you want to force a password reset for this user?')) {
+      this.adminService.forcePasswordReset(token, emailid).subscribe({
+        next: () => {
+          // Sucess
+          alert('Password reset has been forced. User will be prompted to change password at next login.');
+        },
+        error: (error) => {
+          // Error
+          console.error('Error forcing password reset:', error);
+          alert('Failed to force password reset. Please try again.');
+        }
+      });
+    }
+  }
 }

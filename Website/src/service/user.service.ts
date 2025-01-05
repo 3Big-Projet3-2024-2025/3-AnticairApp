@@ -58,7 +58,7 @@ export class UserService {
       })
     );
   }
-  
+
   enableUser(rawToken: string, emailId: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + "/activate?emailId=" + emailId, null, {
       headers: {
@@ -79,5 +79,5 @@ export class UserService {
   updateUserProfile(userData: any, token: string): Observable<any> {
     return this.http.put(`${this.baseUrl}/update`, userData, { headers: { Authorization: `Bearer ${token}` } });
   }
- 
+
 }
