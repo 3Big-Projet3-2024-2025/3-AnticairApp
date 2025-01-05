@@ -8,22 +8,18 @@ import be.anticair.anticairapi.keycloak.service.ListingService;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
-import java.util.Collections;
-
-import java.util.HashMap;
-
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Test that verify the Listing service function's
@@ -277,4 +273,52 @@ public class ListingServiceTests {
         assertEquals(AntiquityState.ACCEPTED.getState(), this.listing.getState());
         this.cleanListing(listing);
     }
+
+    /**
+     * Test the successful update of the `isDisplay` field to `false`.
+     *
+     * This test verifies that the method `updateIsDisplay` correctly sets the
+     * `isDisplay` field of an existing listing to `false` and persists the changes.
+     *
+     * @author Neve Thierry
+     */
+    @Test
+    @DisplayName("Successfully update the isDisplay field to false")
+    void testUpdateIsDisplay_Success() {
+        // Create a new listing entity
+        Listing listing = new Listing(0, 100.0, "A description", "Pandora's box", TEST_ANTIQUARIAN_EMAIL, 0, false, TEST_SELLER_EMAIL);
+        listing = this.listingRepository.save(listing);
+
+        // Call the method to be tested
+        Listing updatedListing = listingService.updateIsDisplay(listing.getIdAntiquity());
+
+        // Validate the results
+        assertFalse(updatedListing.getIsDisplay());
+        this.cleanListing(updatedListing); // Clean up the database
+    }
+
+    /**
+     * Test the handling of a non-existent entity during the update process.
+     *
+     * This test ensures that when attempting to update the `isDisplay` field of a
+     * non-existent listing, a `RuntimeException` is thrown with the appropriate message.
+     *
+     * @author Neve Thierry
+     */
+    @Test
+    @DisplayName("Throw exception when listing entity is not found")
+    void testUpdateIsDisplay_EntityNotFound() {
+        // Use a non-existent listing ID
+        long nonExistentListingId = 999L;
+
+        // Verify the exception is thrown when trying to update a non-existent entity
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> listingService.updateIsDisplay(nonExistentListingId)
+        );
+
+        // Validate the exception message
+        assertEquals("Entity not found", exception.getMessage());
+    }
 }
+
