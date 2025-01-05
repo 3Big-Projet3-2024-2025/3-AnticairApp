@@ -14,7 +14,9 @@ import {ImageServiceService} from '../../service/image-service.service';
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   standalone: true,
-  imports: [FormsModule, NgIf, NgClass, CurrencyPipe, NgForOf],
+
+  imports: [FormsModule, NgIf, CurrencyPipe, NgForOf],
+
 })
 export class ProfileComponent implements OnInit {
   showSuccessMessage: boolean = false;
@@ -41,7 +43,7 @@ export class ProfileComponent implements OnInit {
     });
     try {
       this.userDetails = this.authService.getUserDetails();
-      console.log('User details:', this.userDetails);
+
 
       this.listingService.getListingSeller(this.userDetails['email']).subscribe(res => {
         this.antiquities = res;
@@ -55,6 +57,7 @@ export class ProfileComponent implements OnInit {
           antiquity.photos = photos;
         });
       })
+
 
     } catch (error) {
       console.error('Error loading user details:', error);

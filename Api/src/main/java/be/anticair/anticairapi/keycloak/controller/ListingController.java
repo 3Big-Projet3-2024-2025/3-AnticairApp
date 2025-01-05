@@ -17,6 +17,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +29,7 @@ import java.util.Map;
 
 /**
  * REST Controller for managing listing in the database.
- * @Author Blommaert Youry, Neve Thierry, Zarzycki Alexis
+ * @author Blommaert Youry, Neve Thierry, Zarzycki Alexis
  */
 
 @RestController
@@ -97,7 +98,7 @@ public class ListingController {
      * @param price The price of the listing.
      * @param photos The images associated with the listing.
      * @return ResponseEntity indicating the creation status.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     @PostMapping("/create")
     public ResponseEntity<?> createListing(
@@ -165,7 +166,7 @@ public class ListingController {
      * Get all listings in the database.
      *
      * @return ResponseEntity containing a list of all listings.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     @GetMapping("/checked")
     public ResponseEntity<List<Listing>> getAllListingsChecked() {
@@ -177,6 +178,14 @@ public class ListingController {
         }
     }
 
+    /**
+     * Reject an antiquity and send mails.
+     *
+     * @param otherInformation map which containt the review and the id of the antiquity
+     * @author Verly Noah
+     * @return ResponseEntity containing a Map <String, String>, with the message to know the result
+     */
+    @PreAuthorize("hasAuthority('ROLE_Antiquarian')")
     @PutMapping("/rejectAntiquity")
     public ResponseEntity<Map<String,String>> rejectAntiquity(@RequestBody Map<String, String> otherInformation) {
         Listing rejectedAntiquity= this.listingService.rejectAntiquity(otherInformation);
@@ -189,6 +198,14 @@ public class ListingController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
     }
 
+    /**
+     * Accept an antiquity,  send mails adn apply commission.
+     *
+     * @param otherInformation map which containt the id of the antiquity
+     * @author Verly Noah
+     * @return ResponseEntity containing a Map <String, String>, with the message to know the result
+     */
+    @PreAuthorize("hasAuthority('ROLE_Antiquarian')")
     @PutMapping("/acceptAntiquity")
     public ResponseEntity<Map<String,String>> acceptAntiquity(@RequestBody Map<String, String> otherInformation) {
         Listing acceptAntiquity= this.listingService.acceptAntiquity(otherInformation);
@@ -210,7 +227,7 @@ public class ListingController {
      * @param id The unique identifier of the listing to be purchased.
      * @return A ResponseEntity containing the payment approval URL if successful,
      *         or an error message and HTTP status code if the operation fails.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @PostMapping("/{id}/buy")
     public ResponseEntity<?> buyListing(@PathVariable Integer id) {
@@ -255,7 +272,7 @@ public class ListingController {
      * @param payerId the unique identifier of the payer provided by PayPal
      * @return a ResponseEntity containing a success message with the listingId if the payment is
      *         successfully processed, or an error message if the payment fails or encounters an exception
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @GetMapping("/payment/execute")
     public ResponseEntity<?> executePayment(@RequestParam("paymentId") String paymentId,
@@ -327,6 +344,7 @@ public class ListingController {
      * @see PhotoAntiquity
      * @see ListingService#getAntiquitiesByState(String)
      */
+    @PreAuthorize("hasAuthority('ROLE_Antiquarian')")
     @GetMapping("/by-state")
     public ResponseEntity<List<ListingWithPhotosDto>> getAntiquitiesByState(@RequestParam String mailAntiquarian) {
         List<ListingWithPhotosDto> antiquitiesWithPhoto = new ArrayList<>();
@@ -389,7 +407,6 @@ public class ListingController {
         return ResponseEntity.ok(antiquitiesWithPhoto);
     }
 
-
     /**
      * Updates the 'isDisplay' field of a listing to false based on the provided ID.
      *
@@ -406,5 +423,4 @@ public class ListingController {
         Listing listing = listingService.updateIsDisplay(id);
         return ResponseEntity.ok(listing);
     }
-
 }

@@ -104,13 +104,14 @@ export class AuthService {
       const userProfile = await this.keycloakService.loadUserProfile();
       const tokenParsed = this.keycloakService.getKeycloakInstance().tokenParsed;
       const phoneNumber = this.getFirstElement(userProfile['attributes']?.['phoneNumber']);
-
+      const balance = this.getFirstElement(userProfile['attributes']?.['balance']);
       // Initialize userDetails with basic information
       this.userDetails = {
         email: userProfile.email,
         firstName: userProfile.firstName,
         lastName: userProfile.lastName,
         phoneNumber: phoneNumber,
+        balance: balance,
         groups: tokenParsed && tokenParsed['groups'] ? this.extractGroups(tokenParsed['groups']) : ''
       };
       this.loggedInSubject.next(true); // Update login status
@@ -120,8 +121,6 @@ export class AuthService {
       } else {
         console.error('Cannot logout because Keycloak is not initialized');
       }
-      console.table(this.userDetails);
-
     }
 
   }

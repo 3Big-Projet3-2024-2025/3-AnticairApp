@@ -29,7 +29,7 @@ export class NavbarComponent implements OnInit {
     });
   }
   isUserAntiquarian(): boolean {
-    if(this.authService.isLoggedIn()) {
+    if(this.isUserLoggedIn) {
       const userInfo = this.authService.getUserDetails();
       if(userInfo['groups'].includes('Antiquarian')) {
         return true;
@@ -39,7 +39,6 @@ export class NavbarComponent implements OnInit {
     }
     return false;
   }
-
   isUserAdmin(): boolean {
     if(this.isUserLoggedIn) {
       return this.authService.isAdmin();

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {catchError, Observable, throwError} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
-  private apiUrl = '/api/admin';
+  private apiUrl = 'http://localhost:8080/api/admin';
 
   constructor(private http: HttpClient) {}
 
@@ -14,7 +14,18 @@ export class AdminService {
     return this.http.get(`${this.apiUrl}/api/users/list`);
   }
 
-  forcePasswordReset(userId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/force-password-reset/${userId}`, {});
+  forcePasswordReset(rawToken: string, emailid: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/force-password-reset/${emailid}`, null, {
+      headers: {
+        Authorization: `Bearer ${rawToken}`,
+      }
+    }).pipe(
+      catchError(error => {
+        console.error('Error forcing password reset:', error);
+        return throwError(() => new Error('Error forcing password reset'));
+      })
+    );
   }
+
+
 }

@@ -13,13 +13,16 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
  * Service to send email with html template
- * @Author Verly Noah
+ * @author Verly Noah
  */
 @Service
 public class EmailService {
@@ -47,7 +50,7 @@ public class EmailService {
      * @param otherInformation other information, who aren't shared with all template
      * @throws MessagingException error during the creation of the mail
      * @throws IOException error if the access of the template isn't a success
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     public void sendHtmlEmail(String receiver, String sender, TypeOfMail typeOfMail, Map<String,String> otherInformation) throws MessagingException, IOException {
         if(receiver.isEmpty() || sender.isEmpty() ) return;
@@ -62,7 +65,6 @@ public class EmailService {
                   htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    break;
                case 2: //Application of the commission, so notify the antiquarian
-
                    htmlTemplate = this.replaceAntiquityInformation(htmlTemplate,otherInformation);
                    double priceWithCommission = Double.parseDouble(otherInformation.get("price"));
                    double commissionDouble = priceWithCommission/1.20;
@@ -85,7 +87,26 @@ public class EmailService {
                case 6: // Warning the user that is account status has been changed
                    htmlTemplate = htmlTemplate.replace("${account_newstatus}", otherInformation.get("account_newstatus"));
                    break;
-               case 10:
+               case 7: // Warning the user that they received a payment
+                   htmlTemplate = this.replaceAntiquityInformation(htmlTemplate, otherInformation);
+
+                   // Get the price with commission
+                   double priceWithCommission2 = Double.parseDouble(otherInformation.get("price"));
+
+                   // Calculate the commission (20%)
+                   double commissionDouble2 = priceWithCommission2 * 0.20;
+
+                   // Format commission to two decimal places
+                   DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);  // Force dot separator
+                   DecimalFormat df = new DecimalFormat("#.00", symbols);  // Always two decimal places
+                   String commissionString2 = df.format(commissionDouble2);
+
+                   // Replace the commission placeholder in the HTML template
+                   htmlTemplate = htmlTemplate.replace("${commission}", commissionString2);
+                   break;
+                case 10:
+                   break;
+               case 8:
                    break;
                default: // Just in case
                   return;
@@ -111,7 +132,7 @@ public class EmailService {
      * @param subject Subject of the email
      * @return return the based email
      * @throws MessagingException error during the creation of the mail
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     private MimeMessage setInformationMail(String sender, String receiver, String subject) throws MessagingException {
 
@@ -135,7 +156,7 @@ public class EmailService {
      * @param fileName name of the file with the template
      * @return return the based email
      * @throws IOException error if the access of the template isn't a success
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     private String loadFilePath(String fileName) throws IOException {
         try{
@@ -155,7 +176,7 @@ public class EmailService {
      * @param htmlTemplate name of the file with the template
      * @param receiver Email of the receiver
      * @return return the based email
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     private String replaceSharedInformation(String htmlTemplate, String receiver){
         //Get information about the receiver
@@ -174,7 +195,7 @@ public class EmailService {
      * @param htmlTemplate the template html
      * @param otherInformation the antiquity's information
      * @return the template with the antiquity's information
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     private String replaceAntiquityInformation(String htmlTemplate, Map<String,String> otherInformation){
         htmlTemplate = htmlTemplate.replace("${title}", otherInformation.get("title"));

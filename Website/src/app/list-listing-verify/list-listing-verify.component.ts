@@ -3,7 +3,9 @@ import {ListingService} from '../../service/listing.service';
 import {ImageServiceService} from '../../service/image-service.service';
 import {AuthService} from '../../service/auth.service';
 import {Antiquity} from '../../modele/DtoListing';
+import { Router } from '@angular/router';
 import {ThemeService} from "../../service/theme.service";
+
 
 @Component({
   selector: 'app-list-listing-verify',
@@ -14,8 +16,8 @@ export class ListListingVerifyComponent implements OnInit {
   antiquities: Antiquity[] = []
   currentTheme: 'dark' | 'light' = 'light';
 
+  constructor(private listingService: ListingService,private themeService: ThemeService,private imageService:ImageServiceService,private authService: AuthService, private router : Router) { }
 
-  constructor(private listingService: ListingService,private themeService: ThemeService,private imageService:ImageServiceService,private authService: AuthService) { }
 
   ngOnInit(): void {
     this.themeService.theme$.subscribe(theme => {
@@ -41,7 +43,6 @@ export class ListListingVerifyComponent implements OnInit {
   }
 
   viewDetails(id: number): void {
-    // Action to view details (e.g., navigate to another route)
-    console.log(`View details for antiquity with ID: ${id}`);
+   this.router.navigate(['/list-antiquity-verify',id]);
   }
 }

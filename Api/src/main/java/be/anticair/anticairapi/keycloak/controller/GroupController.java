@@ -6,6 +6,7 @@ import org.keycloak.representations.idm.GroupRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * REST Controller for managing user groups in Keycloak.
- * @Author Zarzycki Alexis
+ * @author Zarzycki Alexis
  */
 @RestController
 @RequestMapping("/api/groups")
@@ -24,7 +25,7 @@ public class GroupController {
 
     /**
      * Service for performing group-related operations.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     private final GroupService groupService;
 
@@ -32,7 +33,7 @@ public class GroupController {
      * Constructor with dependency injection for the GroupService.
      *
      * @param groupService the service used to manage groups in Keycloak.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @Autowired
     public GroupController(GroupService groupService) {
@@ -43,8 +44,9 @@ public class GroupController {
      * Get all the groups in the keycloak realm.
      *
      * @return a ResponseEntity containing a success message.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/")
     public ResponseEntity<List<Map<String, Object>>> getGroups() {
         List<GroupRepresentation> groups = groupService.getGroup();
@@ -66,8 +68,9 @@ public class GroupController {
      *
      * @param emailId   the email of the user to get the groups for.
      * @return a ResponseEntity containing a list of groups the user belongs to.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/{emailId}/groups")
     public ResponseEntity<List<Map<String, Object>>> getGroupsFromUser(@RequestParam String emailId) {
         // Fetch the groups the user is a member of (assuming groupService.getGroupsForUser fetches this)
@@ -96,8 +99,9 @@ public class GroupController {
      * @param emailId   the email of the user to be added to the group.
      * @param groupName the name of the group to which the user will be added.
      * @return a ResponseEntity containing a success message.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/add")
     public ResponseEntity<Map<String, String>> addGroup(
             @RequestParam String emailId,
@@ -115,8 +119,9 @@ public class GroupController {
      * @param emailId   the email of the user to be removed from the group.
      * @param groupName the name of the group from which the user will be removed.
      * @return a ResponseEntity containing a success message.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/remove")
     public ResponseEntity<Map<String, String>> removeGroup(
             @RequestParam String emailId,
@@ -133,7 +138,7 @@ public class GroupController {
      *
      * @param ex the NotFoundException thrown when the user or group is not found.
      * @return a ResponseEntity with a 404 status and an error message.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -146,7 +151,7 @@ public class GroupController {
      *
      * @param ex the RuntimeException thrown during processing.
      * @return a ResponseEntity with a 500 status and an error message.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

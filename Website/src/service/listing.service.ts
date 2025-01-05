@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Antiquity } from '../modele/DtoListing';
 import { AuthService } from './auth.service';
+import { Review } from '../modele/Review';
 
 @Injectable({
   providedIn: 'root'
@@ -95,27 +96,29 @@ export class ListingService {
     return this.http.get<any>(`${this.privateUrl}/payment/execute`, { headers, params: { paymentId, PayerID: payerId } });
   }
 
-  acceptAntiquity(antiquity : Antiquity) : Observable<Map<String,String>>{
-    const formData = new FormData();
-    formData.append('id', JSON.stringify(antiquity.idAntiquity));
-     // Get the token from the authentication service
-     const rawToken = this.authService.getToken();
-    // Configure the headers with the token
+  acceptAntiquity(antiquity: Antiquity): Observable<Map<string, string>> {
+    const body = {
+      id: antiquity.idAntiquity
+    };
+  
+    const rawToken = this.authService.getToken();
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${rawToken}`
+      'Authorization': `Bearer ${rawToken}`,
+      'Content-Type': 'application/json'
     });
-    return this.http.put<any>(`${this.privateUrl}/acceptAntiquity`, formData, { headers});
+  
+    return this.http.put<Map<string, string>>(`${this.privateUrl}/acceptAntiquity`, body, { headers });
   }
 
 
-  rejectAntiquity(antiquity: Antiquity, note_title: string, note_description: string, note_price: string, note_photo: string): Observable<Map<string, string>> {
-    const formData = new FormData();
-
-    formData.append('note_title', JSON.stringify(note_title));
-    formData.append('note_description', JSON.stringify(note_description));
-    formData.append('note_price', JSON.stringify(note_price));
-    formData.append('note_photo', JSON.stringify(note_photo));
-    formData.append('id', JSON.stringify(antiquity.idAntiquity));
+  rejectAntiquity(antiquity: Antiquity, review : Review): Observable<Map<string, string>> {
+    const body = {
+      id: antiquity.idAntiquity,
+      note_title: review.note_title!=="" ? review.note_title : "no comment.",
+      note_description: review.note_description!=="" ? review.note_description : "no comment.",
+      note_price: review.note_price!=="" ? review.note_price : "no comment.",
+      note_photo:review.note_photo!=="" ? review.note_photo : "no comment."
+    };
 
     // Get the token from the authentication service
     const rawToken = this.authService.getToken();
@@ -126,7 +129,7 @@ export class ListingService {
     });
 
     // Envoi de la requête PUT
-    return this.http.put<Map<string, string>>(`${this.privateUrl}/rejectAntiquity`,formData,{headers});
+    return this.http.put<Map<string, string>>(`${this.privateUrl}/rejectAntiquity`,body,{headers});
   }
 
   getListingVerify(mailAntiquarian: string):Observable<Antiquity[]>{

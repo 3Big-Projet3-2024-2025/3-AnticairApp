@@ -39,7 +39,6 @@ export class CreateListingComponent {
     });
 
     this.email = this.authService.getUserDetails().email;
-    console.log(this.email);
   }
 
   redirectToHome() {
