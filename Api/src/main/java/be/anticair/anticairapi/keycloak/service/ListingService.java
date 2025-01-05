@@ -117,8 +117,8 @@ public class ListingService {
     }
 
     /**
-     * Get all the listing in the database.
-     * @return The list of all the listings.
+     * Get all the listing accepted in the database.
+     * @return The list of all the listings accepted.
      * @Author Blommaert Youry
      */
     public List<Listing> getAllListingsAccepted() {
@@ -131,6 +131,23 @@ public class ListingService {
 
         return listings;
     }
+
+    /**
+     * Get all the listing in the database.
+     * @return The list of all the listings.
+     * @Author Blommaert Youry
+     */
+    public List<Listing> getAllListing() {
+        List<Listing> listings = new ArrayList<>();
+        listings = ListingRepository.findAll();
+
+        if(listings.isEmpty()) {
+            throw new RuntimeException("No listings found");
+        }
+
+        return listings;
+    }
+
 
 
     public Listing rejectAntiquity(Map<String,String> otherInformation){
