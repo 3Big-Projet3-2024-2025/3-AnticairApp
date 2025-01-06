@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * REST Controller to the photos of antiquities
+ * @author Dewever David
+ */
 @RestController
 @RequestMapping("/api/photoAntiquity")
 public class PhotoAntiquityController {
@@ -29,6 +33,13 @@ public class PhotoAntiquityController {
         return ResponseEntity.ok(photoAntiquityService.findByIdAntiquity(Math.toIntExact(id)));
     }
 
+    /**
+     * Get the list of the antiquity photo's name
+     *
+     * @param idAntiquity The id of the antiquity to get the photos of.
+     * @return  the list of the antiquity photo's name
+     * @author Blommmaert Youry
+     */
     @GetMapping("/images/{id}")
     public ResponseEntity<List<String>> getPathPhotosByAntiquityId(@PathVariable("id") Long idAntiquity) {
         return ResponseEntity.ok(photoAntiquityService.findPathByIdAntiquity(Math.toIntExact(idAntiquity)));

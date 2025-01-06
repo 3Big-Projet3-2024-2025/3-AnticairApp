@@ -5,13 +5,13 @@ import lombok.*;
 
 import java.util.List;
 
+/**
+ * Listing Class with Photos
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-/**
- * Listing Class with Photos
- */
 public class ListingWithPhotosDto {
 
     private Integer idAntiquity;
