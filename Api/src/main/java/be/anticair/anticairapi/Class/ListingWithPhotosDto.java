@@ -9,6 +9,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * Listing Class with Photos
+ */
 public class ListingWithPhotosDto {
 
     private Integer idAntiquity;

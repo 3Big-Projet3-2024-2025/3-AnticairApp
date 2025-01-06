@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * A Service for the Photo Antiquity
+ */
 @Service
 public class PhotoAntiquityService {
 

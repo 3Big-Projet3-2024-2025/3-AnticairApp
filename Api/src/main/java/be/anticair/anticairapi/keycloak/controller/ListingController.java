@@ -31,7 +31,6 @@ import java.util.Map;
  * REST Controller for managing listing in the database.
  * @author Blommaert Youry, Neve Thierry, Zarzycki Alexis
  */
-
 @RestController
 @RequestMapping("/api/listing")
 public class ListingController {

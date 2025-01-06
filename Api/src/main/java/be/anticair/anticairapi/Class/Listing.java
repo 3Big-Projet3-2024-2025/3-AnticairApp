@@ -17,6 +17,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "antiquity")
+/**
+ * Listing Class
+ */
 public class Listing {
 
         @Id

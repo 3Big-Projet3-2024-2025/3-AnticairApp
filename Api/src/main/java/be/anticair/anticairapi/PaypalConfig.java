@@ -26,6 +26,9 @@ import java.util.*;
 
 import org.keycloak.admin.client.Keycloak;
 
+/**
+ * Configuration for Paypal
+ */
 @Service
 public class PaypalConfig {
 
@@ -34,6 +37,13 @@ public class PaypalConfig {
     private final ListingService listingService;
     private final EmailService emailService;
 
+    /**
+     * Paypal Configuration
+     * @param keycloak the keycloak
+     * @param userService the user service
+     * @param listingService the listing service
+     * @param emailService the email service
+     */
     @Autowired
     public PaypalConfig(Keycloak keycloak, UserService userService, ListingService listingService, EmailService emailService) {
         this.keycloak = keycloak;
