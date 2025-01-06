@@ -9,6 +9,9 @@ import lombok.*;
 @Getter
 @Setter
 @Table(name = "Photo_Antiquity")
+/**
+ * Class Antiquity Photo
+ */
 public class PhotoAntiquity {
 
     @Id

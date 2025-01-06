@@ -23,7 +23,6 @@ import static be.anticair.anticairapi.enumeration.AntiquityState.*;
  *
  * @author Blommaert Youry, Neve Thierry
  */
-
 @Service
 public class ListingService {
 

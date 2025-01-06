@@ -7,6 +7,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+/**
+ * A Repository for the Listing
+ */
 public interface ListingRepository extends JpaRepository<Listing, Long> {
     /**
      * Declaration to get all the antiquity (not checked or ) that an antiquarian is the checker

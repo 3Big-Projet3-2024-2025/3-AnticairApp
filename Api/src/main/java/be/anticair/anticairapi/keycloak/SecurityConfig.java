@@ -64,6 +64,11 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Convert a Keycloak GROUPS to a SECURITY ROLE for guard
+     * @return authenticationConverter the converter
+     * @author Zarzycki Alexis
+     */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
