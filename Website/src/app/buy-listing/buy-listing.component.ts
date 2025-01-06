@@ -3,6 +3,7 @@ import { Antiquity } from '../../modele/DtoListing';
 import { ThemeService } from '../../service/theme.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ListingService } from '../../service/listing.service';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-buy-listing',
@@ -14,8 +15,9 @@ export class BuyListingComponent {
     currentTheme: 'dark' | 'light' = 'light'; // Actual theme, by default light
     @Input() id!: number; // Input property to accept the id
     antiquity!: Antiquity; // Antiquity object
+    errorMessage: string = ''; // Error message
   
-    constructor(private themeService: ThemeService, private route : ActivatedRoute, private router : Router, private listingService : ListingService) {}
+    constructor(private themeService: ThemeService, private route : ActivatedRoute, private router : Router, private listingService : ListingService, private authService: AuthService) {}
   
     ngOnInit(): void {
       // Subscribe to Theme event
@@ -41,6 +43,12 @@ export class BuyListingComponent {
     }
 
   buyAntiquity(): void {
+    // Check if the user is connected
+    if (!this.authService.isLoggedIn().value) {
+      // Show a message to the user
+      this.errorMessage = 'You must be logged in to buy an antiquity';
+      return;
+    }
     // Call the service to buy the antiquity
     this.listingService.buyAntiquity(this.antiquity.idAntiquity).subscribe(response => {
       // Open the paypal link in the current tab

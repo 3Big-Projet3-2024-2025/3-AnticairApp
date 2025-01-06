@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../service/user.service';
 import { AuthService } from '../../../service/auth.service';
+import { AdminService } from '../../../service/admin.service';
+
 
 @Component({
   selector: 'app-users',
@@ -17,6 +19,10 @@ export class UsersComponent implements OnInit {
   adminUsers: any[] = [];
   antiquarianUsers: any[] = [];
   basicUsers: any[] = [];
+  currentPage: number = 1;
+  itemsPerPage: number = 3; // Adjust this value based on your requirements
+  totalPages: number = 1;
+  paginatedUsers: any[] = [];
 
   // Table where users will be displayed
   displayedUsers: any[] = [];
@@ -29,11 +35,12 @@ export class UsersComponent implements OnInit {
   isSortAscending: boolean = true;
 
   constructor(
-    private themeService: ThemeService, 
-    private router: Router, 
+    private themeService: ThemeService,
+    private router: Router,
     private dialog: MatDialog,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private adminService: AdminService
   ) { }
 
   ngOnInit() {
@@ -46,49 +53,43 @@ export class UsersComponent implements OnInit {
     this.loadAllUsers();
   }
 
-  // Load of all users
   private async loadAllUsers() {
-    const token = this.authService.getToken();
-
-    // Load the number of users
+    const token = await this.authService.getToken();
+  
     this.userService.getAdminUsers(await token).subscribe({
       next: (users) => {
         this.adminUsers = users;
+        if (this.selectedUserType === 'admin') {
+          this.loadSelectedUsers();
+        }
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des utilisateurs administrateurs:', error);
-      }
+      error: (error) => console.error('Error loading admin users:', error),
     });
-
-    // Load the antiquarian users
+  
     this.userService.getAntiquarianUsers(await token).subscribe({
       next: (users) => {
         this.antiquarianUsers = users;
+        if (this.selectedUserType === 'antiquarian') {
+          this.loadSelectedUsers();
+        }
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des utilisateurs antiquaires:', error);
-      }
+      error: (error) => console.error('Error loading antiquarian users:', error),
     });
-    
-    // Load the basic users
+  
     this.userService.getSimpleUsers(await token).subscribe({
       next: (users) => {
         this.basicUsers = users;
-        // If the selected user type is basic, we display the basic users
         if (this.selectedUserType === 'basic') {
-          this.displayedUsers = users;
+          this.loadSelectedUsers();
         }
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement de tous les utilisateurs:', error);
-      }
+      error: (error) => console.error('Error loading basic users:', error),
     });
-
   }
+  
 
-  // Method to change the selected user type
   loadSelectedUsers() {
-    let usersToSort: any[];
+    let usersToSort: any[] = [];
     switch (this.selectedUserType) {
       case 'admin':
         usersToSort = this.adminUsers;
@@ -101,14 +102,15 @@ export class UsersComponent implements OnInit {
         usersToSort = this.basicUsers;
         break;
     }
-
-    // If a sort column is set, apply sorting
-    if (this.currentSortColumn) {
-      this.displayedUsers = this.sortUsers(usersToSort, this.currentSortColumn, this.isSortAscending);
-    } else {
-      this.displayedUsers = usersToSort;
-    }
+  
+    this.currentPage = 1; // Réinitialiser la page courante
+    this.calculateTotalPages();
+    this.displayedUsers = this.sortUsers(usersToSort, this.currentSortColumn, this.isSortAscending);
+    this.paginateUsers();
   }
+  
+
+  
 
   // Sorting method
   sortByColumn(column: string) {
@@ -134,9 +136,9 @@ export class UsersComponent implements OnInit {
       if (column === 'phoneNumber') {
         valueA = a.attributes.phoneNumber;
         valueB = b.attributes.phoneNumber;
-      } else if (column === 'homeAddress') {
-        valueA = a.attributes.homeAddress;
-        valueB = b.attributes.homeAddress;
+      } else if (column === 'balance') {
+        valueA = a.attributes.balance;
+        valueB = b.attributes.balance;
       } else {
         valueA = a[column];
         valueB = b[column];
@@ -144,14 +146,14 @@ export class UsersComponent implements OnInit {
 
       // Handle string comparison
       if (typeof valueA === 'string') {
-        return ascending 
-          ? valueA.localeCompare(valueB) 
+        return ascending
+          ? valueA.localeCompare(valueB)
           : valueB.localeCompare(valueA);
       }
 
       // Handle numeric comparison
-      return ascending 
-        ? (valueA - valueB) 
+      return ascending
+        ? (valueA - valueB)
         : (valueB - valueA);
     });
   }
@@ -159,7 +161,7 @@ export class UsersComponent implements OnInit {
   // Method to change the user status (Enabled to Disabled and vice versa)
   async changeUserStatus(emailid: string, status: string) {
     const token = await this.authService.getToken();
-  
+
     if (status === 'Disabled') {
       this.userService.enableUser(token, emailid).subscribe({
         next: (response) => {
@@ -195,16 +197,82 @@ export class UsersComponent implements OnInit {
         user.enabled = (newStatus === 'Enabled');
       }
     };
-  
-    // Mettre à jour dans chaque liste spécifique
+
     updateUserStatusInList(this.adminUsers, emailid);
     updateUserStatusInList(this.antiquarianUsers, emailid);
     updateUserStatusInList(this.basicUsers, emailid);
-  
-    // Charger à nouveau les utilisateurs filtrés selon le type sélectionné
+
     this.loadSelectedUsers();
   }
-  
+
+
+  calculateTotalPages() {
+    let usersToDisplay: any[];
+    switch (this.selectedUserType) {
+      case 'admin':
+        usersToDisplay = this.adminUsers;
+        break;
+      case 'antiquarian':
+        usersToDisplay = this.antiquarianUsers;
+        break;
+      case 'basic':
+      default:
+        usersToDisplay = this.basicUsers;
+        break;
+    }
+    this.totalPages = Math.ceil(usersToDisplay.length / this.itemsPerPage);
+  }
   
 
+  paginateUsers() {
+    let usersToDisplay: any[];
+    switch (this.selectedUserType) {
+      case 'admin':
+        usersToDisplay = this.adminUsers;
+        break;
+      case 'antiquarian':
+        usersToDisplay = this.antiquarianUsers;
+        break;
+      case 'basic':
+      default:
+        usersToDisplay = this.basicUsers;
+        break;
+    }
+  
+    // Vérifier si la page courante dépasse le nombre total de pages
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+  
+    this.paginatedUsers = usersToDisplay.slice(startIndex, endIndex);
+  }
+  
+
+  // Method to change the page
+  changePage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.paginateUsers();
+    }
+  }
+  
+  async forcePasswordReset(emailid: string): Promise<void> {
+    const token = await this.authService.getToken();
+    if (confirm('Are you sure you want to force a password reset for this user?')) {
+      this.adminService.forcePasswordReset(token, emailid).subscribe({
+        next: () => {
+          // Sucess
+          alert('Password reset has been forced. User will be prompted to change password at next login.');
+        },
+        error: (error) => {
+          // Error
+          console.error('Error forcing password reset:', error);
+          alert('Failed to force password reset. Please try again.');
+        }
+      });
+    }
+  }
 }

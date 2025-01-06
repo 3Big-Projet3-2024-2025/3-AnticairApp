@@ -6,6 +6,7 @@ import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Service that manage a user's groups
  *
- * @Author Zarzycki Alexis
+ * @author Zarzycki Alexis
  **/
 @Service
 public class GroupService {
@@ -39,7 +40,7 @@ public class GroupService {
      *
      * @param userEmail The email ID of the user
      * @param groupName The name of the group in the Keycloak Realm
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public void addGroup(String userEmail, String groupName) {
         try {
@@ -69,7 +70,7 @@ public class GroupService {
      *
      * @param userEmail The email ID of the user
      * @param groupName The name of the group in the Keycloak Realm
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public void removeGroup(String userEmail, String groupName) {
         try {
@@ -84,6 +85,17 @@ public class GroupService {
             }
 
             UserRepresentation user = users.getFirst(); // Get the first user
+
+            // Get the user's ID
+            String userId = user.getId();
+
+            if((keycloak.realm(realm).users().get(userId).groups().stream()
+                    .anyMatch(group -> group.getName().equals("Antiquarian"))) && groupName.equalsIgnoreCase("Antiquarian")) {
+                String result = this.userService.redistributeAntiquity(userEmail);
+                if(!result.equals("Antiquity's antiquarian changed")){
+                    return;
+                }
+            }
 
             keycloak.realm(realm).users().get(user.getId()).leaveGroup(groups.getFirst().getId());
 
@@ -100,7 +112,7 @@ public class GroupService {
      * @param userEmail The email of the user to check.
      * @param groupName The name of the group to verify membership.
      * @return true if the user is a member of the group, false otherwise.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     private boolean isUserInGroup(String userEmail, String groupName) {
         try {
@@ -134,7 +146,7 @@ public class GroupService {
      * @param groupName The name of the group to search for.
      * @return A list of GroupRepresentation objects matching the name.
      * @throws NotFoundException if no groups are found with the given name.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public List<GroupRepresentation> getGroupsByName(String groupName) {
         try {
@@ -161,7 +173,7 @@ public class GroupService {
      *
      * @return A list of GroupRepresentation objects
      * @throws NotFoundException if no groups are found with the given name.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public List<GroupRepresentation> getGroup() {
         try {
@@ -185,7 +197,7 @@ public class GroupService {
      * @param emailId the email of the user
      * @return A list of GroupRepresentation objects
      * @throws NotFoundException if the user is not found.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public List<GroupRepresentation> getGroupFromUser(String emailId) {
         try {

@@ -6,6 +6,7 @@ import org.apache.catalina.User;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -17,14 +18,14 @@ import java.util.Objects;
 
 /**
  * REST Controller for managing users in Keycloak.
- * @Author Blommaert Youry
+ * @author Blommaert Youry
  */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     /**
      * Service for performing users-related operations.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     private final UserService userService;
 
@@ -32,7 +33,7 @@ public class UserController {
      * Constructor with dependency injection for the UserService.
      *
      * @param userService the service used to manage users in Keycloak.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     @Autowired
     public UserController(UserService userService) {
@@ -43,7 +44,7 @@ public class UserController {
      * Constructor with dependency injection for the UserService.
      *
      * @param userDetails the service to edit user details.
-     * @Author Dewever David
+     * @author Dewever David
      */
     @PutMapping("/update")
     public ResponseEntity<Map<String, String>> updateUserProfile(
@@ -64,8 +65,9 @@ public class UserController {
      * Get all users from the database.
      *
      * @return a ResponseEntity containing a list of all users.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/list")
     public ResponseEntity<List<UserRepresentation>> listUsers() {
         List<UserRepresentation> users = userService.getAllUsers();
@@ -76,8 +78,9 @@ public class UserController {
      * Get all users without groups from the database.
      *
      * @return a ResponseEntity containing a list of all users without groups.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/list/users")
     public ResponseEntity<List<UserRepresentation>> listUsersWithoutGroups() {
         List<UserRepresentation> users = userService.getUsersWithoutGroups();
@@ -88,7 +91,7 @@ public class UserController {
      * Get the number of users from the database
      *
      * @return a ResponseEntity containing the number of users
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     @GetMapping("/nbrUsers")
     public ResponseEntity<Integer> numberUsers() {
@@ -99,8 +102,9 @@ public class UserController {
     /**
      * Get all users from a specific group.
      * @return ResponseEntity containing a list of all users in the group specified.
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/list/admin")
     public ResponseEntity<List<UserRepresentation>> listAdmins() {
         List<UserRepresentation> admins = userService.getUsersByGroupName("Admin");
@@ -110,8 +114,9 @@ public class UserController {
     /**
      * Get all users from a specific group
      * @return ResponseEntity containing a list of all users in the antiquarian group specified.
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/list/antiquarian")
     public ResponseEntity<List<UserRepresentation>> listAntiquarian() {
         List<UserRepresentation> antiquarian = userService.getUsersByGroupName("Antiquarian");
@@ -121,8 +126,9 @@ public class UserController {
     /**
      * Desactivate a user
      * @return ResponseEntity containing a Json
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/desactivate")
     public ResponseEntity<Map<String,String>> desactivateUser(
             @RequestParam String emailId
@@ -137,8 +143,9 @@ public class UserController {
     /**
      * Activate a user
      * @return ResponseEntity containing a Json
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PostMapping("/activate")
     public ResponseEntity<Map<String,String>> activateUser(
             @RequestParam String emailId
@@ -152,8 +159,9 @@ public class UserController {
     /**
      * Get the status of a user
      * @return ResponseEntity containing a Json
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> getUserStatus(
             @RequestParam String emailId
@@ -165,10 +173,11 @@ public class UserController {
     }
 
     /**
-     * Redistrute the antiquity of a antiquarian
+     * Redistribute the antiquity of an antiquarian
      * @return ResponseEntity containing a Json
-     * @Author Verly Noah
+     * @author Verly Noah
      */
+    @PreAuthorize("hasAuthority('ROLE_Admin')")
     @PutMapping("/redistributeAntiquity")
     public ResponseEntity<Map<String, String>> redistributeAntiquity(
             @RequestParam String emailId

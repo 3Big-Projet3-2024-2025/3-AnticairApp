@@ -7,20 +7,34 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+/**
+ * Repository for the listing
+ */
 public interface ListingRepository extends JpaRepository<Listing, Long> {
     /**
-     * Declaration to get all the antiquity (not checked) that an antiquarian is the checker
+     * Declaration to get all the antiquity (not checked or ) that an antiquarian is the checker
      * @param email the email of the antiquarian
      * @return a list of all the antiquity
+     * @author Verly Noah
      */
-    @Query("SELECT a FROM Listing a WHERE a.mailAntiquarian = :email AND a.state = 0")
+    @Query("SELECT a FROM Listing a WHERE a.mailAntiquarian = :email AND a.state = 0 OR a.state =2")
     List<Listing> getAllAntiquityNotCheckedFromAnAntiquarian(@Param("email") String email);
+
+
+    /**
+     * Declaration to get all the antiquity of a user
+     * @param email the email of the antiquarian
+     * @return a list of all the antiquity
+     * @author Verly Noah
+     */
+    @Query("SELECT a FROM Listing a WHERE a.mailSeller = :email AND a.isDisplay = true")
+    List<Listing> getAllAntiquityDisplayByMailSeller(@Param("email") String email);
 
     /**
      * Declaration to get all the antiquity (checked)
      *
      * @return a list of all the antiquity checked (state = 1)
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     @Query("SELECT a FROM Listing a WHERE a.state = 1")
     List<Listing> getAllAntiquityChecked();
@@ -53,6 +67,5 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
      * @author Neve Thierry
      */
     List<Listing> findByMailSeller(String mailSeller);
-
 
 }

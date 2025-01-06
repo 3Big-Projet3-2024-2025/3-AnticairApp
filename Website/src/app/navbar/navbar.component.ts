@@ -28,7 +28,17 @@ export class NavbarComponent implements OnInit {
       this.isUserLoggedIn = loggedIn;
     });
   }
-
+  isUserAntiquarian(): boolean {
+    if(this.isUserLoggedIn) {
+      const userInfo = this.authService.getUserDetails();
+      if(userInfo['groups'].includes('Antiquarian')) {
+        return true;
+      }else {
+        return false;
+      }
+    }
+    return false;
+  }
   isUserAdmin(): boolean {
     if(this.isUserLoggedIn) {
       return this.authService.isAdmin();

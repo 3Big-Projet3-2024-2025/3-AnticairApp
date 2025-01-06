@@ -2,11 +2,11 @@ package be.anticair.anticairapi.enumeration;
 
 import lombok.Getter;
 
-@Getter
 /**
  * Enumaration to simplify the sending of mail
  * @Author Verly Noah
  */
+@Getter
 public enum TypeOfMail {
     VALIDATIONOFANANTIQUITY (1, "ValdiationOfAnAntiquity.html", "Validation of your antiquity"),
     CONFIRMATIONOFAPPLICATIONCOMMISSION (2, "ConfirmationOfApplicationCommission.html", "Confirmation of the commission application"),
@@ -14,7 +14,10 @@ public enum TypeOfMail {
     REDISTRIBUTEANTIQUITYINITANTIQUARIAN (4, "redistributeAntiquityInitAntiquarian.html", "Redistribution of your antiquity"),
     REDISTRIBUTEANTIQUITYNEWANTIQUARIAN (5, "redistributeAntiquityNewAntiquarian.html", "A new to antiquity to be checked"),
     ENABLEORDISABLEUSER(6, "enableOrDisableUser.html", "Your account has been updated"),
+    PAYMENTOFCOMMISSION(7, "PaymentOfCommission.html", "You received a payment"),
+    NEWANTIQUITY(8, "newAntiquity.html", "A new antiquity"),
     DELETEUSERDATA(10, "ConfirmationRGPDUser.html","Your datas has been deleted");
+
     /**
      * The type of mail to the mailService
      */

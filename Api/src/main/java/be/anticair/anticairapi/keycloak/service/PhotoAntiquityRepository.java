@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * A Repository for the Photo Antiquity
+ * */
 @Repository
 public interface PhotoAntiquityRepository extends JpaRepository<PhotoAntiquity, Integer> {
     @Transactional
@@ -31,6 +34,11 @@ public interface PhotoAntiquityRepository extends JpaRepository<PhotoAntiquity, 
      */
     List<PhotoAntiquity> findByIdAntiquity(Integer idAntiquity);
 
+    /**
+     * Find the photo path from a Id Antiquity
+     * @param idAntiquity the ID of the antiquity
+     * @return A List of the path
+     */
     @Query("SELECT p.pathPhoto FROM PhotoAntiquity p WHERE p.idAntiquity = ?1")
     List<String> findPathByIdAntiquity(Integer idAntiquity);
 }

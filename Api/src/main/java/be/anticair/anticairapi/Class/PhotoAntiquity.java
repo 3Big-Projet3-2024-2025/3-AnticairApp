@@ -3,6 +3,9 @@ package be.anticair.anticairapi.Class;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Class Antiquity Photo
+ */
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor

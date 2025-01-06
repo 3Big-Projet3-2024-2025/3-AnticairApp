@@ -1,24 +1,55 @@
 package be.anticair.anticairapi;
 
+import be.anticair.anticairapi.Class.Listing;
+import be.anticair.anticairapi.Class.ListingWithPhotosDto;
+import be.anticair.anticairapi.enumeration.TypeOfMail;
+import be.anticair.anticairapi.keycloak.service.EmailService;
+import be.anticair.anticairapi.keycloak.service.ListingRepository;
+import be.anticair.anticairapi.keycloak.service.ListingService;
+import be.anticair.anticairapi.keycloak.service.UserService;
 import com.paypal.api.payments.*;
+import com.paypal.api.payments.Currency;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import com.paypal.api.payments.Invoice;
 import com.paypal.api.payments.InvoiceItem;
+import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 
 import org.keycloak.admin.client.Keycloak;
 
+/**
+ * Configuration for Paypal
+ */
 @Service
 public class PaypalConfig {
-    private final Keycloak keycloak;
 
-    public PaypalConfig(Keycloak keycloak) {
+    private final Keycloak keycloak;
+    private final UserService userService;
+    private final ListingService listingService;
+    private final EmailService emailService;
+
+    /**
+     * Paypal Configuration
+     * @param keycloak the keycloak
+     * @param userService the user service
+     * @param listingService the listing service
+     * @param emailService the email service
+     */
+    @Autowired
+    public PaypalConfig(Keycloak keycloak, UserService userService, ListingService listingService, EmailService emailService) {
         this.keycloak = keycloak;
+        this.userService = userService;
+        this.listingService = listingService;
+        this.emailService = emailService;
     }
 
     // PayPal client ID, configured in application properties
@@ -35,6 +66,9 @@ public class PaypalConfig {
 
     // API Context: Responsible for authenticating and managing PayPal API requests
     private APIContext apiContext;
+
+    @Autowired
+    private ListingRepository listingRepository;
 
     /**
      * Lazy loads and initializes the APIContext object.
@@ -141,7 +175,7 @@ public class PaypalConfig {
      * @throws PayPalRESTException If an error occurs while creating or sending the invoice.
      * @Author Zarzycki Alexis
      */
-    public Invoice createAndSendInvoice(Payer payer, String itemName, Double itemPrice, String currency, int quantity, Long listingId) throws PayPalRESTException {
+    public Invoice createAndSendInvoice(Payer payer, String itemName, Double itemPrice, String currency, int quantity, Long listingId) throws PayPalRESTException, MessagingException, IOException {
 
         String customId = generateCustomId(listingId);
         Invoice existingInvoice = checkExistingInvoice(customId);
@@ -235,6 +269,31 @@ public class PaypalConfig {
 
         // Ensure invoice is marked as paid only after sending
         createdInvoice.recordPayment(getApiContext(), paymentDetail);
+
+        ListingWithPhotosDto listing = listingService.getListingById(listingId.intValue());
+
+        // When the antiquity has been sold, we pay the antiquarian for the commission
+        double commissionToPay = listing.getPriceAntiquity() * 0.20;
+        // When the antiquity has been sold, we pay the seller for the payment
+        double sellerToPay = listing.getPriceAntiquity() - commissionToPay;
+
+        // Format the commission to two decimal places before adding to the balance
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("#.00", symbols);
+        String formattedCommission = df.format(commissionToPay);
+        String formattedSeller = df.format(sellerToPay);
+
+        // Add the commission to the antiquarian's balance
+        userService.addToUserBalance(listing.getMailAntiquarian(), Double.parseDouble(formattedCommission));
+        // Add the commission to the seller's balance
+        userService.addToUserBalance(listing.getMailSeller(), Double.parseDouble(formattedSeller));
+
+        // We send the email to inform the antiquarian
+        Map<String,String> otherInformation = new HashMap<>();
+        otherInformation.put("title", listing.getTitleAntiquity());
+        otherInformation.put("description", listing.getDescriptionAntiquity());
+        otherInformation.put("price", listing.getPriceAntiquity().toString());
+        emailService.sendHtmlEmail(listing.getMailAntiquarian(), "info@anticairapp.sixela.be", TypeOfMail.PAYMENTOFCOMMISSION, otherInformation);
 
         return createdInvoice;
     }

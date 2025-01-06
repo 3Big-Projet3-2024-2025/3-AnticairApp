@@ -13,17 +13,16 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
 /**
  * Service that manage user's
- * @Author Zarzycki Alexis
+ * @author Zarzycki Alexis
  **/
 @Service
 public class UserService {
@@ -65,7 +64,7 @@ public class UserService {
      * Retrieves a user from his email
      * @param userEmail The Email of the user to find
      * @return List of the users finded
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public List<UserRepresentation> getUsersByEmail(String userEmail) {
         try {
@@ -88,7 +87,7 @@ public class UserService {
     /**
      * Retrieves all users from the realm
      * @return List of all users
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     public List<UserRepresentation> getAllUsers() {
         try{
@@ -108,7 +107,7 @@ public class UserService {
     /**
      * Retrieves all users without group assignments from the realm
      * @return List of users without group memberships
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     public List<UserRepresentation> getUsersWithoutGroups() {
         try {
@@ -141,7 +140,7 @@ public class UserService {
     /**
      * Retrieves the number of user from the realm
      * @return the number of user
-     * @Author Verly Noah
+     * @author Verly Noah
      */
     public int getNumberOfUsers() {
        return this.getAllUsers().size();
@@ -152,7 +151,7 @@ public class UserService {
      *
      * @param groupName
      * @return List of all users in the group specified
-     * @Author Blommaert Youry
+     * @author Blommaert Youry
      */
     public List<UserRepresentation> getUsersByGroupName(String groupName) {
         List<UserRepresentation> users = new ArrayList<>();
@@ -185,7 +184,7 @@ public class UserService {
      * Disable a user from their Email
      * @param userEmail The email of the user to disable
      * @return boolean True if it has been disabled
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public boolean disableUser(String userEmail) {
         try {
@@ -202,6 +201,23 @@ public class UserService {
 
             // Get the user's ID
             String userId = user.getId();
+
+            if(keycloak.realm(realm).users().get(userId).groups().stream()
+                    .anyMatch(group -> group.getName().equals("Antiquarian"))){
+                String result = this.redistributeAntiquity(userEmail);
+                if(!result.equals("Antiquity's antiquarian changed")){
+                    return false;
+                }
+            }
+
+            // Check if the user is an admin
+            boolean isAdmin = keycloak.realm(realm).users().get(userId).groups().stream()
+                    .anyMatch(group -> group.getName().equals("Admin"));
+
+            // If the user is an admin, don't allow disabling
+            if (isAdmin) {
+                throw new RuntimeException("Cannot disable an admin user.");
+            }
 
             // Desactivate the user
             user.setEnabled(false);
@@ -225,7 +241,7 @@ public class UserService {
      * Enable a user from their Email
      * @param userEmail The email of the user to enable
      * @return boolean True if it has been enabled
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public boolean enableUser(String userEmail) {
         try {
@@ -265,7 +281,7 @@ public class UserService {
      * Get the status of a user
      * @param userEmail the email of the user to get the status
      * @return boolean true if it is enabled, false if not
-     * @Author Zarzycki Alexis
+     * @author Zarzycki Alexis
      */
     public boolean getUserStatus(String userEmail) {
         try {
@@ -293,6 +309,7 @@ public class UserService {
      * Fonction to redistribute Antiquity
      * @param userEmail the email of the user to get the status
      * @return string, to know what was happened
+     * @author Verly Noah
      */
     public String redistributeAntiquity(String userEmail) throws MessagingException, IOException {
     //Get the new antiquarian
@@ -332,15 +349,14 @@ public class UserService {
 
     /**
      * Lambda expression to get a random number between 1 and a max
-     * @Author Verly Noah
+     * @author Verly Noah
      */
    private Function<Integer,Integer> getRandom = max ->  (int) (Math.random() * max);
-
 
     /**
      * Fonction to update user profile
      * @param userDetails the details of user.
-     *  @Author Dewever David
+     *  @author Dewever David
      */
     public void updateUserProfile(Map<String, Object> userDetails) {
         String email = (String) userDetails.get("email");
@@ -393,8 +409,104 @@ public class UserService {
             // Mise à jour sur Keycloak
             keycloak.realm(realm).users().get(user.getId()).update(user);
         } catch (Exception e) {
-    throw new RuntimeException(e);
-}
-
+            throw new RuntimeException(e);
+        }
     }
+
+    /**
+     * Get the balance of a user
+     * @param userEmail the email of the user to get the balance
+     * @return double the amount of the balance
+     * @author Zarzycki Alexis
+     */
+    public double getUserBalance(String userEmail) {
+        try {
+            // Get the users with the email
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // We get the first user in the list
+            UserRepresentation user = users.get(0);
+
+            // Retrieve the "balance" attribute from user attributes
+            Map<String, List<String>> attributes = user.getAttributes();
+
+            if (attributes != null && attributes.containsKey("balance")) {
+                List<String> balanceValues = attributes.get("balance");
+
+                if (balanceValues != null && !balanceValues.isEmpty()) {
+                    // Convert balance to double for proper calculation
+                    return Double.parseDouble(balanceValues.get(0));
+                }
+            }
+            // If no "balance" attribute is found, return a default value
+            return 0;
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with the email: " + userEmail, e);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid balance value for user with email: " + userEmail, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while getting the balance of the user with email: " + userEmail, e);
+        }
+    }
+
+    /**
+     * Add a specified amount to a user's balance.
+     * @param userEmail the email of the user to update the balance.
+     * @param amount the amount to add to the user's balance.
+     * @author Zarzycki Alexis
+     */
+    public void addToUserBalance(String userEmail, double amount) {
+        try {
+            // Check the amount
+            if (amount < 0) {
+                throw new IllegalArgumentException("Amount must be non-negative.");
+            }
+
+            // Get the users with the email
+            List<UserRepresentation> users = keycloak.realm(realm).users().search(userEmail);
+
+            // Check if any users are found
+            if (users.isEmpty()) {
+                throw new NotFoundException("No users found with email: " + userEmail);
+            }
+
+            // Get the first user in the list
+            UserRepresentation user = users.get(0);
+
+            // Retrieve the current "balance" attribute
+            Map<String, List<String>> attributes = user.getAttributes();
+            double currentBalance = getUserBalance(userEmail);
+
+            // Calculate the new balance
+            double newBalance = currentBalance + amount;
+
+            // Format the new balance to ensure it's in the correct format (with two decimal places)
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);  // Force dot separator
+            DecimalFormat df = new DecimalFormat("#.00", symbols);  // Always two decimal places
+            String formattedBalance = df.format(newBalance);
+
+            // Update the user's attributes with the new balance
+            if (attributes == null) {
+                attributes = new HashMap<>();
+            }
+            attributes.put("balance", Collections.singletonList(formattedBalance));
+            user.setAttributes(attributes);
+
+            // Update the user in Keycloak
+            keycloak.realm(realm).users().get(user.getId()).update(user);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("No users found with the email: " + userEmail, e);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid balance value for user with email: " + userEmail, e);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Error while updating the balance of the user with email: " + userEmail, e);
+        }
+    }
+
 }
