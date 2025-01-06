@@ -5,10 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae5959d1-b3f3-4905-8550-7368da4e69de" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Api/uploads/2f84a1fe-1aba-47f4-a0b4-6bd0f4b20ec9.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Api/uploads/53fd305c-64b9-446f-a0fc-5a80f4ca418a.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Api/uploads/774f25b0-05b0-4dbc-b51e-442bb8ffd731.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Api/uploads/864ebb4c-5950-43c6-9a27-110e0ebd36be.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Api/uploads/f5c5ee72-a537-4f0c-af06-79a886f7f723.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Website/src/app/sell/sell.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/Website/src/app/sell/sell.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Website/src/app/sell/sell.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Website/src/app/sell/sell.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Docker/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Docker/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Website/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Website/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/src/app/admin/dashboard/dashboard.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/Website/src/app/admin/dashboard/dashboard.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/src/app/admin/dashboard/dashboard.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Website/src/app/admin/dashboard/dashboard.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/src/app/admin/sidebar/sidebar.component.css" beforeDir="false" afterPath="$PROJECT_DIR$/Website/src/app/admin/sidebar/sidebar.component.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/src/app/admin/sidebar/sidebar.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/Website/src/app/admin/sidebar/sidebar.component.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,23 +44,59 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "C:\\Users\\Lawzen\\RiderProjects\\3-AnticairApp\\Website\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.Docker: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\l01\\Documents\\GitHub\\3-AnticairApp\\Website\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\l01\Documents\GitHub\3-AnticairApp\Docker" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Docker: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="Docker/docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Docker.Docker: Compose Deployment" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-WS-241.17890.13" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -61,6 +106,7 @@
       <option name="presentableId" value="Default" />
       <updated>1735339998757</updated>
       <workItem from="1735340001433" duration="528000" />
+      <workItem from="1736106074986" duration="14730000" />
     </task>
     <servers />
   </component>
