@@ -44,7 +44,6 @@ export class ProfileComponent implements OnInit {
     try {
       this.userDetails = this.authService.getUserDetails();
 
-
       this.listingService.getListingSeller(this.userDetails['email']).subscribe(res => {
         this.antiquities = res;
         this.antiquities.forEach(antiquity => {

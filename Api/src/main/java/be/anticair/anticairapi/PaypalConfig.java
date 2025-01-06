@@ -264,14 +264,19 @@ public class PaypalConfig {
 
         // When the antiquity has been sold, we pay the antiquarian for the commission
         double commissionToPay = listing.getPriceAntiquity() * 0.20;
+        // When the antiquity has been sold, we pay the seller for the payment
+        double sellerToPay = listing.getPriceAntiquity() - commissionToPay;
 
         // Format the commission to two decimal places before adding to the balance
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         DecimalFormat df = new DecimalFormat("#.00", symbols);
         String formattedCommission = df.format(commissionToPay);
+        String formattedSeller = df.format(sellerToPay);
 
         // Add the commission to the antiquarian's balance
         userService.addToUserBalance(listing.getMailAntiquarian(), Double.parseDouble(formattedCommission));
+        // Add the commission to the seller's balance
+        userService.addToUserBalance(listing.getMailSeller(), Double.parseDouble(formattedSeller));
 
         // We send the email to inform the antiquarian
         Map<String,String> otherInformation = new HashMap<>();

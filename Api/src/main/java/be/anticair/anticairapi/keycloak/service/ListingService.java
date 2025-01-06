@@ -93,7 +93,7 @@ public class ListingService {
 
         newListing.setMailSeller(email);
         newListing.setState(NEED_TO_BE_CHECKED.getState());  // Initialized to 0 (not yet verified)
-        newListing.setIsDisplay(false);  // Initialized to false (not yet displayed)
+        newListing.setIsDisplay(true);  // Initialized to true
         newListing.setMailAntiquarian(userAntiquarian.getEmail());
 
         // Save the listing if it has all the required fields

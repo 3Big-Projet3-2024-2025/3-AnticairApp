@@ -199,13 +199,16 @@ public class UserService {
             // We get the first user in the list
             UserRepresentation user = users.getFirst();
 
-            if(user.getGroups().contains("Antiquarian")){
-                String result = this.redistributeAntiquity(userEmail);
-                if(!result.equals("Antiquity's antiquarian changed")){return false;}
-            }
-
             // Get the user's ID
             String userId = user.getId();
+
+            if(keycloak.realm(realm).users().get(userId).groups().stream()
+                    .anyMatch(group -> group.getName().equals("Antiquarian"))){
+                String result = this.redistributeAntiquity(userEmail);
+                if(!result.equals("Antiquity's antiquarian changed")){
+                    return false;
+                }
+            }
 
             // Check if the user is an admin
             boolean isAdmin = keycloak.realm(realm).users().get(userId).groups().stream()

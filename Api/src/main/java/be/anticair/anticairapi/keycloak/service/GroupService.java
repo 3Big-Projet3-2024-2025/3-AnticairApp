@@ -86,9 +86,15 @@ public class GroupService {
 
             UserRepresentation user = users.getFirst(); // Get the first user
 
-            if(user.getGroups().contains("Antiquarian") && groupName.equals("Antiquarian")) {
+            // Get the user's ID
+            String userId = user.getId();
+
+            if((keycloak.realm(realm).users().get(userId).groups().stream()
+                    .anyMatch(group -> group.getName().equals("Antiquarian"))) && groupName.equalsIgnoreCase("Antiquarian")) {
                 String result = this.userService.redistributeAntiquity(userEmail);
-                if(!result.equals("Antiquity's antiquarian changed")){return ;}
+                if(!result.equals("Antiquity's antiquarian changed")){
+                    return;
+                }
             }
 
             keycloak.realm(realm).users().get(user.getId()).leaveGroup(groups.getFirst().getId());

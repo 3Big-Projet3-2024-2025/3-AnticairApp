@@ -17,7 +17,7 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
     @Query("SELECT a FROM Listing a WHERE a.mailAntiquarian = :email AND a.state = 0 OR a.state =2")
     List<Listing> getAllAntiquityNotCheckedFromAnAntiquarian(@Param("email") String email);
 
-    @Query("SELECT a FROM Listing a WHERE a.mailAntiquarian = :email AND a.isDisplay = true")
+    @Query("SELECT a FROM Listing a WHERE a.mailSeller = :email AND a.isDisplay = true")
     List<Listing> getAllAntiquityDisplayByMailSeller(@Param("email") String email);
 
     /**
