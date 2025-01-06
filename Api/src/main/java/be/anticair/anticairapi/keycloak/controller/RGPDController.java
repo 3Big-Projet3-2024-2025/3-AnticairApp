@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * REST Controller to RGPD
+ * @author Neve Thierry
+ */
 @RestController
 @RequestMapping("/api/rgpd")
 public class RGPDController {

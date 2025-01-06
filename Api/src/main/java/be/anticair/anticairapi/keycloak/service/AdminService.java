@@ -2,16 +2,18 @@ package be.anticair.anticairapi.keycloak.service;
 
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.models.UserModel;
-import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.resource.UsersResource;
 
 import java.util.*;
 
+/**
+ * Service to the admin
+ * @author Dewver David
+ */
 @Service
 public class AdminService {
 
