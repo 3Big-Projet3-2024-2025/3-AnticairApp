@@ -2,11 +2,11 @@ package be.anticair.anticairapi.enumeration;
 
 import lombok.Getter;
 
-@Getter
 /**
  * Enumeration to know the antiquity state
  * @Author Verly Noah
  */
+@Getter
 public enum AntiquityState {
     /**
      * an antiquity has been rejected and the owner need to change some information

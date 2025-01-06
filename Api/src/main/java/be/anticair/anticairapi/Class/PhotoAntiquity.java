@@ -3,15 +3,15 @@ package be.anticair.anticairapi.Class;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Class Antiquity Photo
+ */
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Table(name = "Photo_Antiquity")
-/**
- * Class Antiquity Photo
- */
 public class PhotoAntiquity {
 
     @Id

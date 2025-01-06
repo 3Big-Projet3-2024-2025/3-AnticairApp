@@ -10,6 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+/**
+ * Listing Class
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @NoArgsConstructor
@@ -17,9 +20,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "antiquity")
-/**
- * Listing Class
- */
 public class Listing {
 
         @Id

@@ -2,11 +2,11 @@ package be.anticair.anticairapi.enumeration;
 
 import lombok.Getter;
 
-@Getter
 /**
  * Enumaration to simplify the sending of mail
  * @Author Verly Noah
  */
+@Getter
 public enum TypeOfMail {
     VALIDATIONOFANANTIQUITY (1, "ValdiationOfAnAntiquity.html", "Validation of your antiquity"),
     CONFIRMATIONOFAPPLICATIONCOMMISSION (2, "ConfirmationOfApplicationCommission.html", "Confirmation of the commission application"),
