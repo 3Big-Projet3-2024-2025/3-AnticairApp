@@ -273,9 +273,11 @@ public class PaypalConfig {
         ListingWithPhotosDto listing = listingService.getListingById(listingId.intValue());
 
         // When the antiquity has been sold, we pay the antiquarian for the commission
-        double commissionToPay = listing.getPriceAntiquity() * 0.20;
+        // We get the base price
+        double basePrice = listing.getPriceAntiquity() / 1.2;
+        double commissionToPay = listing.getPriceAntiquity() - basePrice;
         // When the antiquity has been sold, we pay the seller for the payment
-        double sellerToPay = listing.getPriceAntiquity() - commissionToPay;
+        double sellerToPay = basePrice;
 
         // Format the commission to two decimal places before adding to the balance
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
