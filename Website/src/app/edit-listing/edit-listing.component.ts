@@ -134,7 +134,6 @@ export class EditListingComponent implements OnInit {
       alert("The antiquity must have max 10 images");
       return;
     }
-    this.antiquity.state = 2;
 
     // Send the updated antiquity with selected images
     this.antiquityService.updateAntiquityWithPhotos(
